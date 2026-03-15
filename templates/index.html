@@ -1,0 +1,2525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>ALFAscript {{ version }}</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:#0f1117; --glass:#1a1d2e; --glass2:#141824; --border:#2a2d3e;
+  --accent:#7c3aed; --accent-g:rgba(124,58,237,.3); --accent2:#a78bfa;
+  --text:#e2e8f0; --dim:#64748b; --muted:#334155;
+  --green:#10b981; --gdim:rgba(16,185,129,.15);
+  --yellow:#f59e0b; --ydim:rgba(245,158,11,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15);
+  --log:#0f1117;
+  --mono:'JetBrains Mono',monospace; --ui:'Nunito',sans-serif;
+  --r:10px; --rsm:7px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--ui);font-size:15px;line-height:1.5;user-select:none}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;background:none}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ── LAYOUT ─────────────────────────────────────────────── */
+#app{display:flex;flex-direction:column;height:100vh}
+
+/* topbar */
+#topbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:0 14px;height:48px;
+  background:var(--glass);border-bottom:1px solid var(--border);
+  position:relative;z-index:20;
+}
+#topbar::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.5;
+}
+
+/* workspace */
+#workspace{flex:1 1 0;display:flex;overflow:hidden}
+
+/* left sidebar */
+#sidebar{
+  flex:0 0 210px;background:var(--glass);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;
+}
+
+/* center */
+#center{flex:1 1 0;display:flex;flex-direction:column;overflow:hidden}
+#tasks-wrap{flex:1 1 0;overflow-y:auto;padding:8px 12px 0}
+
+/* bottom */
+#runbar{
+  flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-top:1px solid var(--border);background:var(--glass);
+}
+
+/* right */
+#rpanel{
+  flex:0 0 220px;background:var(--glass);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+
+/* ── TOPBAR ─────────────────────────────────────────────── */
+.logo{display:flex;align-items:baseline;gap:0;flex-shrink:0;font-family:var(--mono);font-size:20px;font-weight:700}
+.logo-alfa{color:var(--accent2);text-shadow:0 0 16px var(--accent-g);position:relative}
+.logo-script{color:var(--dim);font-size:16px}
+.logo-cur{color:var(--accent2);animation:blink 1.1s step-end infinite}
+@keyframes blink{50%{opacity:0}}
+
+.tb-chips{display:flex;gap:6px;flex:1;overflow:hidden}
+.chip{
+  display:flex;align-items:center;gap:5px;padding:2px 9px;
+  border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap;
+  border:1px solid var(--border);background:var(--glass2);color:var(--dim);
+  transition:all .2s;
+}
+.chip.ok {background:var(--gdim);border-color:rgba(16,185,129,.3);color:var(--green)}
+.chip.err{background:var(--rdim);border-color:rgba(239,68,68,.3);color:var(--red)}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+.tb-right{display:flex;align-items:center;gap:7px;margin-left:auto;flex-shrink:0}
+.ver-tag{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+#upd-pill{
+  display:none;padding:2px 9px;border-radius:20px;font-size:13px;font-weight:600;
+  background:var(--ydim);border:1px solid rgba(245,158,11,.35);color:var(--yellow);
+  cursor:pointer;animation:ppulse 2s ease-in-out infinite;
+}
+@keyframes ppulse{0%,100%{opacity:1}50%{opacity:.6}}
+.ibt{
+  width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:var(--dim);background:var(--glass2);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+}
+.ibt:hover{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 10px var(--accent-g)}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sb-sec{padding:12px 8px 4px}
+.sb-lbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:0 5px;margin-bottom:5px}
+.sep{height:1px;background:var(--border);margin:5px 8px}
+
+.pset{
+  display:flex;align-items:center;width:100%;padding:7px 9px;border-radius:var(--rsm);
+  color:var(--dim);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;
+  margin-bottom:1px;text-align:left;position:relative;overflow:hidden;white-space:normal;line-height:1.3;
+}
+.pset::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--accent);border-radius:0 2px 2px 0;
+  transform:scaleY(0);transition:transform .2s;
+}
+.pset:hover{background:var(--glass2);color:var(--text)}
+.pset.on{background:color-mix(in srgb,var(--accent) 12%,var(--glass2));color:var(--accent2)}
+.pset.on::before{transform:scaleY(1)}
+
+.xbtn{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:6px 9px;border-radius:var(--rsm);
+  color:var(--dim);font-size:14px;cursor:pointer;transition:all .15s;
+  margin-bottom:1px;text-align:left;
+}
+.xbtn:hover{background:var(--glass2);color:var(--text)}
+.xbtn:hover .xi{background:var(--accent);color:#fff;border-color:var(--accent)}
+.xi{
+  width:20px;height:20px;border-radius:5px;background:var(--glass);
+  border:1px solid var(--border);display:flex;align-items:center;
+  justify-content:center;font-size:13px;flex-shrink:0;transition:all .15s;
+}
+
+/* sidebar bottom buttons */
+.sb-foot{margin-top:auto;padding:8px 8px 10px;display:flex;gap:5px}
+.foot-btn{
+  flex:1;padding:5px 4px;border-radius:6px;font-size:14px;font-weight:700;
+  color:var(--dim);background:var(--glass2);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;text-align:center;
+}
+.foot-btn:hover{color:var(--text);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,var(--glass2))}
+
+/* ── TASKS ───────────────────────────────────────────────── */
+.th{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.th-title{font-size:13px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase}
+
+.cat-blk{margin-bottom:8px}
+.cat-name{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--accent);opacity:.6;text-transform:uppercase;margin-bottom:3px;padding-left:1px}
+
+.trow{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 10px;margin-bottom:1px;
+  border-radius:var(--rsm);cursor:pointer;
+  border:1px solid transparent;background:var(--glass2);
+  transition:all .15s;
+}
+.trow:hover{border-color:var(--border);transform:translateX(2px)}
+.trow.on{
+  background:color-mix(in srgb,var(--accent) 10%,var(--glass2));
+  border-color:color-mix(in srgb,var(--accent) 40%,transparent);
+}
+.chk{
+  width:14px;height:14px;border-radius:3px;flex-shrink:0;
+  border:2px solid var(--border);display:flex;align-items:center;
+  justify-content:center;font-size:9px;color:transparent;
+  background:var(--glass);transition:all .15s;
+}
+.trow.on .chk{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 0 7px var(--accent-g)}
+.tname{font-size:13px;font-weight:400;color:var(--dim);flex:1;transition:color .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow.on .tname{color:var(--text)}
+.tbat{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--glass);padding:1px 5px;border-radius:3px;flex-shrink:0}
+.trow.on .tbat{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--glass))}
+
+/* ── RUNBAR ──────────────────────────────────────────────── */
+.prog-col{flex:1}
+.prog-trk{height:3px;background:var(--glass2);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.prog-bar{height:100%;width:0%;border-radius:2px;background:var(--accent);transition:width .4s ease}
+.prog-bar.ok{background:var(--green)}.prog-bar.warn{background:var(--yellow)}
+.stat-lbl{font-size:13px;color:var(--dim);font-family:var(--mono)}
+.stat-lbl.ok{color:var(--green)}.stat-lbl.warn{color:var(--yellow)}.stat-lbl.err{color:var(--red)}
+.step-lbl{font-size:12px;color:var(--accent);font-family:var(--mono);min-height:13px;margin-bottom:2px}
+
+.mini-btns{display:flex;gap:5px;flex-shrink:0}
+.mbtn{padding:5px 10px;border-radius:6px;font-size:13px;font-weight:600;color:var(--dim);background:var(--glass2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.mbtn:hover{color:var(--text);background:var(--border)}
+
+.rbtn{
+  flex-shrink:0;min-width:140px;padding:9px 18px;border-radius:var(--rsm);
+  font-size:16px;font-weight:800;color:#fff;background:var(--accent);
+  cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.rbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent)}
+.rbtn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 18px var(--accent-g)}
+.rbtn:active:not(:disabled){transform:none}
+.rbtn.stop{background:var(--red)}.rbtn.done{background:var(--green)}
+.rbtn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── RIGHT PANEL ─────────────────────────────────────────── */
+.rp-sec{padding:10px 12px;border-bottom:1px solid var(--border)}
+.rp-ttl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.si-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:13px}
+.si-k{color:var(--dim)}.si-v{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text)}
+.si-v.ok{color:var(--green)}.si-v.warn{color:var(--yellow)}.si-v.bad{color:var(--red)}.si-v.click{cursor:pointer;text-decoration:underline dotted}
+.si-more{font-size:12px;color:var(--accent);cursor:default;margin-top:4px;display:inline-block;opacity:.7}
+
+/* hw hover tooltip */
+.hw-hover-wrap{position:relative;display:inline-block;width:100%;margin-top:4px;cursor:default}
+.hw-tip{
+  display:none;
+  position:fixed;
+  z-index:9999;
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+  min-width:320px;
+  max-width:480px;
+  pointer-events:none;
+  animation:popin .15s ease;
+}
+.hw-tip-inner{padding:12px 14px}
+.hw-tip-row{display:flex;align-items:baseline;gap:8px;padding:3px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.hw-tip-row:last-child{border:none}
+.hw-k{color:var(--dim);font-weight:700;min-width:42px;flex-shrink:0;font-size:12px}
+.hw-v{color:var(--text);font-family:var(--mono);font-size:12px;word-break:break-word}
+.hw-sep{height:1px;background:var(--border);margin:6px 0}
+.disk-row{display:flex;align-items:baseline;gap:6px;padding:3px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.disk-row:last-child{border:none}
+.disk-k{color:var(--dim);font-weight:700;min-width:42px;flex-shrink:0;font-size:12px}
+.disk-info{color:var(--text);font-family:var(--mono);font-size:12px;flex:1;word-break:break-word}
+.disk-smart{font-family:var(--mono);font-size:12px;font-weight:700;flex-shrink:0;white-space:nowrap}
+.disk-smart.good{color:var(--green)}.disk-smart.warn{color:var(--yellow)}.disk-smart.bad{color:var(--red)}.disk-smart.unknown{color:var(--dim)}
+
+.aida-ph{text-align:center;padding:20px 8px;color:var(--muted);font-size:14px;line-height:2}
+.aida-ico{font-size:32px;margin-bottom:4px}
+.ar{display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.ar:last-child{border:none}
+.ak{color:var(--dim)}.av{font-family:var(--mono);font-size:13px;font-weight:700}
+.av.ok{color:var(--green)}.av.warn{color:var(--yellow)}.av.crit{color:var(--red)}
+.a-verd{margin-top:8px;padding:6px 10px;border-radius:var(--rsm);font-size:14px;font-weight:700;text-align:center}
+.a-verd.ok{background:var(--gdim);color:var(--green)}
+.a-verd.warn{background:var(--ydim);color:var(--yellow)}
+.a-verd.crit{background:var(--rdim);color:var(--red)}
+
+/* ── MODALS ──────────────────────────────────────────────── */
+.overlay{
+  position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.75);
+  backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;
+}
+.overlay.show{display:flex}
+.mbox{
+  background:var(--glass);border:1px solid var(--border);border-radius:14px;
+  padding:22px;max-width:500px;width:92%;animation:popin .2s ease;
+  max-height:90vh;display:flex;flex-direction:column;
+}
+@keyframes popin{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-shrink:0}
+.mttl{font-size:19px;font-weight:800;color:var(--text)}
+.mclose{width:26px;height:26px;border-radius:6px;background:var(--glass2);color:var(--dim);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.mclose:hover{background:var(--red);color:#fff}
+.hdr-ibt{width:26px;height:26px;border-radius:6px;background:var(--glass2);border:1px solid var(--border);color:var(--dim);font-size:15px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.hdr-ibt:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.mbody{overflow-y:auto;flex:1}
+
+/* Programs modal */
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;padding:2px}
+.prog-card{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:10px 6px;border-radius:var(--rsm);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;background:var(--glass2);text-align:center;
+}
+.prog-card:hover{background:color-mix(in srgb,var(--accent) 12%,var(--glass2));border-color:var(--accent);transform:translateY(-1px)}
+.prog-card.prog-not-installed{opacity:.45;border-style:dashed}
+.prog-card.prog-not-installed:hover{border-color:var(--yellow);opacity:.7;transform:none}
+.prog-ico{font-size:32px;line-height:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.prog-name{font-size:12px;color:var(--text);line-height:1.3;word-break:break-word;opacity:.88}
+.prog-hint{font-size:12px;color:var(--dim);padding:8px 0;text-align:center}
+
+/* About / Info modal */
+.info-row{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:1px solid var(--border)}
+.info-row:last-child{border:none}
+.info-k{color:var(--text);opacity:.65}.info-v{font-family:var(--mono);font-size:13px;color:var(--text)}
+
+/* Update modal */
+.upd-cl{background:var(--bg);border-radius:8px;padding:10px;font-size:13px;font-family:var(--mono);color:var(--dim);max-height:130px;overflow-y:auto;white-space:pre-wrap;margin-bottom:14px}
+.mftr{display:flex;gap:7px;justify-content:flex-end;flex-shrink:0;margin-top:14px}
+.mbtn-p{padding:8px 18px;border-radius:7px;font-size:15px;font-weight:700;background:var(--accent);color:#fff;cursor:pointer}
+.mbtn-p:hover{filter:brightness(1.15)}
+.mbtn-s{padding:8px 18px;border-radius:7px;font-size:15px;font-weight:700;background:var(--glass2);color:var(--text);opacity:.8;border:1px solid var(--border);cursor:pointer}
+.mbtn-s:hover{opacity:1}
+
+/* ── Modal text contrast fixes per theme ─────────────────────
+   Override --dim inside .mbox for themes where the combo of
+   near-black mbox bg + default dim value fails WCAG AA (4.5:1)  */
+/* default dark: glass=#1a1d2e, dim=#64748b → 3.7:1 → bump to #94a3b8 (5.2:1) */
+#app:not([data-vstyle]) .mbox         { --dim:#94a3b8 }
+/* default light: glass=#fff, dim=#64748b → 4.3:1 → bump to #4b5563 (5.9:1) */
+#app:not([data-vstyle])[data-vmode="light"] .mbox { --dim:#4b5563 }
+/* void dark: mbox=#0d0e0f, dim=#475569 → 2.6:1 → bump to #94a3b8 (8.1:1) */
+#app[data-vstyle="void"] .mbox         { --dim:#94a3b8 }
+/* void light: mbox=#fff, dim=#6b7280 → 4.4:1 → bump to #4b5563 (5.9:1) */
+#app[data-vstyle="void"][data-vmode="light"] .mbox { --dim:#4b5563 }
+
+/* Glitch */
+@keyframes glitch-c{0%,100%{clip-path:none;transform:none}10%{clip-path:inset(20% 0 50% 0);transform:translate(-2px,0)}20%{clip-path:inset(60% 0 10% 0);transform:translate(2px,0)}30%{clip-path:none;transform:none}}
+
+/* ═══════════════════════════════════════════════════════════
+   VISUAL STYLES — 10 стилей × 2 режима (dark / light)
+   data-vstyle на #app  |  data-vmode="light" для светлого
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Фоновый слой ──────────────────────────────────────── */
+#vstyle-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#vstyle-bg>*{display:none}
+#app{position:relative;z-index:1}
+
+/* ══ ПЕРЕМЕННЫЕ ПО УМОЛЧАНИЮ (= default dark) ══════════ */
+/* уже заданы в :root выше */
+
+/* ══ DEFAULT — LIGHT ══════════════════════════════════════ */
+#app[data-vmode="light"]{
+  --bg:#f1f5fb; --glass:#ffffff; --glass2:#f0f4fa; --border:#e2e8f0;
+  --accent:#7c3aed; --accent-g:rgba(124,58,237,.2); --accent2:#7c3aed;
+  --text:#0f172a; --dim:#64748b; --muted:rgba(100,116,139,.55);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f8fafc;
+}
+
+/* ══ LATTE — тёплый кофе/пергамент ═══════════════════════ */
+.vbg-latte{position:absolute;inset:0;background:linear-gradient(150deg,#fdf8f0 0%,#fef3e2 50%,#fdfaf5 100%)}
+.vbg-latte .lspot{position:absolute;border-radius:50%;filter:blur(100px);animation:vdrift linear infinite}
+.vbg-latte .ls1{width:600px;height:400px;background:radial-gradient(circle,rgba(217,119,6,.14),transparent 70%);top:-80px;right:-60px;animation-duration:24s}
+.vbg-latte .ls2{width:500px;height:350px;background:radial-gradient(circle,rgba(180,83,9,.09),transparent 70%);bottom:-60px;left:-40px;animation-duration:30s;animation-delay:-13s}
+
+#app[data-vstyle="latte"][data-vmode="light"]{
+  --bg:#fdf8f0; --glass:rgba(255,251,243,.88); --glass2:rgba(253,248,240,.92);
+  --border:rgba(180,83,9,.15); --accent:#b45309; --accent-g:rgba(180,83,9,.25);
+  --accent2:#d97706; --text:#1c0f00; --dim:#78350f; --muted:rgba(120,53,15,.38);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#a16207; --ydim:rgba(161,98,7,.12);
+  --red:#b91c1c; --rdim:rgba(185,28,28,.12); --log:#fdf8f0;
+}
+#app[data-vstyle="latte"][data-vmode="light"] #topbar,
+#app[data-vstyle="latte"][data-vmode="light"] #sidebar,
+#app[data-vstyle="latte"][data-vmode="light"] #runbar,
+#app[data-vstyle="latte"][data-vmode="light"] #rpanel{border-color:rgba(180,83,9,.14)}
+#app[data-vstyle="latte"][data-vmode="light"] #topbar::after{background:linear-gradient(90deg,transparent,#b45309,transparent);opacity:.4}
+#app[data-vstyle="latte"][data-vmode="light"] .logo-alfa{-webkit-text-fill-color:#b45309}
+#app[data-vstyle="latte"][data-vmode="light"] .xi{background:rgba(180,83,9,.07);border-color:rgba(180,83,9,.2)}
+#app[data-vstyle="latte"][data-vmode="light"] .trow{background:rgba(255,255,255,.65);border-color:transparent}
+#app[data-vstyle="latte"][data-vmode="light"] .trow:hover{background:rgba(255,255,255,.9);border-color:rgba(180,83,9,.18)}
+#app[data-vstyle="latte"][data-vmode="light"] .trow.on{background:rgba(255,255,255,.96);border-color:rgba(180,83,9,.32);box-shadow:0 2px 12px rgba(180,83,9,.1)}
+#app[data-vstyle="latte"][data-vmode="light"] .tbat{background:rgba(180,83,9,.07);color:#78350f}
+#app[data-vstyle="latte"][data-vmode="light"] .trow.on .tbat{background:rgba(180,83,9,.13);color:#b45309}
+#app[data-vstyle="latte"][data-vmode="light"] .rbtn{background:linear-gradient(135deg,#92400e,#b45309);box-shadow:0 4px 18px rgba(180,83,9,.3)}
+#app[data-vstyle="latte"][data-vmode="light"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(180,83,9,.45)}
+#app[data-vstyle="latte"][data-vmode="light"] .chip{background:rgba(255,255,255,.8);border-color:rgba(180,83,9,.18)}
+#app[data-vstyle="latte"][data-vmode="light"] .mbox{background:rgba(253,248,240,.92);border-color:rgba(180,83,9,.16)}
+
+/* ══ OCEAN — морская синяя ════════════════════════════════ */
+.vbg-ocean{position:absolute;inset:0;background:#e0f2fe}
+.vbg-ocean .wave{position:absolute;left:-50%;width:200%;border-radius:40%;opacity:.18;animation:vspin linear infinite}
+.vbg-ocean .w1{height:320px;bottom:-140px;background:#0284c7;animation-duration:18s}
+.vbg-ocean .w2{height:280px;bottom:-120px;background:#0369a1;animation-duration:25s;animation-delay:-8s;opacity:.12}
+.vbg-ocean .w3{height:240px;bottom:-100px;background:#38bdf8;animation-duration:14s;animation-delay:-4s;opacity:.1}
+@keyframes vspin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+
+#app[data-vstyle="ocean"][data-vmode="light"]{
+  --bg:#e0f2fe; --glass:rgba(255,255,255,.85); --glass2:rgba(240,249,255,.85);
+  --border:rgba(3,105,161,.18); --accent:#0369a1; --accent-g:rgba(3,105,161,.2);
+  --accent2:#0369a1; --text:#0c1a2e; --dim:#075985; --muted:rgba(7,89,133,.45);
+  --green:#0d6e3a; --gdim:rgba(13,110,58,.12);
+  --yellow:#a16207; --ydim:rgba(161,98,7,.12);
+  --red:#b91c1c; --rdim:rgba(185,28,28,.12); --log:#e0f2fe;
+}
+#app[data-vstyle="ocean"][data-vmode="light"] #topbar,
+#app[data-vstyle="ocean"][data-vmode="light"] #sidebar,
+#app[data-vstyle="ocean"][data-vmode="light"] #runbar,
+#app[data-vstyle="ocean"][data-vmode="light"] #rpanel{border-color:rgba(3,105,161,.15)}
+#app[data-vstyle="ocean"][data-vmode="light"] #topbar::after{background:linear-gradient(90deg,transparent,#0369a1,transparent);opacity:.35}
+#app[data-vstyle="ocean"][data-vmode="light"] .xi{background:rgba(3,105,161,.08);border-color:rgba(3,105,161,.22)}
+#app[data-vstyle="ocean"][data-vmode="light"] .trow.on{background:rgba(3,105,161,.09);border-color:rgba(3,105,161,.3)}
+#app[data-vstyle="ocean"][data-vmode="light"] .rbtn{background:linear-gradient(135deg,#0369a1,#0284c7);box-shadow:0 4px 18px rgba(3,105,161,.3)}
+#app[data-vstyle="ocean"][data-vmode="light"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(3,105,161,.45)}
+#app[data-vstyle="ocean"][data-vmode="light"] .mbox{background:rgba(224,242,254,.95);border-color:rgba(3,105,161,.2)}
+
+/* ══ FROST — матовое стекло ══════════════════════════════ */
+.vbg-frost{position:absolute;inset:0;background:linear-gradient(135deg,#1a2744,#0f172a,#1e1235);background-size:400% 400%;animation:vbgshift 14s ease-in-out infinite}
+.vbg-frost.light-mode{background:linear-gradient(135deg,#dbeafe,#ede9fe,#fce7f3,#d1fae5)!important}
+.vbg-frost .blob{position:absolute;border-radius:50%;filter:blur(60px);animation:vblobdrift ease-in-out infinite}
+.vbg-frost .bl1{width:480px;height:480px;background:#4c1d95;top:-100px;right:-80px;animation-duration:20s;opacity:.4}
+.vbg-frost .bl2{width:380px;height:380px;background:#0e7490;bottom:-70px;left:-60px;animation-duration:25s;animation-delay:-9s;opacity:.35}
+.vbg-frost .bl3{width:280px;height:280px;background:#065f46;top:30%;left:22%;animation-duration:17s;animation-delay:-5s;opacity:.3}
+@keyframes vbgshift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes vblobdrift{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(28px,-18px)}}
+
+#app[data-vstyle="frost"]{
+  --bg:#0d1520; --glass:rgba(30,41,59,.72); --glass2:rgba(20,30,48,.72);
+  --border:rgba(148,163,184,.2); --accent:#818cf8; --accent-g:rgba(129,140,248,.3);
+  --accent2:#a5b4fc; --text:#f1f5f9; --dim:#94a3b8; --muted:rgba(148,163,184,.45);
+  --green:#10b981; --gdim:rgba(16,185,129,.15);
+  --yellow:#f59e0b; --ydim:rgba(245,158,11,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15); --log:rgba(13,21,32,.95);
+}
+#app[data-vstyle="frost"] #topbar,
+#app[data-vstyle="frost"] #sidebar,
+#app[data-vstyle="frost"] #runbar,
+#app[data-vstyle="frost"] #rpanel{backdrop-filter:blur(24px) saturate(1.5)}
+#app[data-vstyle="frost"] .xi{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+#app[data-vstyle="frost"] .rbtn{box-shadow:0 4px 24px var(--accent-g)}
+#app[data-vstyle="frost"] .rbtn:hover:not(:disabled){box-shadow:0 8px 36px var(--accent-g);transform:translateY(-2px)}
+#app[data-vstyle="frost"] .mbox{backdrop-filter:blur(28px)}
+
+/* Frost LIGHT */
+#app[data-vstyle="frost"][data-vmode="light"]{
+  --bg:#e8eeff; --glass:rgba(255,255,255,.7); --glass2:rgba(248,246,255,.7);
+  --border:rgba(199,210,254,.8); --accent:#7c3aed; --accent-g:rgba(124,58,237,.2);
+  --accent2:#7c3aed; --text:#1e293b; --dim:#475569; --muted:rgba(71,85,105,.5);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f1f5f9;
+}
+#app[data-vstyle="frost"][data-vmode="light"] #topbar,
+#app[data-vstyle="frost"][data-vmode="light"] #sidebar,
+#app[data-vstyle="frost"][data-vmode="light"] #runbar,
+#app[data-vstyle="frost"][data-vmode="light"] #rpanel{backdrop-filter:blur(24px) saturate(1.8);border-color:rgba(255,255,255,.85);box-shadow:0 2px 16px rgba(0,0,0,.06)}
+#app[data-vstyle="frost"][data-vmode="light"] .xi{background:rgba(124,58,237,.08);border-color:rgba(124,58,237,.2)}
+#app[data-vstyle="frost"][data-vmode="light"] .rbtn{box-shadow:0 4px 24px rgba(124,58,237,.25),0 0 0 1px rgba(255,255,255,.3) inset}
+
+/* ══ MEADOW — природная зелёная ══════════════════════════ */
+.vbg-meadow{position:absolute;inset:0;background:#f0fdf4}
+.vbg-meadow::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(22,163,74,.1) 1px,transparent 1px);background-size:28px 28px;opacity:.7}
+.vbg-meadow .mg{position:absolute;border-radius:50%;filter:blur(80px);animation:vblobdrift ease-in-out infinite}
+.vbg-meadow .mg1{width:450px;height:350px;background:#bbf7d0;top:-60px;right:-60px;animation-duration:20s;opacity:.6}
+.vbg-meadow .mg2{width:350px;height:350px;background:#d9f99d;bottom:-60px;left:-40px;animation-duration:26s;animation-delay:-10s;opacity:.5}
+
+#app[data-vstyle="meadow"][data-vmode="light"]{
+  --bg:#f0fdf4; --glass:rgba(255,255,255,.85); --glass2:rgba(240,253,244,.85);
+  --border:rgba(22,163,74,.18); --accent:#16a34a; --accent-g:rgba(22,163,74,.2);
+  --accent2:#16a34a; --text:#052e16; --dim:#166534; --muted:rgba(22,101,52,.45);
+  --green:#16a34a; --gdim:rgba(22,163,74,.12);
+  --yellow:#a16207; --ydim:rgba(161,98,7,.12);
+  --red:#b91c1c; --rdim:rgba(185,28,28,.12); --log:#f0fdf4;
+}
+#app[data-vstyle="meadow"][data-vmode="light"] #topbar,
+#app[data-vstyle="meadow"][data-vmode="light"] #sidebar,
+#app[data-vstyle="meadow"][data-vmode="light"] #runbar,
+#app[data-vstyle="meadow"][data-vmode="light"] #rpanel{border-color:rgba(22,163,74,.15)}
+#app[data-vstyle="meadow"][data-vmode="light"] #topbar::after{background:linear-gradient(90deg,transparent,#16a34a,transparent);opacity:.35}
+#app[data-vstyle="meadow"][data-vmode="light"] .xi{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.22)}
+#app[data-vstyle="meadow"][data-vmode="light"] .trow.on{background:rgba(22,163,74,.09);border-color:rgba(22,163,74,.3)}
+#app[data-vstyle="meadow"][data-vmode="light"] .rbtn{background:linear-gradient(135deg,#15803d,#16a34a);box-shadow:0 4px 18px rgba(22,163,74,.3)}
+#app[data-vstyle="meadow"][data-vmode="light"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(22,163,74,.45)}
+#app[data-vstyle="meadow"][data-vmode="light"] .mbox{background:rgba(240,253,244,.95);border-color:rgba(22,163,74,.2)}
+
+/* ══ EMBER — тёмное тепло ════════════════════════════════ */
+.vbg-ember{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 90%,#2a0e00 0%,#0d0200 60%,#000 100%)}
+.vbg-ember .eglow{position:absolute;border-radius:50%;filter:blur(100px);animation:vdrift linear infinite}
+.vbg-ember .eg1{width:600px;height:300px;background:radial-gradient(circle,rgba(251,146,60,.22),transparent 70%);bottom:-50px;left:10%;animation-duration:20s}
+.vbg-ember .eg2{width:400px;height:200px;background:radial-gradient(circle,rgba(239,68,68,.15),transparent 70%);bottom:-30px;right:15%;animation-duration:15s;animation-delay:-7s}
+
+#app[data-vstyle="ember"]{
+  --bg:#0d0200; --glass:rgba(20,8,0,.82); --glass2:rgba(13,5,0,.82);
+  --border:rgba(251,146,60,.18); --accent:#fb923c; --accent-g:rgba(251,146,60,.3);
+  --accent2:#fed7aa; --text:#fef3c7; --dim:#d4a574; --muted:rgba(212,165,116,.4);
+  --green:#65a30d; --gdim:rgba(101,163,13,.15);
+  --yellow:#eab308; --ydim:rgba(234,179,8,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15); --log:#0d0200;
+}
+#app[data-vstyle="ember"] #topbar,
+#app[data-vstyle="ember"] #sidebar,
+#app[data-vstyle="ember"] #runbar,
+#app[data-vstyle="ember"] #rpanel{backdrop-filter:blur(18px)}
+#app[data-vstyle="ember"] .xi{background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.25)}
+#app[data-vstyle="ember"] #topbar::after{background:linear-gradient(90deg,transparent,#fb923c,transparent)}
+#app[data-vstyle="ember"] .logo-alfa{text-shadow:0 0 16px rgba(251,146,60,.6)}
+#app[data-vstyle="ember"] .rbtn{background:linear-gradient(135deg,#c2410c,#fb923c);box-shadow:0 0 24px rgba(251,146,60,.3)}
+#app[data-vstyle="ember"] .rbtn:hover:not(:disabled){box-shadow:0 0 38px rgba(251,146,60,.5)}
+#app[data-vstyle="ember"] .mbox{backdrop-filter:blur(20px)}
+
+/* Ember LIGHT */
+#app[data-vstyle="ember"][data-vmode="light"]{
+  --bg:#fff7ed; --glass:#ffffff; --glass2:#fff3e0;
+  --border:#fed7aa; --accent:#ea580c; --accent-g:rgba(234,88,12,.2);
+  --accent2:#c2410c; --text:#431407; --dim:#9a3412; --muted:rgba(154,52,18,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff7ed;
+}
+#app[data-vstyle="ember"][data-vmode="light"] .vbg-ember{background:linear-gradient(180deg,#fff7ed,#ffedd5)}
+#app[data-vstyle="ember"][data-vmode="light"] .vbg-ember .eglow{opacity:.12}
+#app[data-vstyle="ember"][data-vmode="light"] .xi{background:rgba(234,88,12,.08);border-color:rgba(234,88,12,.2)}
+#app[data-vstyle="ember"][data-vmode="light"] .logo-alfa{text-shadow:none}
+#app[data-vstyle="ember"][data-vmode="light"] .rbtn{background:var(--accent);box-shadow:0 4px 14px rgba(234,88,12,.3)}
+
+/* ══ SAKURA — лепестки ═══════════════════════════════════ */
+.vbg-sakura{position:absolute;inset:0;background:#12020a}
+.vbg-sakura.light-mode{background:linear-gradient(160deg,#fff5f7,#fce7f3,#ede9fe)!important}
+.vbg-sakura .petal{position:absolute;border-radius:50% 0 50% 0;animation:vpetal linear infinite}
+.vbg-sakura .p1{width:16px;height:16px;background:#f9a8d4;opacity:.3;top:5%;left:15%;animation-duration:14s}
+.vbg-sakura .p2{width:10px;height:10px;background:#c084fc;opacity:.25;top:20%;left:70%;animation-duration:19s;animation-delay:-6s}
+.vbg-sakura .p3{width:18px;height:18px;background:#f9a8d4;opacity:.28;top:45%;left:35%;animation-duration:16s;animation-delay:-9s}
+.vbg-sakura .p4{width:12px;height:12px;background:#d8b4fe;opacity:.22;top:65%;left:80%;animation-duration:22s;animation-delay:-4s}
+.vbg-sakura .p5{width:14px;height:14px;background:#fbcfe8;opacity:.26;top:80%;left:50%;animation-duration:17s;animation-delay:-12s}
+.vbg-sakura .p6{width:11px;height:11px;background:#c084fc;opacity:.2;top:10%;left:85%;animation-duration:24s;animation-delay:-7s}
+@keyframes vpetal{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.3}90%{opacity:.2}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+#app[data-vstyle="sakura"]{
+  --bg:#12020a; --glass:rgba(30,5,20,.84); --glass2:rgba(20,3,14,.84);
+  --border:rgba(249,168,212,.2); --accent:#ec4899; --accent-g:rgba(236,72,153,.3);
+  --accent2:#f9a8d4; --text:#fce7f3; --dim:#f9a8d4; --muted:rgba(249,168,212,.4);
+  --green:#34d399; --gdim:rgba(52,211,153,.15);
+  --yellow:#fbbf24; --ydim:rgba(251,191,36,.15);
+  --red:#f87171; --rdim:rgba(248,113,113,.15); --log:#12020a;
+}
+#app[data-vstyle="sakura"] #topbar,
+#app[data-vstyle="sakura"] #sidebar,
+#app[data-vstyle="sakura"] #runbar,
+#app[data-vstyle="sakura"] #rpanel{backdrop-filter:blur(20px)}
+#app[data-vstyle="sakura"] .xi{background:rgba(249,168,212,.12);border-color:rgba(249,168,212,.3)}
+#app[data-vstyle="sakura"] #topbar::after{background:linear-gradient(90deg,transparent,#ec4899,transparent)}
+#app[data-vstyle="sakura"] .logo-alfa{text-shadow:0 0 16px rgba(236,72,153,.5)}
+#app[data-vstyle="sakura"] .rbtn{background:linear-gradient(135deg,#be185d,#ec4899);box-shadow:0 0 22px rgba(236,72,153,.3)}
+#app[data-vstyle="sakura"] .rbtn:hover:not(:disabled){box-shadow:0 0 36px rgba(236,72,153,.5)}
+#app[data-vstyle="sakura"] .trow.on{background:rgba(236,72,153,.12);border-color:rgba(236,72,153,.4)}
+#app[data-vstyle="sakura"] .mbox{backdrop-filter:blur(24px)}
+
+/* Sakura LIGHT */
+#app[data-vstyle="sakura"][data-vmode="light"]{
+  --bg:#fff5f9; --glass:rgba(255,255,255,.72); --glass2:rgba(255,248,252,.72);
+  --border:rgba(249,168,212,.65); --accent:#db2777; --accent-g:rgba(219,39,119,.2);
+  --accent2:#be185d; --text:#500724; --dim:#9d174d; --muted:rgba(157,23,77,.45);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff5f9;
+}
+#app[data-vstyle="sakura"][data-vmode="light"] #topbar,
+#app[data-vstyle="sakura"][data-vmode="light"] #sidebar,
+#app[data-vstyle="sakura"][data-vmode="light"] #runbar,
+#app[data-vstyle="sakura"][data-vmode="light"] #rpanel{backdrop-filter:blur(22px) saturate(1.6);border-color:rgba(249,168,212,.5);box-shadow:0 2px 16px rgba(219,39,119,.06)}
+#app[data-vstyle="sakura"][data-vmode="light"] .xi{background:rgba(219,39,119,.08);border-color:rgba(219,39,119,.2)}
+#app[data-vstyle="sakura"][data-vmode="light"] .logo-alfa{text-shadow:none}
+#app[data-vstyle="sakura"][data-vmode="light"] .rbtn{background:var(--accent);box-shadow:0 4px 14px rgba(219,39,119,.3)}
+
+/* ══ VOID — ультраминимализм ═════════════════════════════ */
+.vbg-void{position:absolute;inset:0;background:#08090a}
+.vbg-void.light-mode{background:#fafafa!important}
+.vbg-void .void-line{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);top:48px}
+
+#app[data-vstyle="void"]{
+  --bg:#08090a; --glass:#0d0e0f; --glass2:#080909;
+  --border:rgba(255,255,255,.07); --accent:#94a3b8; --accent-g:rgba(148,163,184,.2);
+  --accent2:#cbd5e1; --text:#e2e8f0; --dim:#475569; --muted:rgba(71,85,105,.5);
+  --green:#22c55e; --gdim:rgba(34,197,94,.12);
+  --yellow:#eab308; --ydim:rgba(234,179,8,.12);
+  --red:#ef4444; --rdim:rgba(239,68,68,.12); --log:#08090a;
+}
+#app[data-vstyle="void"] .trow{background:transparent;border-color:transparent}
+#app[data-vstyle="void"] .trow:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.07)}
+#app[data-vstyle="void"] .trow.on{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1)}
+#app[data-vstyle="void"] .chk{border-radius:50%}
+#app[data-vstyle="void"] .xi{background:transparent;border-color:rgba(255,255,255,.1)}
+#app[data-vstyle="void"] #topbar::after{display:none}
+#app[data-vstyle="void"] .rbtn{background:transparent;border:1px solid rgba(255,255,255,.25);color:var(--text);box-shadow:none;font-weight:600;letter-spacing:.5px}
+#app[data-vstyle="void"] .rbtn:hover:not(:disabled){background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.45);box-shadow:none;transform:none}
+#app[data-vstyle="void"] .chip{background:transparent;border-color:rgba(255,255,255,.1)}
+#app[data-vstyle="void"] .ibt{background:transparent;border-color:rgba(255,255,255,.08)}
+#app[data-vstyle="void"] .foot-btn{background:transparent;border-color:rgba(255,255,255,.08)}
+#app[data-vstyle="void"] .mbox{box-shadow:0 0 0 1px rgba(255,255,255,.08)}
+
+/* Void LIGHT */
+#app[data-vstyle="void"][data-vmode="light"]{
+  --bg:#fafafa; --glass:#ffffff; --glass2:#f5f5f5;
+  --border:#e5e7eb; --accent:#6b7280; --accent-g:rgba(107,114,128,.15);
+  --accent2:#4b5563; --text:#111827; --dim:#6b7280; --muted:rgba(107,114,128,.5);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fafafa;
+}
+#app[data-vstyle="void"][data-vmode="light"] .vbg-void .void-line{background:linear-gradient(90deg,transparent,rgba(0,0,0,.06),transparent)}
+#app[data-vstyle="void"][data-vmode="light"] .xi{background:transparent;border-color:#e5e7eb}
+#app[data-vstyle="void"][data-vmode="light"] .trow:hover{background:rgba(0,0,0,.03);border-color:#e5e7eb}
+#app[data-vstyle="void"][data-vmode="light"] .trow.on{background:rgba(0,0,0,.04);border-color:#d1d5db}
+#app[data-vstyle="void"][data-vmode="light"] .rbtn{background:transparent;border:1px solid rgba(0,0,0,.2);color:#111827}
+#app[data-vstyle="void"][data-vmode="light"] .rbtn:hover:not(:disabled){background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.4)}
+#app[data-vstyle="void"][data-vmode="light"] .chip{border-color:#e5e7eb}
+#app[data-vstyle="void"][data-vmode="light"] .ibt{border-color:#e5e7eb}
+#app[data-vstyle="void"][data-vmode="light"] .foot-btn{border-color:#e5e7eb}
+
+/* ══ MATRIX — падающий код ═══════════════════════════════ */
+#vstyle-matrix-canvas{position:fixed;inset:0;z-index:0;display:none;pointer-events:none}
+
+#app[data-vstyle="matrix"]{
+  --bg:#000500; --glass:rgba(0,5,0,.9); --glass2:rgba(0,3,0,.9);
+  --border:rgba(0,255,65,.16); --accent:#00ff41; --accent-g:rgba(0,255,65,.25);
+  --accent2:#00ff41; --text:#00ff41; --dim:#00aa2a; --muted:rgba(0,170,42,.4);
+  --green:#00ff41; --gdim:rgba(0,255,65,.12);
+  --yellow:#ffe600; --ydim:rgba(255,230,0,.12);
+  --red:#ff3333; --rdim:rgba(255,51,51,.12); --log:#000500;
+}
+#app[data-vstyle="matrix"] #topbar,
+#app[data-vstyle="matrix"] #sidebar,
+#app[data-vstyle="matrix"] #runbar,
+#app[data-vstyle="matrix"] #rpanel{backdrop-filter:blur(4px)}
+#app[data-vstyle="matrix"] .xi{background:rgba(0,255,65,.07);border-color:rgba(0,255,65,.2);color:#00ff41}
+#app[data-vstyle="matrix"] .tname{color:#00aa2a;font-family:var(--mono)}
+#app[data-vstyle="matrix"] .trow.on .tname{color:#00ff41}
+#app[data-vstyle="matrix"] .logo-alfa{text-shadow:0 0 12px #00ff41}
+#app[data-vstyle="matrix"] #topbar::after{background:linear-gradient(90deg,transparent,#00ff41,transparent)}
+#app[data-vstyle="matrix"] .trow{border-radius:2px;font-family:var(--mono)}
+#app[data-vstyle="matrix"] .chk{border-radius:0}
+#app[data-vstyle="matrix"] .rbtn{background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;box-shadow:0 0 16px rgba(0,255,65,.2),inset 0 0 20px rgba(0,255,65,.05)}
+#app[data-vstyle="matrix"] .rbtn:hover:not(:disabled){background:rgba(0,255,65,.07);box-shadow:0 0 28px rgba(0,255,65,.4)}
+#app[data-vstyle="matrix"] .chip{border-radius:2px;font-family:var(--mono);font-size:11px}
+#app[data-vstyle="matrix"] .mbox{border-radius:2px}
+
+/* Matrix LIGHT */
+#app[data-vstyle="matrix"][data-vmode="light"]{
+  --bg:#f0fdf4; --glass:#ffffff; --glass2:#ecfdf5;
+  --border:#a7f3d0; --accent:#16a34a; --accent-g:rgba(22,163,74,.2);
+  --accent2:#15803d; --text:#052e16; --dim:#166534; --muted:rgba(22,101,52,.45);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f0fdf4;
+}
+#app[data-vstyle="matrix"][data-vmode="light"] .xi{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.25);color:#15803d}
+#app[data-vstyle="matrix"][data-vmode="light"] .tname{color:#166534;font-family:inherit}
+#app[data-vstyle="matrix"][data-vmode="light"] .trow.on .tname{color:#052e16}
+#app[data-vstyle="matrix"][data-vmode="light"] .logo-alfa{text-shadow:none}
+#app[data-vstyle="matrix"][data-vmode="light"] .rbtn{background:var(--accent);border:none;color:#fff;font-family:inherit;letter-spacing:0;text-transform:none;box-shadow:0 4px 14px rgba(22,163,74,.3)}
+#app[data-vstyle="matrix"][data-vmode="light"] .chip{border-radius:20px;font-family:inherit;font-size:13px}
+#app[data-vstyle="matrix"][data-vmode="light"] .trow{border-radius:var(--rsm);font-family:inherit}
+#app[data-vstyle="matrix"][data-vmode="light"] .chk{border-radius:3px}
+#app[data-vstyle="matrix"][data-vmode="light"] .mbox{border-radius:14px}
+
+/* ══ SUNSET — тёплый закат ═══════════════════════════════ */
+.vbg-sunset{position:absolute;inset:0;background:linear-gradient(135deg,#1a0533 0%,#2d0a1e 30%,#4a1530 55%,#2d1000 80%,#0d0505 100%);background-size:400% 400%;animation:vbgshift 16s ease-in-out infinite}
+.vbg-sunset .sg{position:absolute;border-radius:50%;filter:blur(90px);animation:vdrift linear infinite}
+.vbg-sunset .sg1{width:500px;height:500px;background:radial-gradient(circle,rgba(245,158,11,.22),transparent 70%);bottom:-100px;right:-50px;animation-duration:24s;opacity:1}
+.vbg-sunset .sg2{width:400px;height:400px;background:radial-gradient(circle,rgba(236,72,153,.18),transparent 70%);top:-80px;left:-60px;animation-duration:20s;animation-delay:-10s;opacity:1}
+.vbg-sunset .sg3{width:300px;height:300px;background:radial-gradient(circle,rgba(239,68,68,.15),transparent 70%);top:40%;left:50%;animation-duration:18s;animation-delay:-6s;opacity:1}
+
+#app[data-vstyle="sunset"]{
+  --bg:#0a0108; --glass:rgba(15,3,5,.7); --glass2:rgba(10,2,3,.7);
+  --border:rgba(245,158,11,.18); --accent:#f59e0b; --accent-g:rgba(245,158,11,.3);
+  --accent2:#fcd34d; --text:#fef3c7; --dim:#fbbf24; --muted:rgba(251,191,36,.4);
+  --green:#65a30d; --gdim:rgba(101,163,13,.15);
+  --yellow:#eab308; --ydim:rgba(234,179,8,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15); --log:#0a0108;
+}
+#app[data-vstyle="sunset"] #topbar,
+#app[data-vstyle="sunset"] #sidebar,
+#app[data-vstyle="sunset"] #runbar,
+#app[data-vstyle="sunset"] #rpanel{backdrop-filter:blur(20px) saturate(1.3)}
+#app[data-vstyle="sunset"] .xi{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.25)}
+#app[data-vstyle="sunset"] #topbar::after{background:linear-gradient(90deg,transparent,#f59e0b,transparent)}
+#app[data-vstyle="sunset"] .logo-alfa{text-shadow:0 0 18px rgba(245,158,11,.5)}
+#app[data-vstyle="sunset"] .trow{background:rgba(245,158,11,.04)}
+#app[data-vstyle="sunset"] .trow.on{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.45)}
+#app[data-vstyle="sunset"] .rbtn{background:linear-gradient(135deg,#b45309,#f59e0b);box-shadow:0 0 24px rgba(245,158,11,.3)}
+#app[data-vstyle="sunset"] .rbtn:hover:not(:disabled){box-shadow:0 0 40px rgba(245,158,11,.5)}
+#app[data-vstyle="sunset"] .mbox{backdrop-filter:blur(22px)}
+
+/* Sunset LIGHT */
+#app[data-vstyle="sunset"][data-vmode="light"]{
+  --bg:#fff7ed; --glass:#ffffff; --glass2:#fffbf5;
+  --border:#fde68a; --accent:#d97706; --accent-g:rgba(217,119,6,.2);
+  --accent2:#b45309; --text:#451a03; --dim:#92400e; --muted:rgba(146,64,14,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff7ed;
+}
+#app[data-vstyle="sunset"][data-vmode="light"] .vbg-sunset{background:linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7)!important}
+#app[data-vstyle="sunset"][data-vmode="light"] .vbg-sunset .sg{opacity:.18}
+#app[data-vstyle="sunset"][data-vmode="light"] .xi{background:rgba(217,119,6,.08);border-color:rgba(217,119,6,.2)}
+#app[data-vstyle="sunset"][data-vmode="light"] .logo-alfa{text-shadow:none}
+#app[data-vstyle="sunset"][data-vmode="light"] .rbtn{background:var(--accent);box-shadow:0 4px 14px rgba(217,119,6,.3)}
+
+/* ── Стиль-пикер в модалке ────────────────────────────── */
+.theme-tabs{display:flex;gap:4px;margin-bottom:12px}
+.theme-tab{flex:1;padding:7px 10px;border-radius:8px;font-size:13px;font-weight:700;
+  color:var(--dim);background:var(--glass2);border:1px solid var(--border);cursor:pointer;transition:all .15s;text-align:center}
+.theme-tab:hover{border-color:var(--accent);color:var(--text)}
+.theme-tab.on{background:color-mix(in srgb,var(--accent) 18%,var(--glass2));border-color:var(--accent);color:var(--text)}
+.theme-panel{display:none}.theme-panel.on{display:block}
+.vstyle-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.vstyle-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 4px;
+  border-radius:10px;cursor:pointer;border:1.5px solid var(--border);
+  transition:all .18s;background:var(--glass2)}
+.vstyle-item:hover{border-color:var(--accent)}
+.vstyle-item.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 15%,var(--glass2));box-shadow:0 0 10px var(--accent-g)}
+.vstyle-thumb{width:42px;height:28px;border-radius:6px;border:1px solid rgba(0,0,0,.1);flex-shrink:0}
+.vstyle-name{font-size:10px;font-weight:700;color:var(--dim);text-align:center;line-height:1.2}
+.vstyle-item.on .vstyle-name{color:var(--text)}
+/* Тогглер тёмный/светлый */
+.vmode-toggle{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px}
+.vmode-btn{flex:1;padding:7px 10px;border-radius:8px;font-size:13px;font-weight:700;
+  background:var(--glass2);border:1.5px solid var(--border);color:var(--dim);
+  cursor:pointer;transition:all .18s;text-align:center}
+.vmode-btn:hover{border-color:var(--accent);color:var(--text)}
+.vmode-btn.on{background:color-mix(in srgb,var(--accent) 18%,var(--glass2));border-color:var(--accent);color:var(--text)}
+.vstyle-sect{font-size:9px;font-weight:800;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;padding:8px 0 6px;border-top:1px solid var(--border);margin-top:6px}
+.vstyle-sect:first-child{border-top:none;padding-top:0;margin-top:0}
+
+
+/* ══ 1. DEFAULT (текущий вид, без изменений) ════════════════ */
+/* нет переопределений */
+
+/* ══ 2. LATTE — тёплая кремово-кофейная ════════════════════ */
+#app[data-vstyle="latte"] #topbar,
+#app[data-vstyle="latte"] #sidebar,
+#app[data-vstyle="latte"] #runbar,
+#app[data-vstyle="latte"] #rpanel{background:rgba(253,248,236,.85);backdrop-filter:blur(18px) saturate(1.5);border-color:rgba(146,64,14,.15);box-shadow:0 2px 12px rgba(146,64,14,.06)}
+#app[data-vstyle="latte"] .trow{background:rgba(255,251,240,.7);border-color:transparent}
+#app[data-vstyle="latte"] .trow:hover{background:rgba(255,251,240,.9)}
+#app[data-vstyle="latte"] .trow.on{background:rgba(146,64,14,.1);border-color:rgba(146,64,14,.3);box-shadow:0 2px 12px rgba(146,64,14,.08)}
+#app[data-vstyle="latte"] .chip{background:rgba(255,251,240,.7);border-color:rgba(146,64,14,.2)}
+#app[data-vstyle="latte"] .ibt{background:rgba(255,251,240,.7);border-color:rgba(146,64,14,.18)}
+#app[data-vstyle="latte"] .mbox{background:rgba(253,246,236,.9);backdrop-filter:blur(22px);border-color:rgba(146,64,14,.2)}
+
+/* ══ 3. OCEAN — свежая морская синяя ═══════════════════════ */
+#app[data-vstyle="ocean"] #topbar,
+#app[data-vstyle="ocean"] #sidebar,
+#app[data-vstyle="ocean"] #runbar,
+#app[data-vstyle="ocean"] #rpanel{background:rgba(255,255,255,.82);backdrop-filter:blur(20px) saturate(1.6);border-color:rgba(3,105,161,.15);box-shadow:0 2px 14px rgba(3,105,161,.07)}
+#app[data-vstyle="ocean"] .trow{background:rgba(255,255,255,.6);border-color:transparent}
+#app[data-vstyle="ocean"] .trow:hover{background:rgba(255,255,255,.85)}
+#app[data-vstyle="ocean"] .trow.on{background:rgba(3,105,161,.1);border-color:rgba(3,105,161,.3);box-shadow:0 2px 12px rgba(3,105,161,.08)}
+#app[data-vstyle="ocean"] .chip{background:rgba(255,255,255,.7);border-color:rgba(3,105,161,.2)}
+#app[data-vstyle="ocean"] .ibt{background:rgba(255,255,255,.65);border-color:rgba(3,105,161,.18)}
+#app[data-vstyle="ocean"] .mbox{background:rgba(224,242,254,.9);backdrop-filter:blur(22px);border-color:rgba(3,105,161,.2)}
+
+/* ══ 4. FROST — светлое матовое стекло ══════════════════════ */
+.vbg-frost{position:absolute;inset:0;background:linear-gradient(135deg,#dbeafe,#ede9fe,#fce7f3,#d1fae5);background-size:400% 400%;animation:vbgshift 14s ease-in-out infinite}
+.vbg-frost .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;animation:vblobdrift ease-in-out infinite}
+.vbg-frost .bl1{width:480px;height:480px;background:#a78bfa;top:-100px;right:-80px;animation-duration:20s}
+.vbg-frost .bl2{width:380px;height:380px;background:#67e8f9;bottom:-70px;left:-60px;animation-duration:25s;animation-delay:-9s}
+.vbg-frost .bl3{width:280px;height:280px;background:#86efac;top:30%;left:22%;animation-duration:17s;animation-delay:-5s}
+@keyframes vbgshift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes vblobdrift{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.1) translate(28px,-18px)}}
+
+#app[data-vstyle="frost"] #topbar,
+#app[data-vstyle="frost"] #sidebar,
+#app[data-vstyle="frost"] #runbar,
+#app[data-vstyle="frost"] #rpanel{background:rgba(255,255,255,.52);backdrop-filter:blur(24px) saturate(1.8);border-color:rgba(255,255,255,.75);box-shadow:0 2px 16px rgba(0,0,0,.07)}
+#app[data-vstyle="frost"] .trow{background:rgba(255,255,255,.45);border-color:transparent}
+#app[data-vstyle="frost"] .trow:hover{background:rgba(255,255,255,.65)}
+#app[data-vstyle="frost"] .trow.on{background:rgba(255,255,255,.75);border-color:rgba(255,255,255,.9);box-shadow:0 2px 14px rgba(0,0,0,.08)}
+#app[data-vstyle="frost"] .chip{background:rgba(255,255,255,.65);border-color:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+#app[data-vstyle="frost"] .rbtn{box-shadow:0 4px 24px rgba(124,58,237,.25),0 0 0 1px rgba(255,255,255,.3) inset}
+#app[data-vstyle="frost"] .rbtn:hover:not(:disabled){box-shadow:0 8px 36px rgba(124,58,237,.35),0 0 0 1px rgba(255,255,255,.4) inset;transform:translateY(-2px)}
+#app[data-vstyle="frost"] .ibt{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.8)}
+#app[data-vstyle="frost"] .mbox{background:rgba(255,255,255,.65);backdrop-filter:blur(28px) saturate(1.8);border-color:rgba(255,255,255,.85)}
+#app[data-vstyle="frost"] .mbtn-s{background:rgba(255,255,255,.55)}
+
+/* ══ 5. MEADOW — свежая природная зелёная ══════════════════ */
+#app[data-vstyle="meadow"] #topbar,
+#app[data-vstyle="meadow"] #sidebar,
+#app[data-vstyle="meadow"] #runbar,
+#app[data-vstyle="meadow"] #rpanel{background:rgba(255,255,255,.82);backdrop-filter:blur(20px) saturate(1.5);border-color:rgba(22,163,74,.15);box-shadow:0 2px 14px rgba(22,163,74,.07)}
+#app[data-vstyle="meadow"] .trow{background:rgba(255,255,255,.6);border-color:transparent}
+#app[data-vstyle="meadow"] .trow:hover{background:rgba(255,255,255,.85)}
+#app[data-vstyle="meadow"] .trow.on{background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.3);box-shadow:0 2px 12px rgba(22,163,74,.08)}
+#app[data-vstyle="meadow"] .chip{background:rgba(255,255,255,.7);border-color:rgba(22,163,74,.2)}
+#app[data-vstyle="meadow"] .ibt{background:rgba(255,255,255,.65);border-color:rgba(22,163,74,.18)}
+#app[data-vstyle="meadow"] .mbox{background:rgba(240,253,244,.9);backdrop-filter:blur(22px);border-color:rgba(22,163,74,.2)}
+
+/* ══ 6. EMBER — тёмное тепло, огненное свечение ════════════ */
+.vbg-ember{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 80%,#2a0e00 0%,#0d0200 60%,#000 100%)}
+.vbg-ember .eglow{position:absolute;border-radius:50%;filter:blur(100px);animation:vdrift linear infinite}
+.vbg-ember .eg1{width:600px;height:300px;background:radial-gradient(circle,rgba(251,146,60,.18),transparent 70%);bottom:-50px;left:10%;animation-duration:20s}
+.vbg-ember .eg2{width:400px;height:200px;background:radial-gradient(circle,rgba(239,68,68,.12),transparent 70%);bottom:-30px;right:15%;animation-duration:15s;animation-delay:-7s}
+
+#app[data-vstyle="ember"]{--accent:#fb923c;--accent2:#fed7aa;--accent-g:rgba(251,146,60,.3)}
+#app[data-vstyle="ember"] #topbar,
+#app[data-vstyle="ember"] #sidebar,
+#app[data-vstyle="ember"] #runbar,
+#app[data-vstyle="ember"] #rpanel{background:rgba(20,8,0,.72);backdrop-filter:blur(18px);border-color:rgba(251,146,60,.15)}
+#app[data-vstyle="ember"] #topbar::after{background:linear-gradient(90deg,transparent,#fb923c,transparent)}
+#app[data-vstyle="ember"] .logo-alfa{text-shadow:0 0 16px rgba(251,146,60,.6)}
+#app[data-vstyle="ember"] .trow{background:rgba(251,146,60,.03)}
+#app[data-vstyle="ember"] .trow:hover{background:rgba(251,146,60,.07);border-color:rgba(251,146,60,.25)}
+#app[data-vstyle="ember"] .trow.on{background:rgba(251,146,60,.12);border-color:rgba(251,146,60,.4);box-shadow:0 0 14px rgba(251,146,60,.12)}
+#app[data-vstyle="ember"] .rbtn{background:linear-gradient(135deg,#dc2626,#fb923c);box-shadow:0 0 24px rgba(251,146,60,.3)}
+#app[data-vstyle="ember"] .rbtn:hover:not(:disabled){box-shadow:0 0 40px rgba(251,146,60,.5)}
+#app[data-vstyle="ember"] .chip.ok{box-shadow:0 0 8px rgba(251,146,60,.2)}
+#app[data-vstyle="ember"] .mbox{background:rgba(20,8,0,.82);backdrop-filter:blur(20px);border-color:rgba(251,146,60,.2)}
+
+/* ══ 7. SAKURA — светлые лепестки сакуры ═══════════════════ */
+.vbg-sakura{position:absolute;inset:0;background:linear-gradient(160deg,#fff5f7 0%,#fce7f3 40%,#ede9fe 80%,#fdf2f8 100%)}
+.vbg-sakura .petal{position:absolute;border-radius:50% 0 50% 0;opacity:.25;animation:vpetal linear infinite}
+.vbg-sakura .p1{width:18px;height:18px;background:#f9a8d4;top:10%;left:15%;animation-duration:12s;animation-delay:0s}
+.vbg-sakura .p2{width:12px;height:12px;background:#c084fc;top:25%;left:65%;animation-duration:18s;animation-delay:-5s}
+.vbg-sakura .p3{width:20px;height:20px;background:#f9a8d4;top:50%;left:30%;animation-duration:15s;animation-delay:-8s}
+.vbg-sakura .p4{width:10px;height:10px;background:#d8b4fe;top:70%;left:75%;animation-duration:20s;animation-delay:-3s}
+.vbg-sakura .p5{width:16px;height:16px;background:#fbcfe8;top:80%;left:45%;animation-duration:14s;animation-delay:-11s}
+.vbg-sakura .p6{width:14px;height:14px;background:#c084fc;top:5%;left:80%;animation-duration:22s;animation-delay:-6s}
+@keyframes vpetal{0%{transform:translateY(-20px) rotate(0deg);opacity:0}10%{opacity:.3}90%{opacity:.25}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+#app[data-vstyle="sakura"]{--accent:#db2777;--accent2:#f472b6;--accent-g:rgba(219,39,119,.25)}
+#app[data-vstyle="sakura"] #topbar,
+#app[data-vstyle="sakura"] #sidebar,
+#app[data-vstyle="sakura"] #runbar,
+#app[data-vstyle="sakura"] #rpanel{background:rgba(255,255,255,.58);backdrop-filter:blur(22px) saturate(1.6);border-color:rgba(249,168,212,.5);box-shadow:0 2px 16px rgba(219,39,119,.07)}
+#app[data-vstyle="sakura"] .trow{background:rgba(255,255,255,.4);border-color:transparent}
+#app[data-vstyle="sakura"] .trow:hover{background:rgba(255,255,255,.65)}
+#app[data-vstyle="sakura"] .trow.on{background:rgba(255,255,255,.78);border-color:rgba(249,168,212,.7);box-shadow:0 2px 12px rgba(219,39,119,.1)}
+#app[data-vstyle="sakura"] .rbtn{background:linear-gradient(135deg,#db2777,#f472b6);box-shadow:0 4px 24px rgba(219,39,119,.3)}
+#app[data-vstyle="sakura"] .rbtn:hover:not(:disabled){box-shadow:0 8px 36px rgba(219,39,119,.4);transform:translateY(-2px)}
+#app[data-vstyle="sakura"] .chip{background:rgba(255,255,255,.65);border-color:rgba(249,168,212,.6)}
+#app[data-vstyle="sakura"] .ibt{background:rgba(255,255,255,.55);border-color:rgba(249,168,212,.5)}
+#app[data-vstyle="sakura"] .mbox{background:rgba(255,255,255,.72);backdrop-filter:blur(28px) saturate(1.8);border-color:rgba(249,168,212,.5)}
+
+/* ══ 8. VOID — ультра минимализм ════════════════════════════ */
+.vbg-void{position:absolute;inset:0;background:#08090a}
+.vbg-void .void-line{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);top:48px}
+
+#app[data-vstyle="void"] #topbar,
+#app[data-vstyle="void"] #sidebar,
+#app[data-vstyle="void"] #runbar,
+#app[data-vstyle="void"] #rpanel{background:rgba(8,9,10,.95);backdrop-filter:none;border-color:rgba(255,255,255,.06)}
+#app[data-vstyle="void"] #topbar::after{display:none}
+#app[data-vstyle="void"] .logo-alfa{text-shadow:none}
+#app[data-vstyle="void"] .trow{background:transparent;border-color:transparent}
+#app[data-vstyle="void"] .trow:hover{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06)}
+#app[data-vstyle="void"] .trow.on{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);box-shadow:none}
+#app[data-vstyle="void"] .chk{border-radius:50%}
+#app[data-vstyle="void"] .trow.on .chk{box-shadow:none}
+#app[data-vstyle="void"] .rbtn{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text);box-shadow:none;font-weight:600;letter-spacing:1px}
+#app[data-vstyle="void"] .rbtn:hover:not(:disabled){background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.4);box-shadow:none;transform:none}
+#app[data-vstyle="void"] .chip{background:transparent;border-color:rgba(255,255,255,.08);box-shadow:none}
+#app[data-vstyle="void"] .ibt{background:transparent;border-color:rgba(255,255,255,.07)}
+#app[data-vstyle="void"] ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08)}
+#app[data-vstyle="void"] .mbox{background:#0d0e0f;border-color:rgba(255,255,255,.08);border-radius:8px;box-shadow:none}
+
+/* ══ 9. MATRIX — падающий код ═══════════════════════════════ */
+#vstyle-matrix-canvas{position:fixed;inset:0;z-index:0;display:none;pointer-events:none;opacity:.18}
+#app[data-vstyle="matrix"] ~ #vstyle-matrix-canvas,
+#vstyle-matrix-canvas.vactive{display:block}
+
+#app[data-vstyle="matrix"]{--accent:#00ff41;--accent2:#00ff41;--accent-g:rgba(0,255,65,.2);--green:#00ff41}
+#app[data-vstyle="matrix"] #topbar,
+#app[data-vstyle="matrix"] #sidebar,
+#app[data-vstyle="matrix"] #runbar,
+#app[data-vstyle="matrix"] #rpanel{background:rgba(0,5,0,.88);backdrop-filter:blur(2px);border-color:rgba(0,255,65,.15)}
+#app[data-vstyle="matrix"] #topbar::after{background:linear-gradient(90deg,transparent,#00ff41,transparent)}
+#app[data-vstyle="matrix"] .logo-alfa{text-shadow:0 0 12px #00ff41;-webkit-text-fill-color:#00ff41}
+#app[data-vstyle="matrix"] .trow{background:rgba(0,255,65,.03);border-color:rgba(0,255,65,.07);font-family:var(--mono)}
+#app[data-vstyle="matrix"] .trow:hover{border-color:rgba(0,255,65,.3);background:rgba(0,255,65,.07)}
+#app[data-vstyle="matrix"] .trow.on{background:rgba(0,255,65,.1);border-color:rgba(0,255,65,.4);box-shadow:0 0 10px rgba(0,255,65,.1);font-family:var(--mono)}
+#app[data-vstyle="matrix"] .chk{border-radius:0;border-color:rgba(0,255,65,.35)}
+#app[data-vstyle="matrix"] .rbtn{background:transparent;border:1px solid #00ff41;color:#00ff41;font-family:var(--mono);letter-spacing:2px;text-transform:uppercase;box-shadow:0 0 16px rgba(0,255,65,.2),inset 0 0 20px rgba(0,255,65,.05)}
+#app[data-vstyle="matrix"] .rbtn:hover:not(:disabled){box-shadow:0 0 28px rgba(0,255,65,.4),inset 0 0 30px rgba(0,255,65,.1)}
+#app[data-vstyle="matrix"] .chip.ok{box-shadow:0 0 8px rgba(0,255,65,.3)}
+#app[data-vstyle="matrix"] .mbox{background:rgba(0,5,0,.93);border-color:rgba(0,255,65,.3);border-radius:2px}
+
+/* ══ 10. SUNSET — тёплый градиент, золотые панели ══════════ */
+.vbg-sunset{position:absolute;inset:0;background:linear-gradient(135deg,#1a0533 0%,#2d0a1e 25%,#4a1530 50%,#2d1000 75%,#0d0505 100%);background-size:400% 400%;animation:vbgshift 16s ease-in-out infinite}
+.vbg-sunset .sg{position:absolute;border-radius:50%;filter:blur(90px);opacity:.3;animation:vdrift linear infinite}
+.vbg-sunset .sg1{width:500px;height:500px;background:radial-gradient(circle,#f59e0b,transparent 70%);bottom:-100px;right:-50px;animation-duration:24s}
+.vbg-sunset .sg2{width:400px;height:400px;background:radial-gradient(circle,#ec4899,transparent 70%);top:-80px;left:-60px;animation-duration:20s;animation-delay:-10s}
+.vbg-sunset .sg3{width:300px;height:300px;background:radial-gradient(circle,#ef4444,transparent 70%);top:40%;left:50%;animation-duration:18s;animation-delay:-6s}
+
+#app[data-vstyle="sunset"]{--accent:#f59e0b;--accent2:#fcd34d;--accent-g:rgba(245,158,11,.3)}
+#app[data-vstyle="sunset"] #topbar,
+#app[data-vstyle="sunset"] #sidebar,
+#app[data-vstyle="sunset"] #runbar,
+#app[data-vstyle="sunset"] #rpanel{background:rgba(15,5,0,.6);backdrop-filter:blur(20px) saturate(1.3);border-color:rgba(245,158,11,.15)}
+#app[data-vstyle="sunset"] #topbar::after{background:linear-gradient(90deg,transparent,#f59e0b,transparent)}
+#app[data-vstyle="sunset"] .logo-alfa{text-shadow:0 0 18px rgba(245,158,11,.5)}
+#app[data-vstyle="sunset"] .trow{background:rgba(245,158,11,.04)}
+#app[data-vstyle="sunset"] .trow:hover{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.25)}
+#app[data-vstyle="sunset"] .trow.on{background:rgba(245,158,11,.14);border-color:rgba(245,158,11,.45);box-shadow:0 0 14px rgba(245,158,11,.12)}
+#app[data-vstyle="sunset"] .rbtn{background:linear-gradient(135deg,#b45309,#f59e0b);box-shadow:0 0 24px rgba(245,158,11,.3)}
+#app[data-vstyle="sunset"] .rbtn:hover:not(:disabled){box-shadow:0 0 40px rgba(245,158,11,.5)}
+#app[data-vstyle="sunset"] .chip.ok{box-shadow:0 0 8px rgba(245,158,11,.2)}
+#app[data-vstyle="sunset"] .mbox{background:rgba(15,5,0,.78);backdrop-filter:blur(22px);border-color:rgba(245,158,11,.2)}
+
+/* ── vdrift: медленный органичный дрейф (используется latte/ember/sunset) ─ */
+@keyframes vdrift{0%{transform:translate(0,0) scale(1)}25%{transform:translate(30px,-20px) scale(1.06)}50%{transform:translate(-15px,28px) scale(.96)}75%{transform:translate(-28px,-12px) scale(1.04)}100%{transform:translate(0,0) scale(1)}}
+
+/* ══════════════════════════════════════════════════════════════════
+   ТЁМНЫЕ ТЕМЫ #6–10
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── NEON — неоновый киберпанк ─────────────────────────────────── */
+.vbg-neon{position:absolute;inset:0;background:#080014}
+.vbg-neon::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(232,121,249,.012) 3px,rgba(232,121,249,.012) 4px);pointer-events:none}
+.vbg-neon .nb{position:absolute;border-radius:50%;filter:blur(90px);animation:vblobdrift ease-in-out infinite}
+.vbg-neon .nb1{width:580px;height:420px;background:rgba(232,121,249,.2);top:-110px;right:-70px;animation-duration:19s;opacity:1}
+.vbg-neon .nb2{width:480px;height:320px;background:rgba(167,139,250,.14);bottom:-80px;left:-60px;animation-duration:25s;animation-delay:-9s;opacity:1}
+.vbg-neon .nb3{width:260px;height:260px;background:rgba(251,113,133,.12);top:38%;left:42%;animation-duration:15s;animation-delay:-5s;opacity:1}
+.vbg-neon .nscan{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,rgba(232,121,249,.55) 50%,transparent 95%);animation:vneon-scan 6s linear infinite}
+@keyframes vneon-scan{0%{top:-2px;opacity:0}3%{opacity:1}97%{opacity:.15}100%{top:100%;opacity:0}}
+
+#app[data-vstyle="neon"]{--bg:#080014;--glass:rgba(18,0,34,.82);--glass2:rgba(12,0,24,.82);--border:rgba(232,121,249,.2);--accent:#e879f9;--accent2:#f0abfc;--accent-g:rgba(232,121,249,.3);--text:#fdf4ff;--dim:#d8b4fe;--muted:rgba(216,180,254,.4);--mono:var(--mono);--green:#4ade80;--gdim:rgba(74,222,128,.12);--yellow:#facc15;--ydim:rgba(250,204,21,.12);--red:#fb7185;--rdim:rgba(251,113,133,.12);--log:#080014}
+#app[data-vstyle="neon"] #topbar,#app[data-vstyle="neon"] #sidebar,#app[data-vstyle="neon"] #runbar,#app[data-vstyle="neon"] #rpanel{background:rgba(16,0,30,.78);backdrop-filter:blur(20px) saturate(1.4);border-color:rgba(232,121,249,.14)}
+#app[data-vstyle="neon"] #topbar::after{background:linear-gradient(90deg,transparent,#e879f9,transparent);opacity:.55}
+#app[data-vstyle="neon"] .logo-alfa{text-shadow:0 0 16px rgba(232,121,249,.8);-webkit-text-fill-color:#f0abfc}
+#app[data-vstyle="neon"] .trow{background:rgba(232,121,249,.03);border-color:rgba(232,121,249,.08)}
+#app[data-vstyle="neon"] .trow:hover{background:rgba(232,121,249,.07);border-color:rgba(232,121,249,.3)}
+#app[data-vstyle="neon"] .trow.on{background:rgba(232,121,249,.12);border-color:rgba(232,121,249,.45);box-shadow:0 0 14px rgba(232,121,249,.12)}
+#app[data-vstyle="neon"] .rbtn{background:linear-gradient(135deg,#a21caf,#e879f9);box-shadow:0 0 24px rgba(232,121,249,.38)}
+#app[data-vstyle="neon"] .rbtn:hover:not(:disabled){box-shadow:0 0 42px rgba(232,121,249,.6)}
+#app[data-vstyle="neon"] .xi{background:rgba(232,121,249,.08);border-color:rgba(232,121,249,.22)}
+#app[data-vstyle="neon"] .chip.ok{box-shadow:0 0 8px rgba(232,121,249,.3)}
+#app[data-vstyle="neon"] .mbox{background:rgba(14,0,28,.9);backdrop-filter:blur(24px);border-color:rgba(232,121,249,.25)}
+
+/* ── ABYSS — океанская бездна ──────────────────────────────────── */
+.vbg-abyss{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 110%,#011830 0%,#010810 58%,#000 100%)}
+.vbg-abyss .ay{position:absolute;border-radius:50%;filter:blur(80px);animation:vblobdrift ease-in-out infinite}
+.vbg-abyss .ay1{width:460px;height:320px;background:rgba(34,211,238,.2);top:8%;left:4%;animation-duration:21s}
+.vbg-abyss .ay2{width:340px;height:270px;background:rgba(6,182,212,.13);bottom:14%;right:8%;animation-duration:27s;animation-delay:-11s}
+.vbg-abyss .ay3{width:200px;height:200px;background:rgba(103,232,249,.1);top:50%;left:50%;animation-duration:16s;animation-delay:-6s}
+.vbg-abyss .ay4{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(34,211,238,.18),transparent);animation:vray-drift 10s ease-in-out infinite}
+.vbg-abyss .ay4b{animation-delay:-5s;animation-duration:14s}
+@keyframes vray-drift{0%{top:25%;opacity:0}20%{opacity:1}80%{opacity:.4}100%{top:70%;opacity:0}}
+
+#app[data-vstyle="abyss"]{--bg:#010810;--glass:rgba(1,14,32,.84);--glass2:rgba(1,8,22,.84);--border:rgba(34,211,238,.16);--accent:#22d3ee;--accent2:#67e8f9;--accent-g:rgba(34,211,238,.28);--text:#e0f2fe;--dim:#7dd3fc;--muted:rgba(125,211,252,.4);--green:#22c55e;--gdim:rgba(34,197,94,.12);--yellow:#fbbf24;--ydim:rgba(251,191,36,.12);--red:#f87171;--rdim:rgba(248,113,113,.12);--log:#010810}
+#app[data-vstyle="abyss"] #topbar,#app[data-vstyle="abyss"] #sidebar,#app[data-vstyle="abyss"] #runbar,#app[data-vstyle="abyss"] #rpanel{background:rgba(1,12,28,.78);backdrop-filter:blur(20px) saturate(1.4);border-color:rgba(34,211,238,.12)}
+#app[data-vstyle="abyss"] #topbar::after{background:linear-gradient(90deg,transparent,#22d3ee,transparent);opacity:.4}
+#app[data-vstyle="abyss"] .logo-alfa{text-shadow:0 0 18px rgba(34,211,238,.55)}
+#app[data-vstyle="abyss"] .trow{background:rgba(34,211,238,.03);border-color:rgba(34,211,238,.08)}
+#app[data-vstyle="abyss"] .trow:hover{background:rgba(34,211,238,.07);border-color:rgba(34,211,238,.28)}
+#app[data-vstyle="abyss"] .trow.on{background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.4);box-shadow:0 0 12px rgba(34,211,238,.1)}
+#app[data-vstyle="abyss"] .rbtn{background:linear-gradient(135deg,#0891b2,#22d3ee);box-shadow:0 0 22px rgba(34,211,238,.3)}
+#app[data-vstyle="abyss"] .rbtn:hover:not(:disabled){box-shadow:0 0 38px rgba(34,211,238,.5)}
+#app[data-vstyle="abyss"] .xi{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.2)}
+#app[data-vstyle="abyss"] .chip.ok{box-shadow:0 0 8px rgba(34,211,238,.25)}
+#app[data-vstyle="abyss"] .mbox{background:rgba(1,10,24,.88);backdrop-filter:blur(24px);border-color:rgba(34,211,238,.18)}
+
+/* ── BLOOD — тёмный кровавый ───────────────────────────────────── */
+.vbg-blood{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 115%,#28000a 0%,#0c0003 55%,#000 100%)}
+.vbg-blood .bd{position:absolute;border-radius:50%;filter:blur(100px);animation:vblood-pulse ease-in-out infinite}
+.vbg-blood .bd1{width:700px;height:280px;background:rgba(244,63,94,.22);bottom:-90px;left:5%;animation-duration:4.8s}
+.vbg-blood .bd2{width:520px;height:200px;background:rgba(190,18,60,.15);bottom:-70px;right:10%;animation-duration:6.5s;animation-delay:-2.4s}
+.vbg-blood .bd3{width:300px;height:300px;background:rgba(244,63,94,.08);top:20%;left:40%;animation-duration:9s;animation-delay:-4s;border-radius:50%;filter:blur(60px)}
+@keyframes vblood-pulse{0%,100%{opacity:.5;transform:scaleX(1) scaleY(1)}50%{opacity:1;transform:scaleX(1.16) scaleY(1.08)}}
+
+#app[data-vstyle="blood"]{--bg:#0c0003;--glass:rgba(18,0,6,.84);--glass2:rgba(12,0,4,.84);--border:rgba(244,63,94,.17);--accent:#f43f5e;--accent2:#fda4af;--accent-g:rgba(244,63,94,.3);--text:#fff1f2;--dim:#fda4af;--muted:rgba(253,164,175,.4);--green:#4ade80;--gdim:rgba(74,222,128,.12);--yellow:#fbbf24;--ydim:rgba(251,191,36,.12);--red:#f43f5e;--rdim:rgba(244,63,94,.2);--log:#0c0003}
+#app[data-vstyle="blood"] #topbar,#app[data-vstyle="blood"] #sidebar,#app[data-vstyle="blood"] #runbar,#app[data-vstyle="blood"] #rpanel{background:rgba(16,0,5,.8);backdrop-filter:blur(18px);border-color:rgba(244,63,94,.14)}
+#app[data-vstyle="blood"] #topbar::after{background:linear-gradient(90deg,transparent,#f43f5e,transparent);opacity:.45}
+#app[data-vstyle="blood"] .logo-alfa{text-shadow:0 0 18px rgba(244,63,94,.65);-webkit-text-fill-color:#fda4af}
+#app[data-vstyle="blood"] .trow{background:rgba(244,63,94,.03)}
+#app[data-vstyle="blood"] .trow:hover{background:rgba(244,63,94,.07);border-color:rgba(244,63,94,.3)}
+#app[data-vstyle="blood"] .trow.on{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.45);box-shadow:0 0 14px rgba(244,63,94,.12)}
+#app[data-vstyle="blood"] .rbtn{background:linear-gradient(135deg,#9f1239,#f43f5e);box-shadow:0 0 22px rgba(244,63,94,.32)}
+#app[data-vstyle="blood"] .rbtn:hover:not(:disabled){box-shadow:0 0 40px rgba(244,63,94,.52)}
+#app[data-vstyle="blood"] .xi{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.22)}
+#app[data-vstyle="blood"] .chip.ok{box-shadow:0 0 8px rgba(244,63,94,.28)}
+#app[data-vstyle="blood"] .mbox{background:rgba(14,0,5,.9);backdrop-filter:blur(22px);border-color:rgba(244,63,94,.2)}
+
+/* ── AURORA — северное сияние ──────────────────────────────────── */
+.vbg-aurora{position:absolute;inset:0;background:#01080f}
+.vbg-aurora .ar{position:absolute;left:-8%;width:116%;filter:blur(42px);border-radius:40%;animation:vaurora ease-in-out infinite}
+.vbg-aurora .ar1{height:160px;top:15%;background:linear-gradient(90deg,transparent 5%,rgba(16,185,129,.38),rgba(6,182,212,.3),transparent 95%);animation-duration:11s}
+.vbg-aurora .ar2{height:130px;top:30%;background:linear-gradient(90deg,transparent 10%,rgba(99,102,241,.28),rgba(16,185,129,.26),transparent 90%);animation-duration:16s;animation-delay:-5s}
+.vbg-aurora .ar3{height:110px;top:6%;background:linear-gradient(90deg,transparent 18%,rgba(52,211,153,.2),rgba(103,232,249,.18),transparent 82%);animation-duration:20s;animation-delay:-9s}
+.vbg-aurora .ar4{height:90px;top:44%;background:linear-gradient(90deg,transparent 15%,rgba(129,140,248,.18),transparent 85%);animation-duration:25s;animation-delay:-13s}
+@keyframes vaurora{0%,100%{transform:translateY(0) scaleY(1);opacity:.55}50%{transform:translateY(30px) scaleY(1.5);opacity:1}}
+
+#app[data-vstyle="aurora"]{--bg:#01080f;--glass:rgba(1,12,26,.76);--glass2:rgba(1,8,18,.76);--border:rgba(16,185,129,.18);--accent:#10b981;--accent2:#34d399;--accent-g:rgba(16,185,129,.3);--text:#ecfdf5;--dim:#6ee7b7;--muted:rgba(110,231,183,.4);--green:#10b981;--gdim:rgba(16,185,129,.15);--yellow:#fbbf24;--ydim:rgba(251,191,36,.12);--red:#f87171;--rdim:rgba(248,113,113,.12);--log:#01080f}
+#app[data-vstyle="aurora"] #topbar,#app[data-vstyle="aurora"] #sidebar,#app[data-vstyle="aurora"] #runbar,#app[data-vstyle="aurora"] #rpanel{background:rgba(1,10,22,.76);backdrop-filter:blur(22px) saturate(1.5);border-color:rgba(16,185,129,.14)}
+#app[data-vstyle="aurora"] #topbar::after{background:linear-gradient(90deg,transparent,#10b981,transparent);opacity:.4}
+#app[data-vstyle="aurora"] .logo-alfa{text-shadow:0 0 16px rgba(16,185,129,.55)}
+#app[data-vstyle="aurora"] .trow{background:rgba(16,185,129,.03);border-color:rgba(16,185,129,.07)}
+#app[data-vstyle="aurora"] .trow:hover{background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.28)}
+#app[data-vstyle="aurora"] .trow.on{background:rgba(16,185,129,.11);border-color:rgba(16,185,129,.4);box-shadow:0 0 12px rgba(16,185,129,.1)}
+#app[data-vstyle="aurora"] .rbtn{background:linear-gradient(135deg,#065f46,#10b981);box-shadow:0 0 22px rgba(16,185,129,.3)}
+#app[data-vstyle="aurora"] .rbtn:hover:not(:disabled){box-shadow:0 0 36px rgba(16,185,129,.5)}
+#app[data-vstyle="aurora"] .xi{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2)}
+#app[data-vstyle="aurora"] .chip.ok{box-shadow:0 0 8px rgba(16,185,129,.25)}
+#app[data-vstyle="aurora"] .mbox{background:rgba(1,8,20,.88);backdrop-filter:blur(24px);border-color:rgba(16,185,129,.2)}
+
+/* ── COAL — минимализм, индастриал ─────────────────────────────── */
+.vbg-coal{position:absolute;inset:0;background:#0b0b0b}
+.vbg-coal::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.006) 59px,rgba(255,255,255,.006) 60px),repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.006) 59px,rgba(255,255,255,.006) 60px);pointer-events:none}
+.vbg-coal::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 28% 42%,rgba(161,161,170,.06) 0%,transparent 55%),radial-gradient(ellipse at 72% 58%,rgba(161,161,170,.05) 0%,transparent 55%);animation:vcoal-breathe 18s ease-in-out infinite;pointer-events:none}
+@keyframes vcoal-breathe{0%,100%{opacity:.5}50%{opacity:1}}
+
+#app[data-vstyle="coal"]{--bg:#0b0b0b;--glass:rgba(16,16,16,.92);--glass2:rgba(11,11,11,.92);--border:rgba(161,161,170,.11);--accent:#a1a1aa;--accent2:#d4d4d8;--accent-g:rgba(161,161,170,.2);--text:#f4f4f5;--dim:#a1a1aa;--muted:rgba(161,161,170,.45);--green:#22c55e;--gdim:rgba(34,197,94,.12);--yellow:#eab308;--ydim:rgba(234,179,8,.12);--red:#ef4444;--rdim:rgba(239,68,68,.12);--log:#0b0b0b}
+#app[data-vstyle="coal"] #topbar,#app[data-vstyle="coal"] #sidebar,#app[data-vstyle="coal"] #runbar,#app[data-vstyle="coal"] #rpanel{background:rgba(15,15,15,.92);border-color:rgba(161,161,170,.1)}
+#app[data-vstyle="coal"] .trow{background:transparent;border-color:rgba(161,161,170,.08)}
+#app[data-vstyle="coal"] .trow:hover{background:rgba(255,255,255,.04);border-color:rgba(161,161,170,.22)}
+#app[data-vstyle="coal"] .trow.on{background:rgba(255,255,255,.07);border-color:rgba(161,161,170,.3);box-shadow:none}
+#app[data-vstyle="coal"] .rbtn{background:rgba(38,38,38,.95);border:1px solid rgba(161,161,170,.35);color:var(--text);box-shadow:none;letter-spacing:1px}
+#app[data-vstyle="coal"] .rbtn:hover:not(:disabled){background:rgba(50,50,50,.95);border-color:rgba(161,161,170,.55);box-shadow:none}
+#app[data-vstyle="coal"] .xi{background:transparent;border-color:rgba(161,161,170,.15)}
+#app[data-vstyle="coal"] .chip.ok{box-shadow:none}
+#app[data-vstyle="coal"] .mbox{background:rgba(13,13,13,.96);border-color:rgba(161,161,170,.14)}
+#app[data-vstyle="coal"] .mbox{--dim:#c4c4c8}
+
+/* ══════════════════════════════════════════════════════════════════
+   СВЕТЛЫЕ ТЕМЫ #6–10
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CLOUD — небо и облака ─────────────────────────────────────── */
+.vbg-cloud{position:absolute;inset:0;background:linear-gradient(180deg,#bfdbfe 0%,#dbeafe 35%,#f0f9ff 100%)}
+.vbg-cloud .cv{position:absolute;border-radius:50%;filter:blur(65px);animation:vblobdrift ease-in-out infinite}
+.vbg-cloud .cv1{width:520px;height:320px;background:rgba(255,255,255,.78);top:-60px;left:-70px;animation-duration:22s}
+.vbg-cloud .cv2{width:440px;height:270px;background:rgba(186,230,253,.65);top:22%;right:-55px;animation-duration:28s;animation-delay:-11s}
+.vbg-cloud .cv3{width:380px;height:230px;background:rgba(255,255,255,.55);bottom:6%;left:20%;animation-duration:18s;animation-delay:-7s}
+
+#app[data-vstyle="cloud"][data-vmode="light"]{--bg:#f0f9ff;--glass:rgba(255,255,255,.82);--glass2:rgba(240,249,255,.82);--border:rgba(14,165,233,.2);--accent:#0ea5e9;--accent2:#0284c7;--accent-g:rgba(14,165,233,.2);--text:#0c2340;--dim:#0369a1;--muted:rgba(3,105,161,.45);--green:#0d9488;--gdim:rgba(13,148,136,.12);--yellow:#ca8a04;--ydim:rgba(202,138,4,.12);--red:#dc2626;--rdim:rgba(220,38,38,.12);--log:#f0f9ff}
+#app[data-vstyle="cloud"] #topbar,#app[data-vstyle="cloud"] #sidebar,#app[data-vstyle="cloud"] #runbar,#app[data-vstyle="cloud"] #rpanel{background:rgba(255,255,255,.72);backdrop-filter:blur(22px) saturate(1.5);border-color:rgba(14,165,233,.2);box-shadow:0 2px 14px rgba(14,165,233,.07)}
+#app[data-vstyle="cloud"] #topbar::after{background:linear-gradient(90deg,transparent,#0ea5e9,transparent);opacity:.3}
+#app[data-vstyle="cloud"] .trow{background:rgba(255,255,255,.62);border-color:transparent}
+#app[data-vstyle="cloud"] .trow:hover{background:rgba(255,255,255,.88)}
+#app[data-vstyle="cloud"] .trow.on{background:rgba(14,165,233,.09);border-color:rgba(14,165,233,.3);box-shadow:0 2px 10px rgba(14,165,233,.08)}
+#app[data-vstyle="cloud"] .rbtn{background:linear-gradient(135deg,#0284c7,#0ea5e9);box-shadow:0 4px 18px rgba(14,165,233,.3)}
+#app[data-vstyle="cloud"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(14,165,233,.45)}
+#app[data-vstyle="cloud"] .xi{background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.22)}
+#app[data-vstyle="cloud"] .mbox{background:rgba(240,249,255,.94);backdrop-filter:blur(22px);border-color:rgba(14,165,233,.2)}
+
+/* ── PEACH — тёплый персик ─────────────────────────────────────── */
+.vbg-peach{position:absolute;inset:0;background:linear-gradient(150deg,#fff5f0 0%,#ffedd5 50%,#fef3c7 100%)}
+.vbg-peach .ph{position:absolute;border-radius:50%;filter:blur(80px);animation:vblobdrift ease-in-out infinite}
+.vbg-peach .ph1{width:540px;height:400px;background:rgba(254,215,170,.52);top:-80px;right:-60px;animation-duration:21s}
+.vbg-peach .ph2{width:420px;height:320px;background:rgba(253,186,116,.36);bottom:-60px;left:-40px;animation-duration:27s;animation-delay:-11s}
+.vbg-peach .ph3{width:300px;height:220px;background:rgba(254,243,199,.6);top:42%;left:32%;animation-duration:15s;animation-delay:-5s}
+
+#app[data-vstyle="peach"][data-vmode="light"]{--bg:#fff5f0;--glass:rgba(255,255,255,.86);--glass2:rgba(255,248,242,.86);--border:rgba(249,115,22,.18);--accent:#f97316;--accent2:#ea580c;--accent-g:rgba(249,115,22,.22);--text:#3b1003;--dim:#9a3412;--muted:rgba(154,52,18,.45);--green:#15803d;--gdim:rgba(21,128,61,.12);--yellow:#ca8a04;--ydim:rgba(202,138,4,.12);--red:#dc2626;--rdim:rgba(220,38,38,.12);--log:#fff5f0}
+#app[data-vstyle="peach"] #topbar,#app[data-vstyle="peach"] #sidebar,#app[data-vstyle="peach"] #runbar,#app[data-vstyle="peach"] #rpanel{background:rgba(255,255,255,.76);backdrop-filter:blur(20px) saturate(1.4);border-color:rgba(249,115,22,.15);box-shadow:0 2px 12px rgba(249,115,22,.06)}
+#app[data-vstyle="peach"] #topbar::after{background:linear-gradient(90deg,transparent,#f97316,transparent);opacity:.35}
+#app[data-vstyle="peach"] .trow{background:rgba(255,255,255,.62);border-color:transparent}
+#app[data-vstyle="peach"] .trow:hover{background:rgba(255,255,255,.88)}
+#app[data-vstyle="peach"] .trow.on{background:rgba(249,115,22,.09);border-color:rgba(249,115,22,.3)}
+#app[data-vstyle="peach"] .rbtn{background:linear-gradient(135deg,#c2410c,#f97316);box-shadow:0 4px 18px rgba(249,115,22,.3)}
+#app[data-vstyle="peach"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(249,115,22,.45)}
+#app[data-vstyle="peach"] .xi{background:rgba(249,115,22,.07);border-color:rgba(249,115,22,.2)}
+#app[data-vstyle="peach"] .mbox{background:rgba(255,248,242,.95);backdrop-filter:blur(22px);border-color:rgba(249,115,22,.18)}
+
+/* ── MINT — свежая мята ────────────────────────────────────────── */
+.vbg-mint{position:absolute;inset:0;background:#f0fffe}
+.vbg-mint::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(13,148,136,.08) 1px,transparent 1px);background-size:30px 30px;opacity:.7}
+.vbg-mint .mt{position:absolute;border-radius:50%;border:1px solid rgba(13,148,136,.08);animation:vmint-ring ease-in-out infinite}
+.vbg-mint .mt1{width:380px;height:380px;top:calc(50% - 190px);left:calc(50% - 190px);animation-duration:11s}
+.vbg-mint .mt2{width:600px;height:600px;top:calc(50% - 300px);left:calc(50% - 300px);animation-duration:16s;animation-delay:-5s}
+.vbg-mint .mt3{width:820px;height:820px;top:calc(50% - 410px);left:calc(50% - 410px);animation-duration:21s;animation-delay:-9s}
+@keyframes vmint-ring{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.1;transform:scale(1.06)}}
+
+#app[data-vstyle="mint"][data-vmode="light"]{--bg:#f0fffe;--glass:rgba(255,255,255,.86);--glass2:rgba(240,255,254,.86);--border:rgba(13,148,136,.18);--accent:#0d9488;--accent2:#0f766e;--accent-g:rgba(13,148,136,.22);--text:#042f2e;--dim:#0f766e;--muted:rgba(15,118,110,.45);--green:#15803d;--gdim:rgba(21,128,61,.12);--yellow:#ca8a04;--ydim:rgba(202,138,4,.12);--red:#dc2626;--rdim:rgba(220,38,38,.12);--log:#f0fffe}
+#app[data-vstyle="mint"] #topbar,#app[data-vstyle="mint"] #sidebar,#app[data-vstyle="mint"] #runbar,#app[data-vstyle="mint"] #rpanel{background:rgba(255,255,255,.78);backdrop-filter:blur(20px) saturate(1.5);border-color:rgba(13,148,136,.15);box-shadow:0 2px 12px rgba(13,148,136,.06)}
+#app[data-vstyle="mint"] #topbar::after{background:linear-gradient(90deg,transparent,#0d9488,transparent);opacity:.35}
+#app[data-vstyle="mint"] .trow{background:rgba(255,255,255,.62);border-color:transparent}
+#app[data-vstyle="mint"] .trow:hover{background:rgba(255,255,255,.88)}
+#app[data-vstyle="mint"] .trow.on{background:rgba(13,148,136,.09);border-color:rgba(13,148,136,.3)}
+#app[data-vstyle="mint"] .rbtn{background:linear-gradient(135deg,#0f766e,#0d9488);box-shadow:0 4px 18px rgba(13,148,136,.3)}
+#app[data-vstyle="mint"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(13,148,136,.45)}
+#app[data-vstyle="mint"] .xi{background:rgba(13,148,136,.07);border-color:rgba(13,148,136,.2)}
+#app[data-vstyle="mint"] .mbox{background:rgba(240,255,254,.95);backdrop-filter:blur(22px);border-color:rgba(13,148,136,.2)}
+
+/* ── LAVENDER — нежная лаванда ─────────────────────────────────── */
+.vbg-lavender{position:absolute;inset:0;background:linear-gradient(135deg,#faf5ff,#f3e8ff,#ede9fe)}
+.vbg-lavender .la{position:absolute;border-radius:50%;filter:blur(70px);animation:vblobdrift ease-in-out infinite}
+.vbg-lavender .la1{width:480px;height:380px;background:rgba(216,180,254,.42);top:-80px;right:-60px;animation-duration:20s}
+.vbg-lavender .la2{width:380px;height:300px;background:rgba(196,181,253,.36);bottom:-60px;left:-40px;animation-duration:26s;animation-delay:-9s}
+.vbg-lavender .la3{width:280px;height:280px;background:rgba(233,213,255,.32);top:32%;left:22%;animation-duration:16s;animation-delay:-5s}
+
+#app[data-vstyle="lavender"][data-vmode="light"]{--bg:#faf5ff;--glass:rgba(255,255,255,.8);--glass2:rgba(250,245,255,.8);--border:rgba(147,51,234,.18);--accent:#9333ea;--accent2:#7e22ce;--accent-g:rgba(147,51,234,.22);--text:#2d0a5e;--dim:#6b21a8;--muted:rgba(107,33,168,.45);--green:#15803d;--gdim:rgba(21,128,61,.12);--yellow:#ca8a04;--ydim:rgba(202,138,4,.12);--red:#dc2626;--rdim:rgba(220,38,38,.12);--log:#faf5ff}
+#app[data-vstyle="lavender"] #topbar,#app[data-vstyle="lavender"] #sidebar,#app[data-vstyle="lavender"] #runbar,#app[data-vstyle="lavender"] #rpanel{background:rgba(255,255,255,.72);backdrop-filter:blur(20px) saturate(1.5);border-color:rgba(147,51,234,.15);box-shadow:0 2px 14px rgba(147,51,234,.06)}
+#app[data-vstyle="lavender"] #topbar::after{background:linear-gradient(90deg,transparent,#9333ea,transparent);opacity:.35}
+#app[data-vstyle="lavender"] .trow{background:rgba(255,255,255,.62);border-color:transparent}
+#app[data-vstyle="lavender"] .trow:hover{background:rgba(255,255,255,.88)}
+#app[data-vstyle="lavender"] .trow.on{background:rgba(147,51,234,.08);border-color:rgba(147,51,234,.28)}
+#app[data-vstyle="lavender"] .rbtn{background:linear-gradient(135deg,#6b21a8,#9333ea);box-shadow:0 4px 18px rgba(147,51,234,.3)}
+#app[data-vstyle="lavender"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(147,51,234,.45)}
+#app[data-vstyle="lavender"] .xi{background:rgba(147,51,234,.07);border-color:rgba(147,51,234,.2)}
+#app[data-vstyle="lavender"] .mbox{background:rgba(250,245,255,.95);backdrop-filter:blur(22px);border-color:rgba(147,51,234,.18)}
+
+/* ── GOLD — золотой блеск ──────────────────────────────────────── */
+.vbg-gold{position:absolute;inset:0;background:linear-gradient(150deg,#fffbeb 0%,#fef9c3 42%,#fef3c7 100%)}
+.vbg-gold .gl{position:absolute;border-radius:50%;filter:blur(80px);animation:vblobdrift ease-in-out infinite}
+.vbg-gold .gl1{width:440px;height:330px;background:rgba(253,224,71,.3);top:-65px;right:-45px;animation-duration:21s}
+.vbg-gold .gl2{width:360px;height:270px;background:rgba(251,191,36,.24);bottom:-55px;left:-30px;animation-duration:27s;animation-delay:-10s}
+.vbg-gold .gsp{position:absolute;border-radius:50%;animation:vgold-twinkle ease-in-out infinite}
+.vbg-gold .gsp1{width:4px;height:4px;background:#fbbf24;top:14%;left:22%;animation-duration:2.8s}
+.vbg-gold .gsp2{width:3px;height:3px;background:#f59e0b;top:37%;left:74%;animation-duration:3.8s;animation-delay:-1.5s}
+.vbg-gold .gsp3{width:5px;height:5px;background:#fcd34d;top:62%;left:43%;animation-duration:2.5s;animation-delay:-0.8s}
+.vbg-gold .gsp4{width:3px;height:3px;background:#fbbf24;top:22%;left:87%;animation-duration:3.2s;animation-delay:-2.1s}
+.vbg-gold .gsp5{width:4px;height:4px;background:#f59e0b;top:79%;left:14%;animation-duration:4.2s;animation-delay:-1s}
+@keyframes vgold-twinkle{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(2.8)}}
+
+#app[data-vstyle="gold"][data-vmode="light"]{--bg:#fffbeb;--glass:rgba(255,255,255,.86);--glass2:rgba(255,251,235,.86);--border:rgba(217,119,6,.2);--accent:#d97706;--accent2:#b45309;--accent-g:rgba(217,119,6,.22);--text:#451a03;--dim:#92400e;--muted:rgba(146,64,14,.45);--green:#15803d;--gdim:rgba(21,128,61,.12);--yellow:#d97706;--ydim:rgba(217,119,6,.12);--red:#dc2626;--rdim:rgba(220,38,38,.12);--log:#fffbeb}
+#app[data-vstyle="gold"] #topbar,#app[data-vstyle="gold"] #sidebar,#app[data-vstyle="gold"] #runbar,#app[data-vstyle="gold"] #rpanel{background:rgba(255,255,255,.76);backdrop-filter:blur(20px) saturate(1.4);border-color:rgba(217,119,6,.15);box-shadow:0 2px 12px rgba(217,119,6,.06)}
+#app[data-vstyle="gold"] #topbar::after{background:linear-gradient(90deg,transparent,#d97706,transparent);opacity:.35}
+#app[data-vstyle="gold"] .trow{background:rgba(255,255,255,.62);border-color:transparent}
+#app[data-vstyle="gold"] .trow:hover{background:rgba(255,255,255,.88)}
+#app[data-vstyle="gold"] .trow.on{background:rgba(217,119,6,.09);border-color:rgba(217,119,6,.3)}
+#app[data-vstyle="gold"] .rbtn{background:linear-gradient(135deg,#92400e,#d97706);box-shadow:0 4px 18px rgba(217,119,6,.3)}
+#app[data-vstyle="gold"] .rbtn:hover:not(:disabled){box-shadow:0 6px 26px rgba(217,119,6,.45)}
+#app[data-vstyle="gold"] .xi{background:rgba(217,119,6,.07);border-color:rgba(217,119,6,.2)}
+#app[data-vstyle="gold"] .mbox{background:rgba(255,251,235,.95);backdrop-filter:blur(22px);border-color:rgba(217,119,6,.18)}
+
+</style>
+</head>
+<body>
+<!-- ФОНОВЫЕ СЛОИ — нужный показан сервером через Jinja, остальные скрыты -->
+<div id="vstyle-bg">
+  <div class="vbg-latte{% if vmode=='light' and vstyle=='latte' %} light-mode{% endif %}"{% if vstyle!='latte' %} style="display:none"{% endif %}>
+    <div class="lb lb1"></div><div class="lb lb2"></div><div class="lb lb3"></div>
+  </div>
+  <div class="vbg-ocean{% if vmode=='light' and vstyle=='ocean' %} light-mode{% endif %}"{% if vstyle!='ocean' %} style="display:none"{% endif %}>
+    <div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div>
+  </div>
+  <div class="vbg-frost{% if vmode=='light' and vstyle=='frost' %} light-mode{% endif %}"{% if vstyle!='frost' %} style="display:none"{% endif %}>
+    <div class="blob bl1"></div><div class="blob bl2"></div><div class="blob bl3"></div>
+  </div>
+  <div class="vbg-meadow{% if vmode=='light' and vstyle=='meadow' %} light-mode{% endif %}"{% if vstyle!='meadow' %} style="display:none"{% endif %}>
+    <div class="mg mg1"></div><div class="mg mg2"></div>
+  </div>
+  <div class="vbg-ember{% if vmode=='light' and vstyle=='ember' %} light-mode{% endif %}"{% if vstyle!='ember' %} style="display:none"{% endif %}>
+    <div class="eglow eg1"></div><div class="eglow eg2"></div>
+  </div>
+  <div class="vbg-sakura{% if vmode=='light' and vstyle=='sakura' %} light-mode{% endif %}"{% if vstyle!='sakura' %} style="display:none"{% endif %}>
+    <div class="petal p1"></div><div class="petal p2"></div><div class="petal p3"></div>
+    <div class="petal p4"></div><div class="petal p5"></div><div class="petal p6"></div>
+  </div>
+  <div class="vbg-void{% if vmode=='light' and vstyle=='void' %} light-mode{% endif %}"{% if vstyle!='void' %} style="display:none"{% endif %}><div class="void-line"></div></div>
+  <div class="vbg-matrix"{% if vstyle!='matrix' %} style="display:none"{% endif %}></div>
+  <div class="vbg-sunset{% if vmode=='light' and vstyle=='sunset' %} light-mode{% endif %}"{% if vstyle!='sunset' %} style="display:none"{% endif %}>
+    <div class="sg sg1"></div><div class="sg sg2"></div><div class="sg sg3"></div>
+  </div>
+  <!-- ── новые тёмные темы ── -->
+  <div class="vbg-neon"{% if vstyle!='neon' %} style="display:none"{% endif %}>
+    <div class="nb nb1"></div><div class="nb nb2"></div><div class="nb nb3"></div><div class="nscan"></div>
+  </div>
+  <div class="vbg-abyss"{% if vstyle!='abyss' %} style="display:none"{% endif %}>
+    <div class="ay ay1"></div><div class="ay ay2"></div><div class="ay ay3"></div><div class="ay4"></div><div class="ay4 ay4b"></div>
+  </div>
+  <div class="vbg-blood"{% if vstyle!='blood' %} style="display:none"{% endif %}>
+    <div class="bd bd1"></div><div class="bd bd2"></div><div class="bd bd3"></div>
+  </div>
+  <div class="vbg-aurora"{% if vstyle!='aurora' %} style="display:none"{% endif %}>
+    <div class="ar ar1"></div><div class="ar ar2"></div><div class="ar ar3"></div><div class="ar ar4"></div>
+  </div>
+  <div class="vbg-coal"{% if vstyle!='coal' %} style="display:none"{% endif %}></div>
+  <!-- ── новые светлые темы ── -->
+  <div class="vbg-cloud"{% if vstyle!='cloud' %} style="display:none"{% endif %}>
+    <div class="cv cv1"></div><div class="cv cv2"></div><div class="cv cv3"></div>
+  </div>
+  <div class="vbg-peach"{% if vstyle!='peach' %} style="display:none"{% endif %}>
+    <div class="ph ph1"></div><div class="ph ph2"></div><div class="ph ph3"></div>
+  </div>
+  <div class="vbg-mint"{% if vstyle!='mint' %} style="display:none"{% endif %}>
+    <div class="mt mt1"></div><div class="mt mt2"></div><div class="mt mt3"></div>
+  </div>
+  <div class="vbg-lavender"{% if vstyle!='lavender' %} style="display:none"{% endif %}>
+    <div class="la la1"></div><div class="la la2"></div><div class="la la3"></div>
+  </div>
+  <div class="vbg-gold"{% if vstyle!='gold' %} style="display:none"{% endif %}>
+    <div class="gl gl1"></div><div class="gl gl2"></div>
+    <div class="gsp gsp1"></div><div class="gsp gsp2"></div><div class="gsp gsp3"></div>
+    <div class="gsp gsp4"></div><div class="gsp gsp5"></div>
+  </div>
+</div>
+<canvas id="vstyle-matrix-canvas"{% if vstyle=='matrix' %} class="vactive"{% endif %}></canvas>
+
+<div id="app"{% if vstyle!='default' %} data-vstyle="{{ vstyle }}"{% endif %}{% if vmode=='light' %} data-vmode="light"{% endif %}>
+
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="logo">
+    <span class="logo-alfa" id="logo-alfa">ALFA</span><span class="logo-script">script</span><span class="logo-cur">_</span>
+  </div>
+
+  <div class="tb-chips">
+    <div class="chip" id="ch-admin"><span class="chip-dot"></span>&nbsp;admin...</div>
+    <div class="chip" id="ch-ml" onclick="openFolder()" style="cursor:pointer" title="Открыть папку multilaunch"><span class="chip-dot"></span>&nbsp;...</div>
+  </div>
+
+  <div class="tb-right">
+    <div id="upd-pill" onclick="openUpdModal()">↑ Обновление</div>
+    <span class="ver-tag">v{{ version }} · {{ date }}</span>
+    <div class="ibt" onclick="checkUpdate()" title="Проверить обновления">⟳</div>
+    <div class="ibt" id="btn-log" onclick="openLog()" title="Открыть журнал">☰</div>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div id="workspace">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-sec">
+      <div class="sb-lbl">Режим</div>
+      {% for preset in presets %}
+      <button class="pset" data-preset="{{ preset }}" onclick="applyPreset(this)">{{ preset }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="sb-sec">
+      <div class="sb-lbl">Дополнительно</div>
+      {% for icon, name, bat in extras %}
+      <button class="xbtn" onclick="runExtra('{{ bat if bat else 'null' }}','{{ name }}')">
+        <span class="xi">{{ icon }}</span><span>{{ name }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <div class="sep"></div>
+
+    <div class="sb-sec">
+      <div class="sb-lbl">Оформление</div>
+      <button class="xbtn" onclick="openThemeModal()">
+        <span class="xi">🎨</span><span>Тема оформления</span>
+      </button>
+    </div>
+
+    <!-- bottom: i, ?, folder -->
+    <div class="sb-foot">
+      <button class="foot-btn" onclick="openAbout()" title="О программе">i</button>
+      <button class="foot-btn" onclick="openReadme()" title="Справка">?</button>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <div id="tasks-wrap">
+      <div class="th">
+        <span class="th-title">Выбор функций</span>
+      </div>
+      {% for cat_name, tasks in tasks %}
+      <div class="cat-blk">
+        <div class="cat-name">{{ cat_name }}</div>
+        {% for name, bat, default in tasks %}
+        <div class="trow {{ 'on' if state.tasks.get(bat, default) else '' }}"
+             data-bat="{{ bat }}" onclick="toggleTask(this)">
+          <div class="chk">✓</div>
+          <span class="tname">{{ name }}</span>
+          <span class="tbat">{{ bat }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- RUNBAR -->
+    <div id="runbar">
+      <div class="prog-col">
+        <div class="step-lbl" id="step-lbl"></div>
+        <div class="prog-trk"><div class="prog-bar" id="prog-bar"></div></div>
+        <div class="stat-lbl" id="stat-lbl">Ожидание запуска...</div>
+      </div>
+      <div class="mini-btns">
+        <button class="mbtn" onclick="deselectAll()">Снять все</button>
+        <button class="mbtn" onclick="selectAll()">Выбрать все</button>
+      </div>
+      <button class="rbtn" id="rbtn" onclick="handleRun()">▶  Запустить</button>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div id="rpanel">
+    <div class="rp-sec">
+      <div class="rp-ttl">Система</div>
+      <div class="si-row"><span class="si-k">ОС</span>      <span class="si-v" id="si-os">—</span></div>
+      <div class="si-row"><span class="si-k">SDI</span>     <span class="si-v" id="si-sdi">—</span></div>
+      <div class="si-row"><span class="si-k">UAC</span>     <span class="si-v" id="si-uac">—</span></div>
+      <div class="si-row"><span class="si-k">Defender</span><span class="si-v" id="si-def">—</span></div>
+      <div class="si-row"><span class="si-k">Сеть</span>    <span class="si-v" id="si-net">—</span></div>
+      <div class="hw-hover-wrap" id="hw-hover-wrap">
+        <span class="si-more" id="hw-detail-lbl">Подробнее...</span>
+        <div class="hw-tip" id="hw-tip">
+          <div class="hw-tip-inner" id="hw-tip-inner">
+            <div class="hw-tip-row"><span class="hw-k">ЦП</span>     <span class="hw-v" id="ht-cpu">загрузка...</span></div>
+            <div class="hw-tip-row"><span class="hw-k">Мат.п.</span> <span class="hw-v" id="ht-mb">—</span></div>
+            <div class="hw-tip-row"><span class="hw-k">ОЗУ</span>    <span class="hw-v" id="ht-ram">—</span></div>
+            <div class="hw-tip-row"><span class="hw-k">GPU</span>    <span class="hw-v" id="ht-gpu">—</span></div>
+            <div class="hw-tip-row"><span class="hw-k">BIOS</span>   <span class="hw-v" id="ht-bios">—</span></div>
+            <div class="hw-sep"></div>
+            <div id="ht-disks"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rp-sec" style="flex:1">
+      <div class="rp-ttl">Итоги теста</div>
+      <div id="aida-ph" class="aida-ph">
+        <div class="aida-ico">📊</div>Ожидание...
+      </div>
+      <div id="aida-data" style="display:none">
+        <div class="ar"><span class="ak">ЦП макс.</span>  <span class="av" id="a-cpu">—</span></div>
+        <div class="ar"><span class="ak">ГП макс.</span>  <span class="av" id="a-gpu">—</span></div>
+        <div class="ar"><span class="ak">Hotspot</span>   <span class="av" id="a-hot">—</span></div>
+        <div class="ar"><span class="ak">VRM</span>       <span class="av" id="a-vrm">—</span></div>
+        <div class="ar"><span class="ak">ЦП мощн.</span> <span class="av" id="a-pwr">—</span></div>
+        <div class="ar"><span class="ak">Троттл.</span>   <span class="av" id="a-thr">—</span></div>
+        <div class="ar"><span class="ak">Время</span>     <span class="av" id="a-dur">—</span></div>
+        <div class="a-verd" id="a-verd">—</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /workspace -->
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- Theme -->
+<div class="overlay" id="m-theme" onclick="if(event.target===this)closeM('m-theme')">
+  <div class="mbox" style="max-width:380px">
+    <div class="mhdr">
+      <span class="mttl">Оформление</span>
+      <span class="mclose" onclick="closeM('m-theme')">✕</span>
+    </div>
+    <div class="mbody">
+      <!-- Вкладки -->
+      <div class="theme-tabs">
+        <button class="theme-tab" id="ttab-dark"  onclick="switchThemeTab('dark')">🌑 Тёмные</button>
+        <button class="theme-tab" id="ttab-light" onclick="switchThemeTab('light')">☀️ Светлые</button>
+      </div>
+      <!-- Тёмные темы -->
+      <div class="theme-panel" id="tpanel-dark">
+        <div class="vstyle-grid">
+          <div class="vstyle-item" data-vs="default" data-vm="dark" onclick="setVstyleForced('default','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#1a1d2e,#7c3aed)"></div>
+            <div class="vstyle-name">Default</div>
+          </div>
+          <div class="vstyle-item" data-vs="void" data-vm="dark" onclick="setVstyleForced('void','dark')">
+            <div class="vstyle-thumb" style="background:#08090a;border:1px solid rgba(255,255,255,.12)"></div>
+            <div class="vstyle-name">Void</div>
+          </div>
+          <div class="vstyle-item" data-vs="matrix" data-vm="dark" onclick="setVstyleForced('matrix','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#000500,#00ff41 240%)"></div>
+            <div class="vstyle-name">Matrix</div>
+          </div>
+          <div class="vstyle-item" data-vs="sunset" data-vm="dark" onclick="setVstyleForced('sunset','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#0a0108,#f59e0b 200%)"></div>
+            <div class="vstyle-name">Sunset</div>
+          </div>
+          <div class="vstyle-item" data-vs="ember" data-vm="dark" onclick="setVstyleForced('ember','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#0d0200,#fb923c 200%)"></div>
+            <div class="vstyle-name">Ember</div>
+          </div>
+          <div class="vstyle-item" data-vs="neon" data-vm="dark" onclick="setVstyleForced('neon','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#080014,#e879f9 220%)"></div>
+            <div class="vstyle-name">Neon</div>
+          </div>
+          <div class="vstyle-item" data-vs="abyss" data-vm="dark" onclick="setVstyleForced('abyss','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#010810,#22d3ee 260%)"></div>
+            <div class="vstyle-name">Abyss</div>
+          </div>
+          <div class="vstyle-item" data-vs="blood" data-vm="dark" onclick="setVstyleForced('blood','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#0c0003,#f43f5e 220%)"></div>
+            <div class="vstyle-name">Blood</div>
+          </div>
+          <div class="vstyle-item" data-vs="aurora" data-vm="dark" onclick="setVstyleForced('aurora','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#01080f,#10b981 230%)"></div>
+            <div class="vstyle-name">Aurora</div>
+          </div>
+          <div class="vstyle-item" data-vs="coal" data-vm="dark" onclick="setVstyleForced('coal','dark')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#0b0b0b,#3f3f46)"></div>
+            <div class="vstyle-name">Coal</div>
+          </div>
+        </div>
+      </div>
+      <!-- Светлые темы -->
+      <div class="theme-panel" id="tpanel-light">
+        <div class="vstyle-grid">
+          <div class="vstyle-item" data-vs="latte" data-vm="light" onclick="setVstyleForced('latte','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#fdf6ec,#f59e0b 180%)"></div>
+            <div class="vstyle-name">Latte</div>
+          </div>
+          <div class="vstyle-item" data-vs="ocean" data-vm="light" onclick="setVstyleForced('ocean','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#e0f2fe,#0369a1 200%)"></div>
+            <div class="vstyle-name">Ocean</div>
+          </div>
+          <div class="vstyle-item" data-vs="frost" data-vm="light" onclick="setVstyleForced('frost','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe 100%,#e0e7ff)"></div>
+            <div class="vstyle-name">Frost</div>
+          </div>
+          <div class="vstyle-item" data-vs="meadow" data-vm="light" onclick="setVstyleForced('meadow','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#f0fdf4,#16a34a 200%)"></div>
+            <div class="vstyle-name">Meadow</div>
+          </div>
+          <div class="vstyle-item" data-vs="sakura" data-vm="light" onclick="setVstyleForced('sakura','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#fdf2f8,#fbcfe8 150%)"></div>
+            <div class="vstyle-name">Sakura</div>
+          </div>
+          <div class="vstyle-item" data-vs="cloud" data-vm="light" onclick="setVstyleForced('cloud','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#bfdbfe,#f0f9ff)"></div>
+            <div class="vstyle-name">Cloud</div>
+          </div>
+          <div class="vstyle-item" data-vs="peach" data-vm="light" onclick="setVstyleForced('peach','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#fff5f0,#fed7aa)"></div>
+            <div class="vstyle-name">Peach</div>
+          </div>
+          <div class="vstyle-item" data-vs="mint" data-vm="light" onclick="setVstyleForced('mint','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#f0fffe,#99f6e4)"></div>
+            <div class="vstyle-name">Mint</div>
+          </div>
+          <div class="vstyle-item" data-vs="lavender" data-vm="light" onclick="setVstyleForced('lavender','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#faf5ff,#d8b4fe)"></div>
+            <div class="vstyle-name">Lavender</div>
+          </div>
+          <div class="vstyle-item" data-vs="gold" data-vm="light" onclick="setVstyleForced('gold','light')">
+            <div class="vstyle-thumb" style="background:linear-gradient(135deg,#fffbeb,#fcd34d)"></div>
+            <div class="vstyle-name">Gold</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Programs (soft/diag) -->
+<div class="overlay" id="m-progs" onclick="if(event.target===this)closeM('m-progs')">
+  <div class="mbox">
+    <div class="mhdr">
+      <span class="mttl" id="m-progs-title">Программы</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="hdr-ibt" onclick="refreshPrograms()" title="Обновить список">⟳</button>
+        <span class="mclose" onclick="closeM('m-progs')">✕</span>
+      </div>
+    </div>
+    <div id="m-progs-path" style="font-family:var(--mono);font-size:10px;color:var(--dim);padding:0 0 10px;word-break:break-all;cursor:pointer" onclick="openProgsFolder()" title="Открыть папку"></div>
+    <div class="mbody" id="m-progs-body"></div>
+  </div>
+</div>
+
+<!-- About / Info -->
+<div class="overlay" id="m-about" onclick="if(event.target===this)closeM('m-about')">
+  <div class="mbox" style="max-width:640px;width:96%">
+    <div class="mhdr" style="margin-bottom:0">
+      <span></span>
+      <span class="mclose" onclick="closeM('m-about')">✕</span>
+    </div>
+    <div class="mbody">
+      <!-- Hero -->
+      <div style="text-align:center;padding:12px 0 20px">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent2)">ALFAscript</div>
+        <div style="font-size:13px;color:var(--dim);margin-top:6px">v{{ version }}&nbsp;&nbsp;•&nbsp;&nbsp;{{ date }}</div>
+        <div style="font-size:13px;color:var(--accent);margin-top:4px;font-weight:600">by FRUSTIK</div>
+      </div>
+
+      <!-- Updates section -->
+      <div style="background:var(--glass2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Обновления</div>
+        <div id="ab-upd-status" style="font-size:15px;color:var(--dim);display:flex;align-items:center;gap:8px">
+          <span id="ab-upd-icon">🔔</span>
+          <span id="ab-upd-text">Проверка...</span>
+        </div>
+        <div id="ab-upd-ver" style="font-size:12px;color:var(--accent);font-family:var(--mono);margin-top:6px;display:none"></div>
+
+        <!-- Список компонентов с чекбоксами -->
+        <div id="ab-comp-list" style="display:none;margin-top:12px">
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Компоненты</div>
+          <div id="ab-comp-rows" style="font-family:var(--mono);font-size:12px;line-height:1.8;display:flex;flex-direction:column;gap:4px"></div>
+          <div id="ab-comp-total" style="font-size:11px;color:var(--muted);text-align:right;margin-top:6px;display:none"></div>
+        </div>
+
+        <!-- Progress bar for download -->
+        <div id="ab-dl-wrap" style="display:none;margin-top:12px">
+          <div style="height:7px;background:var(--glass);border-radius:4px;overflow:hidden;margin-bottom:7px">
+            <div id="ab-dl-bar" style="height:100%;width:0%;background:var(--accent);border-radius:4px;transition:width .3s"></div>
+          </div>
+          <div id="ab-dl-text" style="font-size:11px;color:var(--dim);font-family:var(--mono)"></div>
+        </div>
+
+        <button id="ab-dl-btn" onclick="startDownload()" style="display:none;width:100%;margin-top:14px;padding:11px;border-radius:8px;font-size:14px;font-weight:700;background:var(--accent);color:#fff;border:none;cursor:pointer">
+          ⬇  Скачать и установить
+        </button>
+        <button id="ab-dl-cancel" onclick="cancelDownload()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:8px;font-size:14px;font-weight:700;background:var(--glass2);color:var(--dim);border:1px solid var(--border);cursor:pointer">
+          ⏹  Отмена
+        </button>
+      </div>
+
+      <!-- Changelog -->
+      <div id="ab-cl-wrap" style="background:var(--glass2);border:1px solid var(--border);border-radius:10px;padding:16px;display:none">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Что нового</div>
+        <div id="ab-cl-body" style="font-size:12px;color:var(--dim);font-family:var(--mono);max-height:180px;overflow-y:auto;white-space:pre-wrap;line-height:1.7"></div>
+      </div>
+    </div>
+    <div class="mftr"><button class="mbtn-s" onclick="closeM('m-about')">Закрыть</button></div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+const UPDATE_URL  = "https://disk.yandex.ru/d/Xq2vFGbe0n5dYA";
+const MULTILAUNCH = {{ multilaunch | tojson }};
+let _running=false,_updData=null;
+let _thresholds={cpu_warn:85,cpu_crit:95,gpu_warn:80,gpu_crit:90,vrm_warn:90,vrm_crit:110};
+
+// ── Серверные значения оформления (из Jinja) ─────────────
+const _SRV_VSTYLE = {{ vstyle | tojson }};
+const _SRV_VMODE  = {{ vmode  | tojson }};
+
+// ── SSE ───────────────────────────────────────────────────
+const es=new EventSource("/api/stream");
+es.onmessage=e=>{
+  const m=JSON.parse(e.data);
+  if     (m.type==="log")          {/* handled by log window */}
+  else if(m.type==="log_history")  {/* handled by log window */}
+  else if(m.type==="status")       applyStatus(m.data);
+  else if(m.type==="test_results") renderAida(m.data);
+  else if(m.type==="update")       onUpdResult(m.data);
+  else if(m.type==="upd_progress") applyDlProgress(m.data);
+  else if(m.type==="log_window")  {
+    _logOpen = !!m.data.open;
+    setLogBtnActive(_logOpen);
+  }
+  else if(m.type==="state")        applySnippet(m.data);
+};
+
+// ── Init ──────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded",()=>{
+  fetchState();
+  glitchLoop();
+  // Восстанавливаем тему из серверных переменных (читаются из theme.json)
+  // передаём skipSave=true чтобы не делать лишний POST на сервер
+  applyAppearance(_SRV_VSTYLE, _SRV_VMODE, true);
+});
+
+function _set(id,val){const e=$(id);if(e)e.textContent=val;}
+function fetchState(){
+  fetch("/api/state").then(r=>r.json()).then(s=>{
+    if(s.thresholds) _thresholds=s.thresholds;
+    // chips
+    setChip("ch-admin",s.is_admin?"✓ Администратор":"✗ Нет прав",s.is_admin);
+    setChip("ch-ml",s.multilaunch||"multilaunch не найден",!!s.multilaunch);
+    // sys info
+    _set("si-os", s.os_ver||"—");
+    // SDI — цвет по свежести
+    (function(){
+      const el=$("si-sdi");if(!el)return;
+      if(!s.sdi_date){el.textContent="нет";el.className="si-v bad";return;}
+      el.textContent=s.sdi_date;
+      const m=s.sdi_date.match(/(\d{2})\.(\d{4})/);
+      if(m){
+        const sdiMs=new Date(parseInt(m[2]),parseInt(m[1])-1,1).getTime();
+        const diff=(Date.now()-sdiMs)/(1000*60*60*24*30);
+        el.className="si-v "+(diff<=3?"ok":"warn");
+      } else el.className="si-v";
+    })();
+    // UAC
+    (function(){
+      const el=$("si-uac");if(!el)return;
+      const off=(s.uac_status==="Выключен");
+      el.textContent=s.uac_status||"—";
+      el.className="si-v "+(off?"ok":"bad click");
+      el.onclick=off?null:function(){
+        if(!confirm("Отключить уведомления UAC?\n\nПолзунок будет переведён в положение \"Никогда не уведомлять\"."))return;
+        fetch("/api/disable_uac",{method:"POST"}).then(r=>r.json()).then(d=>{
+          if(d.ok){
+            el.textContent=d.uac_status;
+            const nowOff=(d.uac_status==="Выключен");
+            el.className="si-v "+(nowOff?"ok":"bad click");
+            el.onclick=null;
+          } else alert("Ошибка: "+d.error);
+        });
+      };
+    })();
+    // Defender exclusions
+    (function(){
+      const el=$("si-def");if(!el)return;
+      const st=s.defender_excl||"—";
+      el.textContent=st;
+      const isOk=(st==="Добавлены");
+      const isPartial=(st==="Частично");
+      const isDisabled=(st==="Отключён"||st==="—");
+      el.className="si-v "+(isOk?"ok":isPartial?"warn":isDisabled?"":"bad click");
+      el.onclick=(isOk||isDisabled)?null:function(){
+        if(!s.is_admin){alert("Для добавления исключений требуются права администратора.\nПерезапустите ALFAscript от имени администратора.");return;}
+        if(!confirm("Добавить в исключения Windows Defender:\n\n• Папка флешки\n• Папка распаковки (_MEIPASS)\n\nЭто ускорит работу и устранит ложные срабатывания."))return;
+        fetch("/api/add_defender_exclusions",{method:"POST"}).then(r=>r.json()).then(d=>{
+          if(d.ok&&d.disabled){
+            el.textContent="Отключён"; el.className="si-v"; el.onclick=null;
+          } else if(d.ok){
+            el.textContent=d.status; el.className="si-v ok"; el.onclick=null;
+          } else alert("Ошибка: "+d.error);
+        });
+      };
+    })();
+    // Сеть
+    (function(){
+      const el=$("si-net");if(!el)return;
+      const ok=(s.net_ok==="Подключена");
+      el.textContent=ok?"Подключена":"Нет сети";
+      el.className="si-v "+(ok?"ok":"bad");
+    })();
+    // tasks
+    if(s.tasks) qsa(".trow").forEach(c=>{
+      if(s.tasks[c.dataset.bat]!==undefined) c.classList.toggle("on",!!s.tasks[c.dataset.bat]);
+    });
+    // preset
+    if(s.active_preset) qsa(".pset").forEach(b=>b.classList.toggle("on",b.dataset.preset===s.active_preset));
+    applySnippet(s);
+    if(s.test_results) renderAida(s.test_results);
+  });
+}
+
+function applySnippet(s){
+  if(s.running!==undefined){_running=s.running;syncBtn();}
+  if(s.progress!==undefined) setProgress(s.progress,s.status_type);
+  if(s.status!==undefined)   setStatLbl(s.status,s.status_type);
+}
+
+// ── Helpers ───────────────────────────────────────────────
+const qs=s=>document.querySelector(s);
+const qsa=s=>document.querySelectorAll(s);
+const $=id=>document.getElementById(id);
+function escH(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function setChip(id,text,ok){
+  const e=$(id); e.innerHTML=`<span class="chip-dot"></span>&nbsp;${escH(text)}`;
+  e.className="chip "+(ok?"ok":"err");
+}
+
+// ── Tasks ─────────────────────────────────────────────────
+function toggleTask(c){if(_running)return;c.classList.toggle("on");clearTimeout(window._st);window._st=setTimeout(syncTasks,300);}
+function syncTasks(){const t={};qsa(".trow").forEach(c=>t[c.dataset.bat]=c.classList.contains("on"));fetch("/api/tasks",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tasks:t})})}
+function selectAll(){qsa(".trow").forEach(c=>{if(c.dataset.bat!=="99_testnotimelimit.bat")c.classList.add("on")});syncTasks()}
+function deselectAll(){qsa(".trow").forEach(c=>c.classList.remove("on"));syncTasks()}
+
+// ── Presets ───────────────────────────────────────────────
+function applyPreset(btn){
+  fetch("/api/preset",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({preset:btn.dataset.preset})})
+  .then(r=>r.json()).then(d=>{
+    if(!d.ok)return;
+    qsa(".trow").forEach(c=>c.classList.toggle("on",!!d.tasks[c.dataset.bat]));
+    qsa(".pset").forEach(b=>b.classList.remove("on"));btn.classList.add("on");
+  });
+}
+
+// ── Run ───────────────────────────────────────────────────
+function handleRun(){
+  if(_running){fetch("/api/stop",{method:"POST"});$("rbtn").textContent="⏳  Отмена...";$("rbtn").disabled=true;return;}
+  fetch("/api/run",{method:"POST"}).then(r=>r.json()).then(d=>{if(!d.ok)setStatLbl(d.error||"Ошибка","err");});
+}
+function syncBtn(){
+  const b=$("rbtn");b.disabled=false;
+  if(_running){b.textContent="⏹  Отмена";b.className="rbtn stop";}
+  else{b.textContent="▶  Запустить";b.className="rbtn";}
+}
+function applyStatus(d){
+  _running=d.running;syncBtn();
+  if(!d.running&&d.type==="done"){$("rbtn").textContent="✓  Готово";$("rbtn").className="rbtn done";setTimeout(syncBtn,3000);}
+  if(d.step)    $("step-lbl").textContent=d.step;
+  if(d.progress!==undefined) setProgress(d.progress,d.type);
+  if(d.text)    setStatLbl(d.text,d.type);
+}
+function setProgress(pct,type){
+  const f=$("prog-bar");f.style.width=pct+"%";
+  f.className="prog-bar"+(type==="done"||type==="ok"?" ok":type==="warn"?" warn":"");
+}
+function setStatLbl(text,type){
+  const e=$("stat-lbl");e.textContent=text;
+  e.className="stat-lbl"+(type==="ok"||type==="done"?" ok":type==="warn"?" warn":type==="err"||type==="error"?" err":"");
+}
+
+// ── Extras ────────────────────────────────────────────────
+function runExtra(bat,name){
+  const body=bat==="null"?{bat:null,name}:{bat,name};
+  fetch("/api/extra",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+  .then(r=>r.json()).then(d=>{
+    if(d.action==="softmgr")   openPrograms("/api/soft_programs");
+    else if(d.action==="portmgr") openPrograms("/api/diag_programs");
+    else if(!d.ok) setStatLbl(d.error||"Ошибка","err");
+    else setStatLbl("▶ "+name,"ok");
+  });
+}
+
+// ── Programs modal ────────────────────────────────────────
+let _currentProgsApi = null;
+let _currentProgsFolder = null;
+
+function openPrograms(apiUrl){
+  _currentProgsApi = apiUrl;
+  $("m-progs-body").innerHTML = '<div class="prog-hint">Загрузка...</div>';
+  $("m-progs-path").textContent = "";
+  openM("m-progs");
+  loadPrograms(apiUrl);
+}
+function refreshPrograms(){
+  if(!_currentProgsApi) return;
+  const btn = document.querySelector("#m-progs .hdr-ibt");
+  if(btn){ btn.style.animation="spin .5s linear"; setTimeout(()=>btn.style.animation="",500); }
+  loadPrograms(_currentProgsApi);
+}
+function loadPrograms(apiUrl){
+  fetch(apiUrl).then(r=>r.json()).then(d=>{
+    $("m-progs-title").textContent = d.title||"Программы";
+    _currentProgsFolder = d.folder||null;
+    // Показываем путь к папке
+    const pathEl = $("m-progs-path");
+    if(d.folder){
+      pathEl.textContent = "📁 " + d.folder;
+      pathEl.title = "Открыть папку";
+      pathEl.style.display = "";
+    } else {
+      pathEl.style.display = "none";
+    }
+    // Счётчик в заголовке
+    const cnt = d.programs ? d.programs.length : 0;
+    $("m-progs-title").textContent = (d.title||"Программы") + (cnt ? `  (${cnt})` : "");
+    const body = $("m-progs-body");
+    if(!d.programs || !d.programs.length){
+      body.innerHTML = '<div class="prog-hint">Программы не найдены.<br>Добавь папки с программами в:<br><b>' + escH(d.folder||"multilaunch/soft") + '</b></div>';
+      return;
+    }
+    const grid = document.createElement("div");
+    grid.className = "prog-grid";
+    d.programs.forEach(p => {
+      const card = document.createElement("div");
+      const notInstalled = p.installed === false;
+      card.className = "prog-card" + (notInstalled ? " prog-not-installed" : "");
+      // Иконка
+      const ico = document.createElement("div");
+      ico.className = "prog-ico";
+      if(p.icon && !notInstalled){
+        const img = document.createElement("img");
+        img.src = "/api/icon?path=" + encodeURIComponent(p.icon);
+        img.width = 32; img.height = 32;
+        img.style.cssText = "object-fit:contain;border-radius:4px";
+        img.onerror = () => { ico.innerHTML = ""; ico.textContent = "📦"; };
+        ico.appendChild(img);
+      } else {
+        ico.textContent = notInstalled ? "💾" : "📦";
+      }
+      const lbl = document.createElement("div");
+      lbl.className = "prog-name";
+      lbl.textContent = p.name;
+      if(notInstalled){
+        const hint = document.createElement("div");
+        hint.style.cssText="font-size:8px;color:var(--muted);margin-top:2px";
+        hint.textContent = "не установлена";
+        lbl.appendChild(hint);
+      }
+      card.appendChild(ico);
+      card.appendChild(lbl);
+      if(notInstalled){
+        card.title = "Программа не установлена. Загрузите её через раздел обновлений.";
+        card.addEventListener("click", () => {
+          closeM("m-progs");
+          openAbout();
+        });
+      } else {
+        card.addEventListener("click", () => launchProg(p.path, p.name));
+      }
+      grid.appendChild(card);
+    });
+    body.innerHTML = "";
+    body.appendChild(grid);
+  }).catch(e => {
+    $("m-progs-body").innerHTML = '<div class="prog-hint">Ошибка загрузки списка</div>';
+  });
+}
+function openProgsFolder(){
+  if(_currentProgsFolder)
+    fetch("/api/open_folder",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({path:_currentProgsFolder})});
+}
+function _doLaunchProg(path, name){
+  fetch("/api/launch_program",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({path:path})
+  }).then(r=>r.json()).then(d=>{
+    if(d.ok){ setStatLbl("▶ "+name,"ok"); closeM("m-progs"); }
+    else setStatLbl(d.error||"Ошибка запуска","err");
+  }).catch(e => setStatLbl("Ошибка: "+e,"err"));
+}
+function launchProg(path, name){
+  if(name && name.toLowerCase().indexOf("occt") !== -1){
+    showOcctWarning(path, name);
+    return;
+  }
+  _doLaunchProg(path, name);
+}
+function showOcctWarning(path, name){
+  // Удаляем старый модал если вдруг есть
+  const old = document.getElementById("m-occt-warn");
+  if(old) old.remove();
+
+  const ov = document.createElement("div");
+  ov.id = "m-occt-warn";
+  ov.style.cssText = [
+    "position:fixed","inset:0","z-index:9999",
+    "background:rgba(0,0,0,.72)","display:flex",
+    "align-items:center","justify-content:center",
+    "animation:fadeIn .15s ease"
+  ].join(";");
+
+  ov.innerHTML = `
+    <div style="
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:32px 28px 24px;
+      max-width:420px;
+      width:90%;
+      box-shadow:0 24px 60px rgba(0,0,0,.5);
+      text-align:center;
+      font-family:inherit;
+    ">
+      <div style="font-size:42px;margin-bottom:14px">⚠️</div>
+      <div style="
+        font-size:15px;font-weight:800;color:var(--text);
+        margin-bottom:16px;line-height:1.4;letter-spacing:-.2px
+      ">ВНИМАНИЕ!</div>
+      <div style="
+        font-size:13px;color:var(--text-dim);line-height:1.65;
+        margin-bottom:28px
+      ">
+        Перед запуском OCCT убедитесь что в пределах <strong>16 км</strong> нет Мишани.<br><br>
+        В противном случае возможны <em>неконтролируемые</em> запуски OCCT с неадекватными настройками
+        и фантомные проблемы с компьютером включая <strong>BSOD</strong> и краши приложений.
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button id="occt-yes" style="
+          background:var(--accent);color:#fff;border:none;
+          border-radius:8px;padding:12px 16px;
+          font-size:12px;font-weight:700;cursor:pointer;
+          font-family:inherit;line-height:1.4;
+          transition:opacity .15s
+        " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+          Иван сказал хотя бы раз в неделю запускать
+        </button>
+        <button id="occt-no" style="
+          background:var(--surface2);color:var(--text-dim);
+          border:1px solid var(--border);border-radius:8px;
+          padding:12px 16px;font-size:12px;font-weight:700;
+          cursor:pointer;font-family:inherit;line-height:1.4;
+          transition:opacity .15s
+        " onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+          Ну нахер! Я чувствую он рядом
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(ov);
+
+  document.getElementById("occt-yes").onclick = function(){
+    ov.remove();
+    _doLaunchProg(path, name);
+  };
+  document.getElementById("occt-no").onclick = function(){
+    ov.remove();
+  };
+  // Клик по затемнению = нет
+  ov.addEventListener("click", function(e){
+    if(e.target === ov) ov.remove();
+  });
+}
+
+// ── Log window ────────────────────────────────────────────
+let _logOpen = false;
+let _logWin  = null; // ссылка на открытое окно (browser-режим)
+
+function openLog(){
+  if(window.pywebview){
+    // pywebview: open_log сам определяет открыть/закрыть
+    pywebview.api.open_log();
+  } else {
+    if(_logOpen && _logWin && !_logWin.closed){
+      _logWin.close();
+      _logWin = null;
+      _logOpen = false;
+      setLogBtnActive(false);
+    } else {
+      _logWin = window.open("/log","alfaLog","width=480,height=680");
+      if(_logWin){
+        _logOpen = true;
+        setLogBtnActive(true);
+        // Сбрасываем кнопку если пользователь закрыл окно вручную
+        const _poll = setInterval(()=>{
+          if(_logWin && _logWin.closed){
+            clearInterval(_poll);
+            _logWin = null;
+            _logOpen = false;
+            setLogBtnActive(false);
+          }
+        }, 500);
+      }
+    }
+  }
+}
+function setLogBtnActive(on){
+  const b=$("btn-log");
+  if(!b) return;
+  if(on){ b.style.background="var(--accent)"; b.style.color="#fff"; b.style.borderColor="var(--accent)"; }
+  else  { b.style.background=""; b.style.color=""; b.style.borderColor=""; }
+}
+
+// ── Appearance (vstyle + vmode) ──────────────────────────
+let _matrixRAF = null;
+// Текущие значения берём из серверных переменных (уже применены в HTML)
+let _curVstyle = _SRV_VSTYLE;
+let _curVmode  = _SRV_VMODE;
+
+function applyAppearance(vs, vm, skipSave){
+  vs = vs||"default"; vm = vm||"dark";
+  _curVstyle = vs; _curVmode = vm;
+  const app = document.getElementById("app");
+  if(app){
+    if(vs==="default") app.removeAttribute("data-vstyle");
+    else app.setAttribute("data-vstyle", vs);
+    if(vm==="light") app.setAttribute("data-vmode","light");
+    else app.removeAttribute("data-vmode");
+  }
+  // Фоновые слои
+  const bg = $("vstyle-bg");
+  if(bg){
+    Array.from(bg.children).forEach(el=>{ el.style.display="none"; el.classList.remove("light-mode"); });
+    const active = bg.querySelector(".vbg-"+vs);
+    if(active){
+      active.style.display="block";
+      if(vm==="light") active.classList.add("light-mode");
+    }
+  }
+  // Matrix canvas
+  const mc = $("vstyle-matrix-canvas");
+  if(vs==="matrix"){
+    if(mc){ mc.classList.add("vactive"); startMatrix(mc); }
+  } else {
+    if(mc) mc.classList.remove("vactive");
+    if(_matrixRAF){ cancelAnimationFrame(_matrixRAF); _matrixRAF=null; }
+  }
+  // Сохраняем на сервер (не при инициализации)
+  if(!skipSave)
+    fetch("/api/vstyle",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({vstyle:vs,vmode:vm})});
+  // Синхронизируем UI пикера
+  syncAppearanceUI(vs, vm);
+  // Обновляем CSS-переменные тултипа "Подробнее" (он в <body>, вне #app)
+  syncHwTipTheme();
+}
+
+// Тёмные темы → всегда dark, светлые → всегда light
+const _DARK_THEMES  = new Set(["default","void","matrix","sunset","ember","neon","abyss","blood","aurora","coal"]);
+const _LIGHT_THEMES = new Set(["latte","ocean","frost","meadow","sakura","cloud","peach","mint","lavender","gold"]);
+
+function switchThemeTab(tab){
+  const td=$("ttab-dark"), tl=$("ttab-light");
+  const pd=$("tpanel-dark"), pl=$("tpanel-light");
+  if(td){ td.classList.toggle("on", tab==="dark"); }
+  if(tl){ tl.classList.toggle("on", tab==="light"); }
+  if(pd){ pd.classList.toggle("on", tab==="dark"); }
+  if(pl){ pl.classList.toggle("on", tab==="light"); }
+}
+
+function syncAppearanceUI(vs, vm){
+  qsa(".vstyle-item").forEach(i=>i.classList.toggle("on", i.dataset.vs===vs));
+  const tab = _LIGHT_THEMES.has(vs) ? "light" : "dark";
+  switchThemeTab(tab);
+}
+
+function setVstyleForced(vs, vm){
+  applyAppearance(vs, vm);
+}
+
+function setVstyle(vs){
+  const vm = _LIGHT_THEMES.has(vs) ? "light" : "dark";
+  applyAppearance(vs, vm);
+}
+
+function setVmode(vm){
+  applyAppearance(_curVstyle, vm);
+}
+
+function startMatrix(canvas){
+  if(_matrixRAF){ cancelAnimationFrame(_matrixRAF); _matrixRAF=null; }
+  // Убираем старый resize-слушатель если был
+  if(startMatrix._resizeFn) window.removeEventListener("resize", startMatrix._resizeFn);
+
+  const ctx = canvas.getContext("2d");
+  const FONT_SIZE = 15;
+  const CHARS = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01";
+
+  let cols = [];
+
+  function initCols(){
+    const count = Math.floor(canvas.width / FONT_SIZE);
+    cols = Array.from({length: count}, (_, i) => cols[i] || {
+      y:      Math.random() * -50,
+      speed:  0.015 + Math.random() * 0.035,  // ~1-3 rows/sec at 60fps
+      next:   Math.random() * 60,
+      head:   CHARS[Math.floor(Math.random() * CHARS.length)],
+      trail:  Math.floor(8 + Math.random() * 20),
+    });
+  }
+
+  function resize(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    // Перекрашиваем фон после ресайза чтобы не было белого холста
+    ctx.fillStyle = "#000500";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    initCols();
+  }
+
+  // Сначала размер — потом колонки
+  resize();
+
+  let frame = 0;
+  function draw(){
+    ctx.fillStyle = "rgba(0,5,0,0.06)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = `${FONT_SIZE}px "JetBrains Mono",monospace`;
+
+    cols.forEach((col, i) => {
+      const x = i * FONT_SIZE;
+      if(col.next > 0){ col.next--; return; }
+
+      col.y += col.speed;
+
+      const headY = Math.floor(col.y) * FONT_SIZE;
+      if(headY > 0 && headY < canvas.height){
+        if(frame % 20 === 0)
+          col.head = CHARS[Math.floor(Math.random() * CHARS.length)];
+        ctx.fillStyle = "#e0ffe0";
+        ctx.fillText(col.head, x, headY);
+      }
+
+      for(let t = 1; t < col.trail; t++){
+        const ty = (Math.floor(col.y) - t) * FONT_SIZE;
+        if(ty < 0) continue;
+        const alpha = 1 - t / col.trail;
+        const bright = Math.floor(alpha * 200 + 20);
+        ctx.fillStyle = `rgba(0,${bright},0,${(alpha * 0.9).toFixed(2)})`;
+        const bodyChar = CHARS[Math.floor((i * 137 + t * 31 + frame * 0.3) % CHARS.length)];
+        ctx.fillText(bodyChar, x, ty);
+      }
+
+      if(Math.floor(col.y) * FONT_SIZE > canvas.height + col.trail * FONT_SIZE){
+        col.y     = 0;
+        col.speed = 0.015 + Math.random() * 0.035;
+        col.next  = Math.floor(Math.random() * 120);
+        col.trail = Math.floor(8 + Math.random() * 20);
+      }
+    });
+
+    frame++;
+    _matrixRAF = requestAnimationFrame(draw);
+  }
+
+  startMatrix._resizeFn = resize;
+  window.addEventListener("resize", resize);
+  draw();
+}
+
+function openThemeModal(){ openM("m-theme"); syncAppearanceUI(_curVstyle, _curVmode); }
+
+// ── HW Info tooltip ──────────────────────────────────────
+let _hwLoaded = false;
+function loadHwInfo(){
+  if(_hwLoaded) return;
+  fetch("/api/hw_info").then(r=>r.json()).then(d=>{
+    if(!d.ready) return; // ещё собирается, попробуем снова при следующем hover
+    _hwLoaded = true;
+    $("ht-cpu").textContent  = d.cpu  || "—";
+    $("ht-mb").textContent   = d.mb   || "—";
+    $("ht-ram").textContent  = d.ram  || "—";
+    $("ht-gpu").textContent  = d.gpu  || "—";
+    $("ht-bios").textContent = d.bios || "—";
+    const dc = $("ht-disks");
+    dc.innerHTML = "";
+    (d.disks||[]).forEach(disk=>{
+      const row = document.createElement("div");
+      row.className = "disk-row";
+      const kEl = document.createElement("span");
+      kEl.className = "disk-k"; kEl.textContent = disk.label;
+      const infoEl = document.createElement("span");
+      infoEl.className = "disk-info"; infoEl.textContent = disk.info;
+      row.appendChild(kEl);
+      row.appendChild(infoEl);
+      if(disk.health){
+        const parts = [];
+        const icon = disk.health==="good"?"✓":disk.health==="bad"?"✕":"?";
+        if(disk.pct   != null) parts.push(icon+" "+disk.pct+"%");
+        if(disk.temp  != null) parts.push(disk.temp+"°C");
+        if(disk.hours != null) parts.push(disk.hours+"ч");
+        const sEl = document.createElement("span");
+        sEl.className = "disk-smart "+disk.health;
+        sEl.textContent = parts.join("  ");
+        row.appendChild(sEl);
+      }
+      dc.appendChild(row);
+    });
+    // Данные загружены — обновляем позицию тултипа если он сейчас виден
+    const t = $("hw-tip");
+    if(t && t.style.display === "block") positionHwTip();
+  });
+}
+function positionHwTip(){
+  const wrap = $("hw-hover-wrap");
+  const tip  = $("hw-tip");
+  if(!wrap || !tip) return;
+  const rect = wrap.getBoundingClientRect();
+  tip.style.top  = Math.max(8, rect.top - 20) + "px";
+  tip.style.left = (rect.left - 340) + "px";
+  // Не управляем display здесь — только позиция
+}
+
+// Копируем CSS-переменные темы в тултип (он в <body>, вне #app)
+function syncHwTipTheme(){
+  const tip = $("hw-tip");
+  if(!tip) return;
+  const app = document.getElementById("app");
+  if(!app) return;
+  const cs = getComputedStyle(app);
+  const vars = ["--bg","--glass","--glass2","--border","--accent","--accent-g","--accent2",
+                "--text","--dim","--muted","--green","--yellow","--red","--mono"];
+  vars.forEach(v => {
+    const val = cs.getPropertyValue(v);
+    if(val) tip.style.setProperty(v, val);
+  });
+}
+
+// Загружаем при первом hover и пересчитываем позицию
+document.addEventListener("DOMContentLoaded", ()=>{
+  // Перемещаем .hw-tip в <body>, чтобы backdrop-filter на #rpanel
+  // (не-default темы) не создавал новый stacking context и не обрезал тултип
+  const tip = $("hw-tip");
+  if(tip) document.body.appendChild(tip);
+
+  const wrap = $("hw-hover-wrap");
+  if(wrap){
+    wrap.addEventListener("mouseenter", ()=>{
+      loadHwInfo();
+      positionHwTip();
+      syncHwTipTheme();
+      const t = $("hw-tip"); if(t) t.style.display = "block";
+    });
+    wrap.addEventListener("mouseleave", ()=>{
+      const t = $("hw-tip"); if(t) t.style.display = "none";
+    });
+    wrap.addEventListener("mousemove", positionHwTip);
+  }
+  // Подгружаем данные в фоне через 3 сек — БЕЗ показа тултипа
+  setTimeout(()=>{ if(!_hwLoaded) _loadHwInfoSilent(); }, 3000);
+});
+
+// Тихая загрузка железа без позиционирования и показа тултипа
+function _loadHwInfoSilent(){
+  if(_hwLoaded) return;
+  fetch("/api/hw_info").then(r=>r.json()).then(d=>{
+    if(!d.ready) return;
+    _hwLoaded = true;
+    $("ht-cpu").textContent  = d.cpu  || "—";
+    $("ht-mb").textContent   = d.mb   || "—";
+    $("ht-ram").textContent  = d.ram  || "—";
+    $("ht-gpu").textContent  = d.gpu  || "—";
+    $("ht-bios").textContent = d.bios || "—";
+    const dc = $("ht-disks"); if(!dc) return;
+    dc.innerHTML = "";
+    (d.disks||[]).forEach(disk=>{
+      const row = document.createElement("div");
+      row.className = "disk-row";
+      const kEl = document.createElement("span");
+      kEl.className = "disk-k"; kEl.textContent = disk.label;
+      const infoEl = document.createElement("span");
+      infoEl.className = "disk-info"; infoEl.textContent = disk.info;
+      row.appendChild(kEl); row.appendChild(infoEl);
+      if(disk.health){
+        const parts = [];
+        const icon = disk.health==="good"?"✓":disk.health==="bad"?"✕":"?";
+        if(disk.pct   != null) parts.push(icon+" "+disk.pct+"%");
+        if(disk.temp  != null) parts.push(disk.temp+"°C");
+        if(disk.hours != null) parts.push(disk.hours+"ч");
+        const sEl = document.createElement("span");
+        sEl.className = "disk-smart "+disk.health;
+        sEl.textContent = parts.join("  ");
+        row.appendChild(sEl);
+      }
+      dc.appendChild(row);
+    });
+  });
+}
+
+// ── Folder / About / Readme ───────────────────────────────
+function openFolder(){
+  if(MULTILAUNCH) fetch("/api/open_folder",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({path:MULTILAUNCH})});
+  else setStatLbl("multilaunch не найден","err");
+}
+function openAbout(){
+  openM("m-about");
+  // Если данные ещё не загружены — проверяем обновления
+  if(!_updData) checkUpdate();
+  else renderAboutUpd();
+}
+function openReadme(){
+  fetch("/api/open_readme").then(r=>r.json()).then(d=>{
+    if(!d.ok) setStatLbl(d.error||"README не найден","err");
+  });
+}
+
+// ── AIDA ──────────────────────────────────────────────────
+function tC(v,w,c){if(!v)return"";return v>=c?"crit":v>=w?"warn":"ok"}
+function setAV(id,text,cls){const e=$(id);if(!e)return;e.textContent=text;e.className="av "+(cls||"")}
+function renderAida(d){
+  const {cpu_warn:CW,cpu_crit:CC,gpu_warn:GW,gpu_crit:GC,vrm_warn:VW,vrm_crit:VC}=_thresholds;
+  $("aida-ph").style.display="none";$("aida-data").style.display="block";
+  setAV("a-cpu",d.cpu_max?d.cpu_max+"°C":"—",tC(d.cpu_max,CW,CC));
+  setAV("a-gpu",d.gpu_max?d.gpu_max+"°C":"—",tC(d.gpu_max,GW,GC));
+  setAV("a-hot",d.gpu_hotspot_max?d.gpu_hotspot_max+"°C":"—",tC(d.gpu_hotspot_max,GW,GC));
+  setAV("a-vrm",d.vrm_max?d.vrm_max+"°C":"—",tC(d.vrm_max,VW,VC));
+  setAV("a-pwr",d.cpu_power_max?d.cpu_power_max+" W":"—","");
+  const thr=d.throttle,te=$("a-thr");
+  te.textContent=thr?`Да (${thr})`:"Нет";te.className="av "+(thr?"crit":"ok");
+  $("a-dur").textContent=d.duration||"—";
+  const cs=tC(d.cpu_max,CW,CC),gs=tC(d.gpu_max,GW,GC);
+  const w=(thr||cs==="crit"||gs==="crit")?"crit":(cs==="warn"||gs==="warn")?"warn":"ok";
+  const ve=$("a-verd");ve.className="a-verd "+w;
+  ve.textContent=thr?`✕ Троттлинг (${thr})!`:w==="crit"?"✕ Критические темп.!":w==="warn"?"⚠ Повышенные темп.":"✓ Температуры в норме";
+}
+
+// ── Updates ───────────────────────────────────────────────
+
+function checkUpdate(){
+  setStatLbl("Проверяю обновления...","");
+  fetch("/api/check_update");
+}
+function onUpdResult(d){
+  _updData=d;
+  if(d.error){ setStatLbl("Ошибка проверки обновлений","warn"); }
+  else if(d.has_update){
+    $("upd-pill").style.display="inline-flex";
+    setStatLbl("! Требуется обновление multilaunch","warn");
+  } else if(d.has_heavy_update){
+    $("upd-pill").style.display="inline-flex";
+    setStatLbl("Требуется обновление компонентов","warn");
+  } else {
+    setStatLbl("Версия актуальна ✓","ok");
+  }
+  // Если about-окно открыто — обновляем его
+  if(document.getElementById("m-about").classList.contains("show")) renderAboutUpd();
+}
+function renderAboutUpd(){
+  const d = _updData;
+  if(!d){ $("ab-upd-text").textContent="Проверка..."; return; }
+
+  // Сброс
+  $("ab-comp-list").style.display="none";
+  $("ab-comp-rows").innerHTML="";
+  $("ab-comp-total").style.display="none";
+  $("ab-cl-wrap").style.display="none";
+  $("ab-cl-body").textContent="";
+  $("ab-dl-btn").style.display="none";
+
+  if(d.error){
+    $("ab-upd-icon").textContent="⚠";
+    $("ab-upd-text").textContent="Ошибка проверки";
+    $("ab-upd-text").style.color="var(--yellow)";
+    return;
+  }
+
+  // Статус версии
+  const localStr  = d.local_date ? "Текущий: "+d.local_date : "";
+  const remoteStr = d.date       ? "Новый: "+d.date         : "";
+
+  if(d.has_update){
+    $("ab-upd-icon").textContent="🔔";
+    $("ab-upd-text").textContent="! Требуется обновление multilaunch";
+    $("ab-upd-text").style.color="var(--yellow)";
+    $("ab-upd-ver").textContent = [localStr, remoteStr].filter(Boolean).join("   →   ");
+    $("ab-upd-ver").style.display="block";
+  } else if(d.has_heavy_update){
+    $("ab-upd-icon").textContent="🔔";
+    $("ab-upd-text").textContent="Требуется обновление компонентов";
+    $("ab-upd-text").style.color="var(--yellow)";
+    if(d.local_date){
+      $("ab-upd-ver").textContent="Билд: "+d.local_date;
+      $("ab-upd-ver").style.display="block";
+    } else {
+      $("ab-upd-ver").style.display="none";
+    }
+  } else {
+    $("ab-upd-icon").textContent="✓";
+    $("ab-upd-text").textContent="Версия актуальна";
+    $("ab-upd-text").style.color="var(--green)";
+    if(d.local_date){
+      $("ab-upd-ver").textContent="Билд: "+d.local_date;
+      $("ab-upd-ver").style.display="block";
+    } else {
+      $("ab-upd-ver").style.display="none";
+    }
+  }
+
+  // ── Список компонентов с чекбоксами ──────────────────────
+  const comps  = d.standard||[];
+  const heavy  = d.heavy||[];
+  const rows   = $("ab-comp-rows");
+
+  function makeRow(c, isHeavy){
+    const needsUpd = c.needs_update;
+    const notInst  = c.not_installed;
+    const canCheck = needsUpd || notInst;
+
+    let statusColor = canCheck ? "var(--yellow)" : "var(--green)";
+    let verStr = "";
+    if(notInst)       verStr = "не установлен";
+    else if(needsUpd) verStr = (c.local_ver||"?")+" → "+(c.remote_ver||"?");
+    else              verStr = "✓ " + (c.remote_ver||"актуален");
+
+    const label = (isHeavy ? "💾 " : "") + (c.display_name||c.key);
+
+    const row = document.createElement("label");
+    row.style.cssText = "display:flex;align-items:center;gap:10px;cursor:"+(canCheck?"pointer":"default")+
+      ";padding:5px 8px;border-radius:6px;transition:background .15s"+
+      (canCheck?";background:var(--glass)":"");
+    row.dataset.key = c.key;
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = canCheck;
+    cb.disabled = !canCheck;
+    cb.dataset.key = c.key;
+    cb.style.cssText = "width:15px;height:15px;accent-color:var(--accent);flex-shrink:0;cursor:"+(canCheck?"pointer":"default");
+    cb.addEventListener("change", updateDlBtn);
+
+    const nameSpan = document.createElement("span");
+    nameSpan.style.cssText = "flex:1;color:"+statusColor+";overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
+    nameSpan.textContent = label;
+
+    const verSpan = document.createElement("span");
+    verSpan.style.cssText = "color:var(--muted);white-space:nowrap;font-size:11px";
+    verSpan.textContent = verStr;
+
+    row.appendChild(cb);
+    row.appendChild(nameSpan);
+    row.appendChild(verSpan);
+    rows.appendChild(row);
+  }
+
+  comps.forEach(c => makeRow(c, false));
+
+  if(heavy.length && comps.length){
+    const sep = document.createElement("div");
+    sep.style.cssText = "border-top:1px solid var(--border);margin:6px 0";
+    rows.appendChild(sep);
+  }
+  heavy.forEach(c => makeRow(c, true));
+
+  if(comps.length || heavy.length){
+    $("ab-comp-list").style.display="block";
+  }
+
+  updateDlBtn();
+
+  // Changelog
+  if(d.changelog){
+    $("ab-cl-body").textContent=d.changelog;
+    $("ab-cl-wrap").style.display="block";
+  }
+}
+
+function updateDlBtn(){
+  // Кнопка активна если хоть один чекбокс отмечен
+  const checked = $("ab-comp-rows").querySelectorAll("input[type=checkbox]:checked:not(:disabled)");
+  const btn = $("ab-dl-btn");
+  if(checked.length > 0){
+    btn.style.display="block";
+    // Пересчитываем суммарный размер
+    let totalMb = 0;
+    const d = _updData;
+    checked.forEach(cb=>{
+      const all = [...(d.standard||[]), ...(d.heavy||[])];
+      const comp = all.find(c=>c.key===cb.dataset.key);
+      if(comp) totalMb += comp.size_mb||0;
+    });
+    btn.textContent = "⬇  Скачать и установить" + (totalMb>0 ? `  (~${totalMb.toFixed(0)} МБ)` : "");
+    $("ab-comp-total").style.display="none"; // убираем старый итог — он теперь в кнопке
+  } else {
+    btn.style.display="none";
+  }
+}
+function startDownload(){
+  if(!_updData) return;
+  // Берём только отмеченные чекбоксы
+  const checkedKeys = Array.from(
+    $("ab-comp-rows").querySelectorAll("input[type=checkbox]:checked:not(:disabled)")
+  ).map(cb=>cb.dataset.key);
+  if(!checkedKeys.length){ return; }
+  const allComps = [...(_updData.standard||[]), ...(_updData.heavy||[])];
+  const toUpdate = allComps.filter(c=>checkedKeys.includes(c.key));
+  if(!toUpdate.length) return;
+  _dlCancelled=false;
+  $("ab-dl-btn").style.display="none";
+  $("ab-dl-cancel").style.display="block";
+  $("ab-dl-wrap").style.display="block";
+  $("ab-dl-bar").style.width="0%";
+  $("ab-dl-bar").style.background="var(--accent)";
+  $("ab-dl-text").textContent="Подготовка…";
+  fetch("/api/download_update",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      components: toUpdate.map(c=>c.key),
+      remote_comp: allComps
+    })
+  }).then(r=>r.json()).then(d=>{
+    if(!d.ok){
+      $("ab-dl-cancel").style.display="none";
+      $("ab-dl-bar").style.background="var(--red)";
+      $("ab-dl-text").textContent="⚠  "+d.error;
+      $("ab-dl-btn").style.display="block";
+      $("ab-dl-btn").textContent="⬇  Повторить";
+    }
+  }).catch(e=>{
+    $("ab-dl-cancel").style.display="none";
+    $("ab-dl-text").textContent="⚠  Ошибка соединения";
+    $("ab-dl-btn").style.display="block";
+    $("ab-dl-btn").textContent="⬇  Повторить";
+  });
+}
+function _driveFromPath(p){
+  if(!p)return"?";
+  const m=p.match(/^([A-Za-z]):/);
+  return m?m[1].toUpperCase():"?";
+}
+function cancelDownload(){
+  $("ab-dl-cancel").style.display="none";
+  $("ab-dl-text").textContent="Отмена...";
+  fetch("/api/cancel_update",{method:"POST"}).then(r=>r.json()).then(d=>{
+    if(d.ok){
+      $("ab-dl-text").textContent="⏹  Скачивание отменено. Файлы удалены.";
+      $("ab-dl-bar").style.width="0%";
+      $("ab-dl-btn").style.display="block";
+      $("ab-dl-btn").textContent="⬇  Скачать снова";
+    }
+  }).catch(()=>{
+    $("ab-dl-text").textContent="⏹  Отменено.";
+    $("ab-dl-btn").style.display="block";
+    $("ab-dl-btn").textContent="⬇  Скачать снова";
+  });
+}
+let _dlCancelled=false;
+function applyDlProgress(d){
+  if(d.cancelled){
+    _dlCancelled=true;
+    $("ab-dl-cancel").style.display="none";
+    $("ab-dl-bar").style.width="0%";
+    $("ab-dl-text").textContent=d.text||"⏹  Отменено.";
+    $("ab-dl-btn").style.display="block";
+    $("ab-dl-btn").textContent="⬇  Скачать снова";
+    return;
+  }
+  if(_dlCancelled) return;
+  if(d.text) $("ab-dl-text").textContent=d.text;
+  if(d.pct!=null) $("ab-dl-bar").style.width=d.pct+"%";
+
+  // Подсветка компонента в списке
+  if(d.component && d.phase){
+    const rows = $("ab-comp-rows");
+    if(rows){
+      const spans = rows.querySelectorAll("span:first-child");
+      spans.forEach(sp=>{
+        const txt = sp.textContent;
+        const comp = (_updData&&_updData.standard||[]).find(c=>(c.display_name||c.key)===txt.slice(2).trim() || c.key===d.component);
+        if(comp && comp.key===d.component){
+          sp.style.color = d.phase==="extract" ? "var(--accent)" : "var(--yellow)";
+        }
+      });
+    }
+  }
+
+  if(d.error){
+    $("ab-dl-bar").style.background="var(--red)";
+    $("ab-dl-cancel").style.display="none";
+    $("ab-dl-btn").style.display="block";
+    $("ab-dl-btn").textContent="⬇  Повторить";
+  }
+  if(d.done){
+    $("ab-dl-cancel").style.display="none";
+    $("ab-dl-bar").style.width="100%";
+    $("ab-dl-bar").style.background="var(--green)";
+    if(d.restart===false){
+      // Обновление применено без перезапуска — обновляем данные
+      setStatLbl("Обновление установлено ✓","ok");
+      $("ab-dl-btn").style.display="none";
+      // Повторно проверяем обновления чтобы обновить список компонентов
+      setTimeout(()=>{ checkUpdate(); }, 1500);
+    }
+    // restart===true: приложение само закроется через _bg
+  }
+}
+// Legacy — pill click
+function openUpdModal(){ openAbout(); }
+function openUpdLink(){window.open(UPDATE_URL,"_blank");}
+
+// ── Modal helpers ─────────────────────────────────────────
+function openM(id){$(id).classList.add("show")}
+function closeM(id){$(id).classList.remove("show")}
+
+// ── Logo glitch ───────────────────────────────────────────
+const GLITCH_CHARS={A:["4","@","Λ","∆","Â"],L:["1","|","Ł","£"],F:["ƒ","₣","Ƒ"],A2:["4","@","Λ","∆","Â"]};
+const GLITCH_COLORS=["#ff4444","#ff9900","#00ffcc","#ff00ff","#ffffff","#ffff00"];
+function glitchLoop(){
+  const el=$("logo-alfa");
+  const orig="ALFA";
+  function runGlitch(){
+    if(!el)return;
+    const letters=[...orig];
+    let frame=0,maxFrames=random(5,9);
+    const interval=setInterval(()=>{
+      frame++;
+      const out=letters.map((ch,i)=>{
+        if(Math.random()<0.4){
+          const set=i===0?GLITCH_CHARS.A:i===1?GLITCH_CHARS.L:i===2?GLITCH_CHARS.F:GLITCH_CHARS.A2;
+          const gc=GLITCH_COLORS[Math.floor(Math.random()*GLITCH_COLORS.length)];
+          return`<span style="color:${gc}">${set[Math.floor(Math.random()*set.length)]}</span>`;
+        }
+        return`<span style="color:var(--accent2)">${ch}</span>`;
+      });
+      el.innerHTML=out.join("");
+      if(frame>=maxFrames){
+        clearInterval(interval);
+        el.innerHTML=orig.split("").map(c=>`<span style="color:var(--accent2)">${c}</span>`).join("");
+        setTimeout(runGlitch,random(3000,8000));
+      }
+    },random(40,80));
+  }
+  setTimeout(runGlitch,2000);
+}
+function random(a,b){return Math.floor(Math.random()*(b-a))+a}
+</script>
+</body>
+</html>
