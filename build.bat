@@ -2,7 +2,7 @@
 chcp 65001 >nul
 title ALFAscript — сборка EXE
 
-:: ── Переходим в папку где лежит этот bat (ВАЖНО) ─────────────────────────
+:: ── Переходим в папку где лежит этот bat ─────────────────────────────────
 cd /d "%~dp0"
 
 echo.
@@ -21,23 +21,53 @@ if errorlevel 1 (
     pause & exit /b 1
 )
 
-:: ── Проверяем наличие app.py ──────────────────────────────────────────────
-if not exist app.py (
-    echo  [ОШИБКА] app.py не найден в текущей папке!
-    echo  Убедись что build.bat лежит рядом с app.py
+:: ── Проверяем точку входа ─────────────────────────────────────────────────
+if not exist main.py (
+    echo  [ОШИБКА] main.py не найден!
+    echo  Убедись что build.bat лежит рядом с main.py и папкой src\
     pause & exit /b 1
 )
 
-:: ── Если index.html лежит рядом — кладём в templates\ автоматически ──────
-if exist index.html (
-    if not exist templates mkdir templates
-    echo  [ИНФО] Перемещаем index.html в templates\...
-    move /y index.html templates\index.html >nul
+:: ── Проверяем структуру src\ ──────────────────────────────────────────────
+if not exist src (
+    echo  [ОШИБКА] Папка src\ не найдена!
+    pause & exit /b 1
 )
 
-if not exist templates\index.html (
-    echo  [ОШИБКА] templates\index.html не найден!
-    echo  Положи index.html в папку templates\ рядом с build.bat
+for %%F in (app.py config.py paths.py state.py theme.py webapi.py) do (
+    if not exist src\%%F (
+        echo  [ОШИБКА] src\%%F не найден!
+        pause & exit /b 1
+    )
+)
+for %%F in (routes\__init__.py routes\main.py routes\tasks.py routes\extras.py routes\updates.py routes\hardware.py routes\system.py) do (
+    if not exist src\%%F (
+        echo  [ОШИБКА] src\%%F не найден!
+        pause & exit /b 1
+    )
+)
+for %%F in (services\__init__.py services\system.py services\bat_runner.py services\aida.py services\hardware.py services\programs.py services\updater.py) do (
+    if not exist src\%%F (
+        echo  [ОШИБКА] src\%%F не найден!
+        pause & exit /b 1
+    )
+)
+
+:: ── Если index.html лежит рядом — кладём в src\templates\ автоматически ──
+if exist index.html (
+    if not exist src\templates mkdir src\templates
+    echo  [ИНФО] Перемещаем index.html в src\templates\...
+    move /y index.html src\templates\index.html >nul
+)
+if exist log.html (
+    if not exist src\templates mkdir src\templates
+    echo  [ИНФО] Перемещаем log.html в src\templates\...
+    move /y log.html src\templates\log.html >nul
+)
+
+if not exist src\templates\index.html (
+    echo  [ОШИБКА] src\templates\index.html не найден!
+    echo  Положи index.html в папку src\templates\
     pause & exit /b 1
 )
 
@@ -55,7 +85,7 @@ echo.
 echo  [2/3] Очищаем предыдущую сборку...
 if exist dist\_ALFAscript.exe del /f /q dist\_ALFAscript.exe >nul 2>&1
 if exist build rmdir /s /q build >nul 2>&1
-if exist alfascript.spec del /f /q alfascript.spec >nul 2>&1
+if exist _ALFAscript.spec del /f /q _ALFAscript.spec >nul 2>&1
 echo        OK
 echo.
 
@@ -63,16 +93,17 @@ echo.
 echo  [3/3] Собираем EXE (это займёт 1-2 минуты)...
 echo.
 
-:: Иконка — если icon.ico есть рядом, используем её
 set ICON_ARG=
-if exist icon.ico set ICON_ARG=--icon=icon.ico
+if exist src\icon.ico set ICON_ARG=--icon=src\icon.ico
+if exist icon.ico     set ICON_ARG=--icon=icon.ico
 
 pyinstaller ^
   --onefile ^
   --windowed ^
   --name _ALFAscript ^
   %ICON_ARG% ^
-  --add-data "templates;templates" ^
+  --add-data "src\templates;templates" ^
+  --paths "src" ^
   --hidden-import webview ^
   --hidden-import webview.platforms.winforms ^
   --hidden-import flask ^
@@ -84,9 +115,23 @@ pyinstaller ^
   --hidden-import werkzeug.debug ^
   --hidden-import clr ^
   --hidden-import pythonnet ^
+  --hidden-import routes ^
+  --hidden-import routes.main ^
+  --hidden-import routes.tasks ^
+  --hidden-import routes.extras ^
+  --hidden-import routes.updates ^
+  --hidden-import routes.hardware ^
+  --hidden-import routes.system ^
+  --hidden-import services ^
+  --hidden-import services.system ^
+  --hidden-import services.bat_runner ^
+  --hidden-import services.aida ^
+  --hidden-import services.hardware ^
+  --hidden-import services.programs ^
+  --hidden-import services.updater ^
   --collect-all webview ^
   --collect-all flask ^
-  app.py
+  main.py
 
 if errorlevel 1 (
     echo.

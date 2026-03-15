@@ -1,9 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('templates', 'templates')]
+datas = [('src\\templates', 'templates')]
 binaries = []
-hiddenimports = ['webview', 'webview.platforms.winforms', 'flask', 'flask.templating', 'jinja2', 'jinja2.ext', 'werkzeug', 'werkzeug.serving', 'werkzeug.debug', 'clr', 'pythonnet']
+hiddenimports = ['webview', 'webview.platforms.winforms', 'flask', 'flask.templating', 'jinja2', 'jinja2.ext', 'werkzeug', 'werkzeug.serving', 'werkzeug.debug', 'clr', 'pythonnet', 'routes', 'routes.main', 'routes.tasks', 'routes.extras', 'routes.updates', 'routes.hardware', 'routes.system', 'services', 'services.system', 'services.bat_runner', 'services.aida', 'services.hardware', 'services.programs', 'services.updater']
 tmp_ret = collect_all('webview')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 tmp_ret = collect_all('flask')
@@ -11,8 +11,8 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['app.py'],
-    pathex=[],
+    ['main.py'],
+    pathex=['src'],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
