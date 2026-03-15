@@ -1,0 +1,81 @@
+/* tasks.css — task list, runbar, progress bar, run button */
+
+.th       { display:flex; align-items:center; justify-content:space-between; margin-bottom:7px }
+.th-title { font-size:13px; font-weight:700; color:var(--dim); letter-spacing:1px; text-transform:uppercase }
+
+.cat-blk  { margin-bottom:8px }
+.cat-name { font-size:11px; font-weight:700; letter-spacing:2px; color:var(--accent); opacity:.6; text-transform:uppercase; margin-bottom:3px; padding-left:1px }
+
+.trow {
+  display:flex; align-items:center; gap:8px;
+  padding:5px 10px; margin-bottom:1px;
+  border-radius:var(--rsm); cursor:pointer;
+  border:1px solid transparent; background:var(--glass2);
+  transition:all .15s;
+}
+.trow:hover { border-color:var(--border); transform:translateX(2px) }
+.trow.on {
+  background:color-mix(in srgb,var(--accent) 10%,var(--glass2));
+  border-color:color-mix(in srgb,var(--accent) 40%,transparent);
+}
+
+.chk {
+  width:14px; height:14px; border-radius:3px; flex-shrink:0;
+  border:2px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; color:transparent;
+  background:var(--glass); transition:all .15s;
+}
+.trow.on .chk {
+  background:var(--accent); border-color:var(--accent);
+  color:#fff; box-shadow:0 0 7px var(--accent-g);
+}
+
+.tname {
+  font-size:13px; font-weight:400; color:var(--dim); flex:1;
+  transition:color .15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.trow.on .tname { color:var(--text) }
+
+.tbat {
+  font-family:var(--mono); font-size:11px; color:var(--muted);
+  background:var(--glass); padding:1px 5px; border-radius:3px; flex-shrink:0;
+}
+.trow.on .tbat {
+  color:var(--accent);
+  background:color-mix(in srgb,var(--accent) 12%,var(--glass));
+}
+
+/* ── Runbar ──────────────────────────────────────────────── */
+.prog-col  { flex:1 }
+.prog-trk  { height:3px; background:var(--glass2); border-radius:2px; overflow:hidden; margin-bottom:4px }
+.prog-bar  { height:100%; width:0%; border-radius:2px; background:var(--accent); transition:width .4s ease }
+.prog-bar.ok   { background:var(--green)  }
+.prog-bar.warn { background:var(--yellow) }
+
+.stat-lbl      { font-size:13px; color:var(--dim); font-family:var(--mono) }
+.stat-lbl.ok   { color:var(--green)  }
+.stat-lbl.warn { color:var(--yellow) }
+.stat-lbl.err  { color:var(--red)    }
+
+.step-lbl { font-size:12px; color:var(--accent); font-family:var(--mono); min-height:13px; margin-bottom:2px }
+
+.mini-btns { display:flex; gap:5px; flex-shrink:0 }
+.mbtn {
+  padding:5px 10px; border-radius:6px; font-size:13px; font-weight:600;
+  color:var(--dim); background:var(--glass2); border:1px solid var(--border);
+  cursor:pointer; transition:all .15s;
+}
+.mbtn:hover { color:var(--text); background:var(--border) }
+
+.rbtn {
+  flex-shrink:0; min-width:140px; padding:9px 18px; border-radius:var(--rsm);
+  font-size:16px; font-weight:800; color:#fff; background:var(--accent);
+  cursor:pointer; transition:all .2s; position:relative; overflow:hidden;
+}
+.rbtn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,.1),transparent) }
+.rbtn:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 4px 18px var(--accent-g) }
+.rbtn:active:not(:disabled){ transform:none }
+.rbtn.stop     { background:var(--red)   }
+.rbtn.done     { background:var(--green) }
+.rbtn:disabled { opacity:.5; cursor:not-allowed }

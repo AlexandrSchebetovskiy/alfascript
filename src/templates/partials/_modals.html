@@ -1,0 +1,137 @@
+{# partials/_modals.html — theme picker, programs, about/update modals #}
+
+<!-- ── Theme ──────────────────────────────────────────────── -->
+<div class="overlay" id="m-theme" onclick="if(event.target===this)closeM('m-theme')">
+  <div class="mbox" style="max-width:380px">
+    <div class="mhdr">
+      <span class="mttl">Оформление</span>
+      <span class="mclose" onclick="closeM('m-theme')">✕</span>
+    </div>
+    <div class="mbody">
+      <div class="theme-tabs">
+        <button class="theme-tab" id="ttab-dark"  onclick="switchThemeTab('dark')">🌑 Тёмные</button>
+        <button class="theme-tab" id="ttab-light" onclick="switchThemeTab('light')">☀️ Светлые</button>
+      </div>
+
+      <div class="theme-panel" id="tpanel-dark">
+        <div class="vstyle-grid">
+          {% for vs, label, grad in [
+            ('default','Default','linear-gradient(135deg,#1a1d2e,#7c3aed)'),
+            ('void',   'Void',   '#08090a;border:1px solid rgba(255,255,255,.12)'),
+            ('matrix', 'Matrix', 'linear-gradient(135deg,#000500,#00ff41 240%)'),
+            ('sunset', 'Sunset', 'linear-gradient(135deg,#0a0108,#f59e0b 200%)'),
+            ('ember',  'Ember',  'linear-gradient(135deg,#0d0200,#fb923c 200%)'),
+            ('neon',   'Neon',   'linear-gradient(135deg,#080014,#e879f9 220%)'),
+            ('abyss',  'Abyss',  'linear-gradient(135deg,#010810,#22d3ee 260%)'),
+            ('blood',  'Blood',  'linear-gradient(135deg,#0c0003,#f43f5e 220%)'),
+            ('aurora', 'Aurora', 'linear-gradient(135deg,#01080f,#10b981 230%)'),
+            ('coal',   'Coal',   'linear-gradient(135deg,#0b0b0b,#3f3f46)'),
+          ] %}
+          <div class="vstyle-item" data-vs="{{ vs }}" data-vm="dark" onclick="setVstyleForced('{{ vs }}','dark')">
+            <div class="vstyle-thumb" style="background:{{ grad }}"></div>
+            <div class="vstyle-name">{{ label }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="theme-panel" id="tpanel-light">
+        <div class="vstyle-grid">
+          {% for vs, label, grad in [
+            ('latte',    'Latte',    'linear-gradient(135deg,#fdf6ec,#f59e0b 180%)'),
+            ('ocean',    'Ocean',    'linear-gradient(135deg,#e0f2fe,#0369a1 200%)'),
+            ('frost',    'Frost',    'linear-gradient(135deg,#eff6ff,#bfdbfe 100%,#e0e7ff)'),
+            ('meadow',   'Meadow',   'linear-gradient(135deg,#f0fdf4,#16a34a 200%)'),
+            ('sakura',   'Sakura',   'linear-gradient(135deg,#fdf2f8,#fbcfe8 150%)'),
+            ('cloud',    'Cloud',    'linear-gradient(135deg,#bfdbfe,#f0f9ff)'),
+            ('peach',    'Peach',    'linear-gradient(135deg,#fff5f0,#fed7aa)'),
+            ('mint',     'Mint',     'linear-gradient(135deg,#f0fffe,#99f6e4)'),
+            ('lavender', 'Lavender', 'linear-gradient(135deg,#faf5ff,#d8b4fe)'),
+            ('gold',     'Gold',     'linear-gradient(135deg,#fffbeb,#fcd34d)'),
+          ] %}
+          <div class="vstyle-item" data-vs="{{ vs }}" data-vm="light" onclick="setVstyleForced('{{ vs }}','light')">
+            <div class="vstyle-thumb" style="background:{{ grad }}"></div>
+            <div class="vstyle-name">{{ label }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Programs ───────────────────────────────────────────── -->
+<div class="overlay" id="m-progs" onclick="if(event.target===this)closeM('m-progs')">
+  <div class="mbox">
+    <div class="mhdr">
+      <span class="mttl" id="m-progs-title">Программы</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="hdr-ibt" onclick="refreshPrograms()" title="Обновить список">⟳</button>
+        <span class="mclose" onclick="closeM('m-progs')">✕</span>
+      </div>
+    </div>
+    <div id="m-progs-path"
+         style="font-family:var(--mono);font-size:10px;color:var(--dim);padding:0 0 10px;word-break:break-all;cursor:pointer"
+         onclick="openProgsFolder()" title="Открыть папку"></div>
+    <div class="mbody" id="m-progs-body"></div>
+  </div>
+</div>
+
+<!-- ── About / Updates ────────────────────────────────────── -->
+<div class="overlay" id="m-about" onclick="if(event.target===this)closeM('m-about')">
+  <div class="mbox" style="max-width:640px;width:96%">
+    <div class="mhdr" style="margin-bottom:0">
+      <span></span>
+      <span class="mclose" onclick="closeM('m-about')">✕</span>
+    </div>
+    <div class="mbody">
+
+      <!-- Hero -->
+      <div style="text-align:center;padding:12px 0 20px">
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--accent2)">ALFAscript</div>
+        <div style="font-size:13px;color:var(--dim);margin-top:6px">v{{ version }}&nbsp;&nbsp;•&nbsp;&nbsp;{{ date }}</div>
+        <div style="font-size:13px;color:var(--accent);margin-top:4px;font-weight:600">by FRUSTIK</div>
+      </div>
+
+      <!-- Updates -->
+      <div style="background:var(--glass2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Обновления</div>
+        <div id="ab-upd-status" style="font-size:15px;color:var(--dim);display:flex;align-items:center;gap:8px">
+          <span id="ab-upd-icon">🔔</span>
+          <span id="ab-upd-text">Проверка...</span>
+        </div>
+        <div id="ab-upd-ver" style="font-size:12px;color:var(--accent);font-family:var(--mono);margin-top:6px;display:none"></div>
+
+        <div id="ab-comp-list" style="display:none;margin-top:12px">
+          <div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Компоненты</div>
+          <div id="ab-comp-rows" style="font-family:var(--mono);font-size:12px;line-height:1.8;display:flex;flex-direction:column;gap:4px"></div>
+          <div id="ab-comp-total" style="font-size:11px;color:var(--muted);text-align:right;margin-top:6px;display:none"></div>
+        </div>
+
+        <div id="ab-dl-wrap" style="display:none;margin-top:12px">
+          <div style="height:7px;background:var(--glass);border-radius:4px;overflow:hidden;margin-bottom:7px">
+            <div id="ab-dl-bar" style="height:100%;width:0%;background:var(--accent);border-radius:4px;transition:width .3s"></div>
+          </div>
+          <div id="ab-dl-text" style="font-size:11px;color:var(--dim);font-family:var(--mono)"></div>
+        </div>
+
+        <button id="ab-dl-btn" onclick="startDownload()"
+          style="display:none;width:100%;margin-top:14px;padding:11px;border-radius:8px;font-size:14px;font-weight:700;background:var(--accent);color:#fff;border:none;cursor:pointer">
+          ⬇  Скачать и установить
+        </button>
+        <button id="ab-dl-cancel" onclick="cancelDownload()"
+          style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:8px;font-size:14px;font-weight:700;background:var(--glass2);color:var(--dim);border:1px solid var(--border);cursor:pointer">
+          ⏹  Отмена
+        </button>
+      </div>
+
+      <!-- Changelog -->
+      <div id="ab-cl-wrap" style="background:var(--glass2);border:1px solid var(--border);border-radius:10px;padding:16px;display:none">
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Что нового</div>
+        <div id="ab-cl-body" style="font-size:12px;color:var(--dim);font-family:var(--mono);max-height:180px;overflow-y:auto;white-space:pre-wrap;line-height:1.7"></div>
+      </div>
+
+    </div>
+    <div class="mftr"><button class="mbtn-s" onclick="closeM('m-about')">Закрыть</button></div>
+  </div>
+</div>

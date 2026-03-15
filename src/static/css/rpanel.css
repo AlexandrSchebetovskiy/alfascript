@@ -1,0 +1,60 @@
+/* rpanel.css — right panel, system info, HW hover tooltip, AIDA results */
+
+.rp-sec  { padding:10px 12px; border-bottom:1px solid var(--border) }
+.rp-ttl  { font-size:11px; font-weight:700; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:8px }
+
+.si-row  { display:flex; justify-content:space-between; align-items:center; padding:3px 0; font-size:13px }
+.si-k    { color:var(--dim) }
+.si-v    { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--text) }
+.si-v.ok    { color:var(--green)  }
+.si-v.warn  { color:var(--yellow) }
+.si-v.bad   { color:var(--red)    }
+.si-v.click { cursor:pointer; text-decoration:underline dotted }
+
+.si-more { font-size:12px; color:var(--accent); cursor:default; margin-top:4px; display:inline-block; opacity:.7 }
+
+/* ── HW hover tooltip ────────────────────────────────────── */
+.hw-hover-wrap { position:relative; display:inline-block; width:100%; margin-top:4px; cursor:default }
+
+.hw-tip {
+  display:none;
+  position:fixed; z-index:9999;
+  background:var(--glass); border:1px solid var(--border);
+  border-radius:10px; box-shadow:0 8px 32px rgba(0,0,0,.5);
+  min-width:320px; max-width:480px;
+  pointer-events:none;
+  animation:popin .15s ease;
+}
+.hw-tip-inner   { padding:12px 14px }
+.hw-tip-row     { display:flex; align-items:baseline; gap:8px; padding:3px 0; font-size:13px; border-bottom:1px solid var(--border) }
+.hw-tip-row:last-child { border:none }
+.hw-k { color:var(--dim); font-weight:700; min-width:42px; flex-shrink:0; font-size:12px }
+.hw-v { color:var(--text); font-family:var(--mono); font-size:12px; word-break:break-word }
+.hw-sep { height:1px; background:var(--border); margin:6px 0 }
+
+.disk-row       { display:flex; align-items:baseline; gap:6px; padding:3px 0; font-size:13px; border-bottom:1px solid var(--border) }
+.disk-row:last-child { border:none }
+.disk-k         { color:var(--dim); font-weight:700; min-width:42px; flex-shrink:0; font-size:12px }
+.disk-info      { color:var(--text); font-family:var(--mono); font-size:12px; flex:1; word-break:break-word }
+.disk-smart     { font-family:var(--mono); font-size:12px; font-weight:700; flex-shrink:0; white-space:nowrap }
+.disk-smart.good    { color:var(--green)  }
+.disk-smart.warn    { color:var(--yellow) }
+.disk-smart.bad     { color:var(--red)    }
+.disk-smart.unknown { color:var(--dim)    }
+
+/* ── AIDA results ────────────────────────────────────────── */
+.aida-ph  { text-align:center; padding:20px 8px; color:var(--muted); font-size:14px; line-height:2 }
+.aida-ico { font-size:32px; margin-bottom:4px }
+
+.ar { display:flex; justify-content:space-between; padding:4px 0; font-size:13px; border-bottom:1px solid var(--border) }
+.ar:last-child { border:none }
+.ak { color:var(--dim) }
+.av { font-family:var(--mono); font-size:13px; font-weight:700 }
+.av.ok   { color:var(--green)  }
+.av.warn { color:var(--yellow) }
+.av.crit { color:var(--red)    }
+
+.a-verd { margin-top:8px; padding:6px 10px; border-radius:var(--rsm); font-size:14px; font-weight:700; text-align:center }
+.a-verd.ok   { background:var(--gdim); color:var(--green)  }
+.a-verd.warn { background:var(--ydim); color:var(--yellow) }
+.a-verd.crit { background:var(--rdim); color:var(--red)    }

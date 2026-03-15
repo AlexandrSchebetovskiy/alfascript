@@ -1,0 +1,37 @@
+{# partials/_tasks.html — task checklist + runbar #}
+<div id="center">
+
+  <div id="tasks-wrap">
+    <div class="th">
+      <span class="th-title">Выбор функций</span>
+    </div>
+
+    {% for cat_name, tasks in tasks %}
+    <div class="cat-blk">
+      <div class="cat-name">{{ cat_name }}</div>
+      {% for name, bat, default in tasks %}
+      <div class="trow {{ 'on' if state.tasks.get(bat, default) else '' }}"
+           data-bat="{{ bat }}" onclick="toggleTask(this)">
+        <div class="chk">✓</div>
+        <span class="tname">{{ name }}</span>
+        <span class="tbat">{{ bat }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div id="runbar">
+    <div class="prog-col">
+      <div class="step-lbl" id="step-lbl"></div>
+      <div class="prog-trk"><div class="prog-bar" id="prog-bar"></div></div>
+      <div class="stat-lbl" id="stat-lbl">Ожидание запуска...</div>
+    </div>
+    <div class="mini-btns">
+      <button class="mbtn" onclick="deselectAll()">Снять все</button>
+      <button class="mbtn" onclick="selectAll()">Выбрать все</button>
+    </div>
+    <button class="rbtn" id="rbtn" onclick="handleRun()">▶  Запустить</button>
+  </div>
+
+</div>

@@ -1,0 +1,81 @@
+{# partials/_vstyle_bg.html — animated background layers, one per vstyle #}
+<div id="vstyle-bg">
+
+  <div class="vbg-latte{% if vmode=='light' and vstyle=='latte' %} light-mode{% endif %}"{% if vstyle!='latte' %} style="display:none"{% endif %}>
+    <div class="lspot ls1"></div><div class="lspot ls2"></div>
+  </div>
+
+  <div class="vbg-ocean{% if vmode=='light' and vstyle=='ocean' %} light-mode{% endif %}"{% if vstyle!='ocean' %} style="display:none"{% endif %}>
+    <div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div>
+  </div>
+
+  <div class="vbg-frost{% if vmode=='light' and vstyle=='frost' %} light-mode{% endif %}"{% if vstyle!='frost' %} style="display:none"{% endif %}>
+    <div class="blob bl1"></div><div class="blob bl2"></div><div class="blob bl3"></div>
+  </div>
+
+  <div class="vbg-meadow{% if vmode=='light' and vstyle=='meadow' %} light-mode{% endif %}"{% if vstyle!='meadow' %} style="display:none"{% endif %}>
+    <div class="mg mg1"></div><div class="mg mg2"></div>
+  </div>
+
+  <div class="vbg-ember{% if vmode=='light' and vstyle=='ember' %} light-mode{% endif %}"{% if vstyle!='ember' %} style="display:none"{% endif %}>
+    <div class="eglow eg1"></div><div class="eglow eg2"></div>
+  </div>
+
+  <div class="vbg-sakura{% if vmode=='light' and vstyle=='sakura' %} light-mode{% endif %}"{% if vstyle!='sakura' %} style="display:none"{% endif %}>
+    <div class="petal p1"></div><div class="petal p2"></div><div class="petal p3"></div>
+    <div class="petal p4"></div><div class="petal p5"></div><div class="petal p6"></div>
+  </div>
+
+  <div class="vbg-void{% if vmode=='light' and vstyle=='void' %} light-mode{% endif %}"{% if vstyle!='void' %} style="display:none"{% endif %}>
+    <div class="void-line"></div>
+  </div>
+
+  <div class="vbg-matrix"{% if vstyle!='matrix' %} style="display:none"{% endif %}></div>
+
+  <div class="vbg-sunset{% if vmode=='light' and vstyle=='sunset' %} light-mode{% endif %}"{% if vstyle!='sunset' %} style="display:none"{% endif %}>
+    <div class="sg sg1"></div><div class="sg sg2"></div><div class="sg sg3"></div>
+  </div>
+
+  <div class="vbg-neon"{% if vstyle!='neon' %} style="display:none"{% endif %}>
+    <div class="nb nb1"></div><div class="nb nb2"></div><div class="nb nb3"></div><div class="nscan"></div>
+  </div>
+
+  <div class="vbg-abyss"{% if vstyle!='abyss' %} style="display:none"{% endif %}>
+    <div class="ay ay1"></div><div class="ay ay2"></div><div class="ay ay3"></div>
+    <div class="ay4"></div><div class="ay4 ay4b"></div>
+  </div>
+
+  <div class="vbg-blood"{% if vstyle!='blood' %} style="display:none"{% endif %}>
+    <div class="bd bd1"></div><div class="bd bd2"></div><div class="bd bd3"></div>
+  </div>
+
+  <div class="vbg-aurora"{% if vstyle!='aurora' %} style="display:none"{% endif %}>
+    <div class="ar ar1"></div><div class="ar ar2"></div><div class="ar ar3"></div><div class="ar ar4"></div>
+  </div>
+
+  <div class="vbg-coal"{% if vstyle!='coal' %} style="display:none"{% endif %}></div>
+
+  <div class="vbg-cloud"{% if vstyle!='cloud' %} style="display:none"{% endif %}>
+    <div class="cv cv1"></div><div class="cv cv2"></div><div class="cv cv3"></div>
+  </div>
+
+  <div class="vbg-peach"{% if vstyle!='peach' %} style="display:none"{% endif %}>
+    <div class="ph ph1"></div><div class="ph ph2"></div><div class="ph ph3"></div>
+  </div>
+
+  <div class="vbg-mint"{% if vstyle!='mint' %} style="display:none"{% endif %}>
+    <div class="mt mt1"></div><div class="mt mt2"></div><div class="mt mt3"></div>
+  </div>
+
+  <div class="vbg-lavender"{% if vstyle!='lavender' %} style="display:none"{% endif %}>
+    <div class="la la1"></div><div class="la la2"></div><div class="la la3"></div>
+  </div>
+
+  <div class="vbg-gold"{% if vstyle!='gold' %} style="display:none"{% endif %}>
+    <div class="gl gl1"></div><div class="gl gl2"></div>
+    <div class="gsp gsp1"></div><div class="gsp gsp2"></div><div class="gsp gsp3"></div>
+    <div class="gsp gsp4"></div><div class="gsp gsp5"></div>
+  </div>
+
+</div>
+<canvas id="vstyle-matrix-canvas"{% if vstyle=='matrix' %} class="vactive"{% endif %}></canvas>

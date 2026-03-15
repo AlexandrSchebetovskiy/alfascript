@@ -1,0 +1,22 @@
+{# partials/_topbar.html #}
+<div id="topbar">
+  <div class="logo">
+    <span class="logo-alfa" id="logo-alfa">ALFA</span>
+    <span class="logo-script">script</span>
+    <span class="logo-cur">_</span>
+  </div>
+
+  <div class="tb-chips">
+    <div class="chip" id="ch-admin"><span class="chip-dot"></span>&nbsp;admin...</div>
+    <div class="chip" id="ch-ml" onclick="openFolder()" style="cursor:pointer" title="Открыть папку multilaunch">
+      <span class="chip-dot"></span>&nbsp;...
+    </div>
+  </div>
+
+  <div class="tb-right">
+    <div id="upd-pill" onclick="openUpdModal()">↑ Обновление</div>
+    <span class="ver-tag">v{{ version }} · {{ date }}</span>
+    <div class="ibt" onclick="checkUpdate()" title="Проверить обновления">⟳</div>
+    <div class="ibt" id="btn-log" onclick="openLog()" title="Открыть журнал">☰</div>
+  </div>
+</div>

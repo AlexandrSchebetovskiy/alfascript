@@ -1,0 +1,36 @@
+{# partials/_sidebar.html #}
+<div id="sidebar">
+
+  <div class="sb-sec">
+    <div class="sb-lbl">Режим</div>
+    {% for preset in presets %}
+    <button class="pset" data-preset="{{ preset }}" onclick="applyPreset(this)">{{ preset }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="sb-sec">
+    <div class="sb-lbl">Дополнительно</div>
+    {% for icon, name, bat in extras %}
+    <button class="xbtn" onclick="runExtra('{{ bat if bat else 'null' }}','{{ name }}')">
+      <span class="xi">{{ icon }}</span><span>{{ name }}</span>
+    </button>
+    {% endfor %}
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="sb-sec">
+    <div class="sb-lbl">Оформление</div>
+    <button class="xbtn" onclick="openThemeModal()">
+      <span class="xi">🎨</span><span>Тема оформления</span>
+    </button>
+  </div>
+
+  <div class="sb-foot">
+    <button class="foot-btn" onclick="openAbout()" title="О программе">i</button>
+    <button class="foot-btn" onclick="openReadme()" title="Справка">?</button>
+  </div>
+
+</div>

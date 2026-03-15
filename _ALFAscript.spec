@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('src\\templates', 'templates')]
+datas = [('src\\templates', 'templates'), ('src/static', 'static')]
 binaries = []
 hiddenimports = ['webview', 'webview.platforms.winforms', 'flask', 'flask.templating', 'jinja2', 'jinja2.ext', 'werkzeug', 'werkzeug.serving', 'werkzeug.debug', 'clr', 'pythonnet', 'routes', 'routes.main', 'routes.tasks', 'routes.extras', 'routes.updates', 'routes.hardware', 'routes.system', 'services', 'services.system', 'services.bat_runner', 'services.aida', 'services.hardware', 'services.programs', 'services.updater']
 tmp_ret = collect_all('webview')

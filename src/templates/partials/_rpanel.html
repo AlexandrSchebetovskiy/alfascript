@@ -1,0 +1,45 @@
+{# partials/_rpanel.html — right panel: system info, HW tooltip, AIDA results #}
+<div id="rpanel">
+
+  <div class="rp-sec">
+    <div class="rp-ttl">Система</div>
+    <div class="si-row"><span class="si-k">ОС</span>       <span class="si-v" id="si-os">—</span></div>
+    <div class="si-row"><span class="si-k">SDI</span>      <span class="si-v" id="si-sdi">—</span></div>
+    <div class="si-row"><span class="si-k">UAC</span>      <span class="si-v" id="si-uac">—</span></div>
+    <div class="si-row"><span class="si-k">Defender</span> <span class="si-v" id="si-def">—</span></div>
+    <div class="si-row"><span class="si-k">Сеть</span>     <span class="si-v" id="si-net">—</span></div>
+
+    <div class="hw-hover-wrap" id="hw-hover-wrap">
+      <span class="si-more" id="hw-detail-lbl">Подробнее...</span>
+      <div class="hw-tip" id="hw-tip">
+        <div class="hw-tip-inner" id="hw-tip-inner">
+          <div class="hw-tip-row"><span class="hw-k">ЦП</span>     <span class="hw-v" id="ht-cpu">загрузка...</span></div>
+          <div class="hw-tip-row"><span class="hw-k">Мат.п.</span> <span class="hw-v" id="ht-mb">—</span></div>
+          <div class="hw-tip-row"><span class="hw-k">ОЗУ</span>    <span class="hw-v" id="ht-ram">—</span></div>
+          <div class="hw-tip-row"><span class="hw-k">GPU</span>    <span class="hw-v" id="ht-gpu">—</span></div>
+          <div class="hw-tip-row"><span class="hw-k">BIOS</span>   <span class="hw-v" id="ht-bios">—</span></div>
+          <div class="hw-sep"></div>
+          <div id="ht-disks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rp-sec" style="flex:1">
+    <div class="rp-ttl">Итоги теста</div>
+    <div id="aida-ph" class="aida-ph">
+      <div class="aida-ico">📊</div>Ожидание...
+    </div>
+    <div id="aida-data" style="display:none">
+      <div class="ar"><span class="ak">ЦП макс.</span>  <span class="av" id="a-cpu">—</span></div>
+      <div class="ar"><span class="ak">ГП макс.</span>  <span class="av" id="a-gpu">—</span></div>
+      <div class="ar"><span class="ak">Hotspot</span>   <span class="av" id="a-hot">—</span></div>
+      <div class="ar"><span class="ak">VRM</span>       <span class="av" id="a-vrm">—</span></div>
+      <div class="ar"><span class="ak">ЦП мощн.</span> <span class="av" id="a-pwr">—</span></div>
+      <div class="ar"><span class="ak">Троттл.</span>   <span class="av" id="a-thr">—</span></div>
+      <div class="ar"><span class="ak">Время</span>     <span class="av" id="a-dur">—</span></div>
+      <div class="a-verd" id="a-verd">—</div>
+    </div>
+  </div>
+
+</div>

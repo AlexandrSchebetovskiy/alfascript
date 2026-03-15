@@ -1,0 +1,641 @@
+/* themes_vstyle.css — all vstyle background layers and data-attribute overrides */
+
+/* ══ LATTE — warm coffee/parchment ═══════════════════════ */
+.vbg-latte { position:absolute; inset:0; background:linear-gradient(150deg,#fdf8f0 0%,#fef3e2 50%,#fdfaf5 100%) }
+.vbg-latte .lspot { position:absolute; border-radius:50%; filter:blur(100px); animation:vdrift linear infinite }
+.vbg-latte .ls1 { width:600px; height:400px; background:radial-gradient(circle,rgba(217,119,6,.14),transparent 70%); top:-80px; right:-60px; animation-duration:24s }
+.vbg-latte .ls2 { width:500px; height:350px; background:radial-gradient(circle,rgba(180,83,9,.09),transparent 70%); bottom:-60px; left:-40px; animation-duration:30s; animation-delay:-13s }
+
+#app[data-vstyle="latte"][data-vmode="light"] {
+  --bg:#fdf8f0; --glass:rgba(255,251,243,.88); --glass2:rgba(253,248,240,.92);
+  --border:rgba(180,83,9,.15); --accent:#b45309; --accent-g:rgba(180,83,9,.25);
+  --accent2:#d97706; --text:#1c0f00; --dim:#78350f; --muted:rgba(120,53,15,.38);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#a16207; --ydim:rgba(161,98,7,.12);
+  --red:#b91c1c; --rdim:rgba(185,28,28,.12); --log:#fdf8f0;
+}
+#app[data-vstyle="latte"] #topbar,
+#app[data-vstyle="latte"] #sidebar,
+#app[data-vstyle="latte"] #runbar,
+#app[data-vstyle="latte"] #rpanel { background:rgba(253,248,236,.85); backdrop-filter:blur(18px) saturate(1.5); border-color:rgba(146,64,14,.15); box-shadow:0 2px 12px rgba(146,64,14,.06) }
+#app[data-vstyle="latte"] .trow                 { background:rgba(255,251,240,.7); border-color:transparent }
+#app[data-vstyle="latte"] .trow:hover           { background:rgba(255,251,240,.9) }
+#app[data-vstyle="latte"] .trow.on              { background:rgba(146,64,14,.1); border-color:rgba(146,64,14,.3); box-shadow:0 2px 12px rgba(146,64,14,.08) }
+#app[data-vstyle="latte"] .chip                 { background:rgba(255,251,240,.7); border-color:rgba(146,64,14,.2) }
+#app[data-vstyle="latte"] .ibt                  { background:rgba(255,251,240,.7); border-color:rgba(146,64,14,.18) }
+#app[data-vstyle="latte"] .mbox                 { background:rgba(253,246,236,.9); backdrop-filter:blur(22px); border-color:rgba(146,64,14,.2) }
+#app[data-vstyle="latte"][data-vmode="light"] #topbar::after { background:linear-gradient(90deg,transparent,#b45309,transparent); opacity:.4 }
+#app[data-vstyle="latte"][data-vmode="light"] .xi             { background:rgba(180,83,9,.07); border-color:rgba(180,83,9,.2) }
+#app[data-vstyle="latte"][data-vmode="light"] .trow           { background:rgba(255,255,255,.65) }
+#app[data-vstyle="latte"][data-vmode="light"] .trow.on        { background:rgba(255,255,255,.96); border-color:rgba(180,83,9,.32); box-shadow:0 2px 12px rgba(180,83,9,.1) }
+#app[data-vstyle="latte"][data-vmode="light"] .tbat           { background:rgba(180,83,9,.07); color:#78350f }
+#app[data-vstyle="latte"][data-vmode="light"] .trow.on .tbat  { background:rgba(180,83,9,.13); color:#b45309 }
+#app[data-vstyle="latte"][data-vmode="light"] .rbtn            { background:linear-gradient(135deg,#92400e,#b45309); box-shadow:0 4px 18px rgba(180,83,9,.3) }
+#app[data-vstyle="latte"][data-vmode="light"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(180,83,9,.45) }
+#app[data-vstyle="latte"][data-vmode="light"] .chip            { background:rgba(255,255,255,.8); border-color:rgba(180,83,9,.18) }
+#app[data-vstyle="latte"][data-vmode="light"] .mbox            { background:rgba(253,248,240,.92); border-color:rgba(180,83,9,.16) }
+
+/* ══ OCEAN ════════════════════════════════════════════════ */
+.vbg-ocean { position:absolute; inset:0; background:#e0f2fe }
+.vbg-ocean .wave { position:absolute; left:-50%; width:200%; border-radius:40%; opacity:.18; animation:vspin linear infinite }
+.vbg-ocean .w1 { height:320px; bottom:-140px; background:#0284c7; animation-duration:18s }
+.vbg-ocean .w2 { height:280px; bottom:-120px; background:#0369a1; animation-duration:25s; animation-delay:-8s; opacity:.12 }
+.vbg-ocean .w3 { height:240px; bottom:-100px; background:#38bdf8; animation-duration:14s; animation-delay:-4s; opacity:.1 }
+
+#app[data-vstyle="ocean"][data-vmode="light"] {
+  --bg:#e0f2fe; --glass:rgba(255,255,255,.85); --glass2:rgba(240,249,255,.85);
+  --border:rgba(3,105,161,.18); --accent:#0369a1; --accent-g:rgba(3,105,161,.2);
+  --accent2:#0369a1; --text:#0c1a2e; --dim:#075985; --muted:rgba(7,89,133,.45);
+  --green:#0d6e3a; --gdim:rgba(13,110,58,.12);
+  --yellow:#a16207; --ydim:rgba(161,98,7,.12);
+  --red:#b91c1c; --rdim:rgba(185,28,28,.12); --log:#e0f2fe;
+}
+#app[data-vstyle="ocean"] #topbar,
+#app[data-vstyle="ocean"] #sidebar,
+#app[data-vstyle="ocean"] #runbar,
+#app[data-vstyle="ocean"] #rpanel { background:rgba(255,255,255,.82); backdrop-filter:blur(20px) saturate(1.6); border-color:rgba(3,105,161,.15); box-shadow:0 2px 14px rgba(3,105,161,.07) }
+#app[data-vstyle="ocean"] .trow     { background:rgba(255,255,255,.6); border-color:transparent }
+#app[data-vstyle="ocean"] .trow:hover { background:rgba(255,255,255,.85) }
+#app[data-vstyle="ocean"] .trow.on  { background:rgba(3,105,161,.1); border-color:rgba(3,105,161,.3); box-shadow:0 2px 12px rgba(3,105,161,.08) }
+#app[data-vstyle="ocean"] .chip     { background:rgba(255,255,255,.7); border-color:rgba(3,105,161,.2) }
+#app[data-vstyle="ocean"] .ibt      { background:rgba(255,255,255,.65); border-color:rgba(3,105,161,.18) }
+#app[data-vstyle="ocean"] .mbox     { background:rgba(224,242,254,.9); backdrop-filter:blur(22px); border-color:rgba(3,105,161,.2) }
+#app[data-vstyle="ocean"][data-vmode="light"] #topbar::after { background:linear-gradient(90deg,transparent,#0369a1,transparent); opacity:.35 }
+#app[data-vstyle="ocean"][data-vmode="light"] .trow.on       { background:rgba(3,105,161,.09); border-color:rgba(3,105,161,.3) }
+#app[data-vstyle="ocean"][data-vmode="light"] .rbtn           { background:linear-gradient(135deg,#0369a1,#0284c7); box-shadow:0 4px 18px rgba(3,105,161,.3) }
+#app[data-vstyle="ocean"][data-vmode="light"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(3,105,161,.45) }
+#app[data-vstyle="ocean"][data-vmode="light"] .mbox           { background:rgba(224,242,254,.95); border-color:rgba(3,105,161,.2) }
+#app[data-vstyle="ocean"][data-vmode="light"] .xi             { background:rgba(3,105,161,.08); border-color:rgba(3,105,161,.22) }
+
+/* ══ FROST ════════════════════════════════════════════════ */
+.vbg-frost { position:absolute; inset:0; background:linear-gradient(135deg,#dbeafe,#ede9fe,#fce7f3,#d1fae5); background-size:400% 400%; animation:vbgshift 14s ease-in-out infinite }
+.vbg-frost .blob { position:absolute; border-radius:50%; filter:blur(60px); opacity:.4; animation:vblobdrift ease-in-out infinite }
+.vbg-frost .bl1 { width:480px; height:480px; background:#a78bfa; top:-100px; right:-80px; animation-duration:20s }
+.vbg-frost .bl2 { width:380px; height:380px; background:#67e8f9; bottom:-70px; left:-60px; animation-duration:25s; animation-delay:-9s }
+.vbg-frost .bl3 { width:280px; height:280px; background:#86efac; top:30%; left:22%; animation-duration:17s; animation-delay:-5s }
+
+#app[data-vstyle="frost"] {
+  --bg:#0d1520; --glass:rgba(30,41,59,.72); --glass2:rgba(20,30,48,.72);
+  --border:rgba(148,163,184,.2); --accent:#818cf8; --accent-g:rgba(129,140,248,.3);
+  --accent2:#a5b4fc; --text:#f1f5f9; --dim:#94a3b8; --muted:rgba(148,163,184,.45);
+  --green:#10b981; --gdim:rgba(16,185,129,.15);
+  --yellow:#f59e0b; --ydim:rgba(245,158,11,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15); --log:rgba(13,21,32,.95);
+}
+#app[data-vstyle="frost"] #topbar,
+#app[data-vstyle="frost"] #sidebar,
+#app[data-vstyle="frost"] #runbar,
+#app[data-vstyle="frost"] #rpanel { background:rgba(255,255,255,.52); backdrop-filter:blur(24px) saturate(1.8); border-color:rgba(255,255,255,.75); box-shadow:0 2px 16px rgba(0,0,0,.07) }
+#app[data-vstyle="frost"] .trow     { background:rgba(255,255,255,.45); border-color:transparent }
+#app[data-vstyle="frost"] .trow:hover { background:rgba(255,255,255,.65) }
+#app[data-vstyle="frost"] .trow.on  { background:rgba(255,255,255,.75); border-color:rgba(255,255,255,.9); box-shadow:0 2px 14px rgba(0,0,0,.08) }
+#app[data-vstyle="frost"] .chip     { background:rgba(255,255,255,.65); border-color:rgba(255,255,255,.9); box-shadow:0 2px 8px rgba(0,0,0,.07) }
+#app[data-vstyle="frost"] .rbtn     { box-shadow:0 4px 24px rgba(124,58,237,.25),0 0 0 1px rgba(255,255,255,.3) inset }
+#app[data-vstyle="frost"] .rbtn:hover:not(:disabled) { box-shadow:0 8px 36px rgba(124,58,237,.35),0 0 0 1px rgba(255,255,255,.4) inset; transform:translateY(-2px) }
+#app[data-vstyle="frost"] .ibt      { background:rgba(255,255,255,.55); border-color:rgba(255,255,255,.8) }
+#app[data-vstyle="frost"] .mbox     { background:rgba(255,255,255,.65); backdrop-filter:blur(28px) saturate(1.8); border-color:rgba(255,255,255,.85) }
+#app[data-vstyle="frost"] .mbtn-s   { background:rgba(255,255,255,.55) }
+#app[data-vstyle="frost"][data-vmode="light"] {
+  --bg:#e8eeff; --glass:rgba(255,255,255,.7); --glass2:rgba(248,246,255,.7);
+  --border:rgba(199,210,254,.8); --accent:#7c3aed; --accent-g:rgba(124,58,237,.2);
+  --accent2:#7c3aed; --text:#1e293b; --dim:#475569; --muted:rgba(71,85,105,.5);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f1f5f9;
+}
+#app[data-vstyle="frost"][data-vmode="light"] #topbar,
+#app[data-vstyle="frost"][data-vmode="light"] #sidebar,
+#app[data-vstyle="frost"][data-vmode="light"] #runbar,
+#app[data-vstyle="frost"][data-vmode="light"] #rpanel { backdrop-filter:blur(24px) saturate(1.8); border-color:rgba(255,255,255,.85); box-shadow:0 2px 16px rgba(0,0,0,.06) }
+#app[data-vstyle="frost"][data-vmode="light"] .xi  { background:rgba(124,58,237,.08); border-color:rgba(124,58,237,.2) }
+#app[data-vstyle="frost"][data-vmode="light"] .rbtn { box-shadow:0 4px 24px rgba(124,58,237,.25),0 0 0 1px rgba(255,255,255,.3) inset }
+
+/* ══ MEADOW ═══════════════════════════════════════════════ */
+.vbg-meadow { position:absolute; inset:0; background:#f0fdf4 }
+.vbg-meadow::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle,rgba(22,163,74,.1) 1px,transparent 1px); background-size:28px 28px; opacity:.7 }
+.vbg-meadow .mg  { position:absolute; border-radius:50%; filter:blur(80px); animation:vblobdrift ease-in-out infinite }
+.vbg-meadow .mg1 { width:450px; height:350px; background:#bbf7d0; top:-60px; right:-60px; animation-duration:20s; opacity:.6 }
+.vbg-meadow .mg2 { width:350px; height:350px; background:#d9f99d; bottom:-60px; left:-40px; animation-duration:26s; animation-delay:-10s; opacity:.5 }
+
+#app[data-vstyle="meadow"][data-vmode="light"] {
+  --bg:#f0fdf4; --glass:rgba(255,255,255,.85); --glass2:rgba(240,253,244,.85);
+  --border:rgba(22,163,74,.18); --accent:#16a34a; --accent-g:rgba(22,163,74,.2);
+  --accent2:#16a34a; --text:#052e16; --dim:#166534; --muted:rgba(22,101,52,.45);
+  --green:#16a34a; --gdim:rgba(22,163,74,.12);
+  --yellow:#a16207; --ydim:rgba(161,98,7,.12);
+  --red:#b91c1c; --rdim:rgba(185,28,28,.12); --log:#f0fdf4;
+}
+#app[data-vstyle="meadow"] #topbar,
+#app[data-vstyle="meadow"] #sidebar,
+#app[data-vstyle="meadow"] #runbar,
+#app[data-vstyle="meadow"] #rpanel { background:rgba(255,255,255,.82); backdrop-filter:blur(20px) saturate(1.5); border-color:rgba(22,163,74,.15); box-shadow:0 2px 14px rgba(22,163,74,.07) }
+#app[data-vstyle="meadow"] .trow     { background:rgba(255,255,255,.6); border-color:transparent }
+#app[data-vstyle="meadow"] .trow:hover { background:rgba(255,255,255,.85) }
+#app[data-vstyle="meadow"] .trow.on  { background:rgba(22,163,74,.1); border-color:rgba(22,163,74,.3); box-shadow:0 2px 12px rgba(22,163,74,.08) }
+#app[data-vstyle="meadow"] .chip     { background:rgba(255,255,255,.7); border-color:rgba(22,163,74,.2) }
+#app[data-vstyle="meadow"] .ibt      { background:rgba(255,255,255,.65); border-color:rgba(22,163,74,.18) }
+#app[data-vstyle="meadow"] .mbox     { background:rgba(240,253,244,.9); backdrop-filter:blur(22px); border-color:rgba(22,163,74,.2) }
+#app[data-vstyle="meadow"][data-vmode="light"] #topbar::after { background:linear-gradient(90deg,transparent,#16a34a,transparent); opacity:.35 }
+#app[data-vstyle="meadow"][data-vmode="light"] .xi  { background:rgba(22,163,74,.08); border-color:rgba(22,163,74,.22) }
+#app[data-vstyle="meadow"][data-vmode="light"] .trow.on { background:rgba(22,163,74,.09); border-color:rgba(22,163,74,.3) }
+#app[data-vstyle="meadow"][data-vmode="light"] .rbtn { background:linear-gradient(135deg,#15803d,#16a34a); box-shadow:0 4px 18px rgba(22,163,74,.3) }
+#app[data-vstyle="meadow"][data-vmode="light"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(22,163,74,.45) }
+#app[data-vstyle="meadow"][data-vmode="light"] .mbox { background:rgba(240,253,244,.95); border-color:rgba(22,163,74,.2) }
+
+/* ══ EMBER ════════════════════════════════════════════════ */
+.vbg-ember { position:absolute; inset:0; background:radial-gradient(ellipse at 60% 80%,#2a0e00 0%,#0d0200 60%,#000 100%) }
+.vbg-ember .eglow { position:absolute; border-radius:50%; filter:blur(100px); animation:vdrift linear infinite }
+.vbg-ember .eg1 { width:600px; height:300px; background:radial-gradient(circle,rgba(251,146,60,.18),transparent 70%); bottom:-50px; left:10%; animation-duration:20s }
+.vbg-ember .eg2 { width:400px; height:200px; background:radial-gradient(circle,rgba(239,68,68,.12),transparent 70%); bottom:-30px; right:15%; animation-duration:15s; animation-delay:-7s }
+
+#app[data-vstyle="ember"] {
+  --bg:#0d0200; --glass:rgba(20,8,0,.82); --glass2:rgba(13,5,0,.82);
+  --border:rgba(251,146,60,.18); --accent:#fb923c; --accent-g:rgba(251,146,60,.3);
+  --accent2:#fed7aa; --text:#fef3c7; --dim:#d4a574; --muted:rgba(212,165,116,.4);
+  --green:#65a30d; --gdim:rgba(101,163,13,.15);
+  --yellow:#eab308; --ydim:rgba(234,179,8,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15); --log:#0d0200;
+}
+#app[data-vstyle="ember"] #topbar,
+#app[data-vstyle="ember"] #sidebar,
+#app[data-vstyle="ember"] #runbar,
+#app[data-vstyle="ember"] #rpanel { background:rgba(20,8,0,.72); backdrop-filter:blur(18px); border-color:rgba(251,146,60,.15) }
+#app[data-vstyle="ember"] #topbar::after { background:linear-gradient(90deg,transparent,#fb923c,transparent) }
+#app[data-vstyle="ember"] .logo-alfa  { text-shadow:0 0 16px rgba(251,146,60,.6) }
+#app[data-vstyle="ember"] .trow       { background:rgba(251,146,60,.03) }
+#app[data-vstyle="ember"] .trow:hover { background:rgba(251,146,60,.07); border-color:rgba(251,146,60,.25) }
+#app[data-vstyle="ember"] .trow.on    { background:rgba(251,146,60,.12); border-color:rgba(251,146,60,.4); box-shadow:0 0 14px rgba(251,146,60,.12) }
+#app[data-vstyle="ember"] .rbtn       { background:linear-gradient(135deg,#dc2626,#fb923c); box-shadow:0 0 24px rgba(251,146,60,.3) }
+#app[data-vstyle="ember"] .rbtn:hover:not(:disabled) { box-shadow:0 0 40px rgba(251,146,60,.5) }
+#app[data-vstyle="ember"] .xi         { background:rgba(251,146,60,.1); border-color:rgba(251,146,60,.25) }
+#app[data-vstyle="ember"] .mbox       { background:rgba(20,8,0,.82); backdrop-filter:blur(20px); border-color:rgba(251,146,60,.2) }
+#app[data-vstyle="ember"][data-vmode="light"] {
+  --bg:#fff7ed; --glass:#ffffff; --glass2:#fff3e0;
+  --border:#fed7aa; --accent:#ea580c; --accent-g:rgba(234,88,12,.2);
+  --accent2:#c2410c; --text:#431407; --dim:#9a3412; --muted:rgba(154,52,18,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff7ed;
+}
+#app[data-vstyle="ember"][data-vmode="light"] .vbg-ember         { background:linear-gradient(180deg,#fff7ed,#ffedd5) }
+#app[data-vstyle="ember"][data-vmode="light"] .vbg-ember .eglow  { opacity:.12 }
+#app[data-vstyle="ember"][data-vmode="light"] .xi                { background:rgba(234,88,12,.08); border-color:rgba(234,88,12,.2) }
+#app[data-vstyle="ember"][data-vmode="light"] .logo-alfa         { text-shadow:none }
+#app[data-vstyle="ember"][data-vmode="light"] .rbtn              { background:var(--accent); box-shadow:0 4px 14px rgba(234,88,12,.3) }
+
+/* ══ SAKURA ═══════════════════════════════════════════════ */
+.vbg-sakura { position:absolute; inset:0; background:linear-gradient(160deg,#fff5f7 0%,#fce7f3 40%,#ede9fe 80%,#fdf2f8 100%) }
+.vbg-sakura .petal { position:absolute; border-radius:50% 0 50% 0; opacity:.25; animation:vpetal linear infinite }
+.vbg-sakura .p1 { width:18px; height:18px; background:#f9a8d4; top:10%; left:15%; animation-duration:12s }
+.vbg-sakura .p2 { width:12px; height:12px; background:#c084fc; top:25%; left:65%; animation-duration:18s; animation-delay:-5s }
+.vbg-sakura .p3 { width:20px; height:20px; background:#f9a8d4; top:50%; left:30%; animation-duration:15s; animation-delay:-8s }
+.vbg-sakura .p4 { width:10px; height:10px; background:#d8b4fe; top:70%; left:75%; animation-duration:20s; animation-delay:-3s }
+.vbg-sakura .p5 { width:16px; height:16px; background:#fbcfe8; top:80%; left:45%; animation-duration:14s; animation-delay:-11s }
+.vbg-sakura .p6 { width:14px; height:14px; background:#c084fc; top:5%;  left:80%; animation-duration:22s; animation-delay:-6s }
+
+#app[data-vstyle="sakura"] {
+  --accent:#db2777; --accent2:#f472b6; --accent-g:rgba(219,39,119,.25);
+}
+#app[data-vstyle="sakura"] #topbar,
+#app[data-vstyle="sakura"] #sidebar,
+#app[data-vstyle="sakura"] #runbar,
+#app[data-vstyle="sakura"] #rpanel { background:rgba(255,255,255,.58); backdrop-filter:blur(22px) saturate(1.6); border-color:rgba(249,168,212,.5); box-shadow:0 2px 16px rgba(219,39,119,.07) }
+#app[data-vstyle="sakura"] .trow     { background:rgba(255,255,255,.4); border-color:transparent }
+#app[data-vstyle="sakura"] .trow:hover { background:rgba(255,255,255,.65) }
+#app[data-vstyle="sakura"] .trow.on  { background:rgba(255,255,255,.78); border-color:rgba(249,168,212,.7); box-shadow:0 2px 12px rgba(219,39,119,.1) }
+#app[data-vstyle="sakura"] .rbtn     { background:linear-gradient(135deg,#db2777,#f472b6); box-shadow:0 4px 24px rgba(219,39,119,.3) }
+#app[data-vstyle="sakura"] .rbtn:hover:not(:disabled) { box-shadow:0 8px 36px rgba(219,39,119,.4); transform:translateY(-2px) }
+#app[data-vstyle="sakura"] .chip     { background:rgba(255,255,255,.65); border-color:rgba(249,168,212,.6) }
+#app[data-vstyle="sakura"] .ibt      { background:rgba(255,255,255,.55); border-color:rgba(249,168,212,.5) }
+#app[data-vstyle="sakura"] .mbox     { background:rgba(255,255,255,.72); backdrop-filter:blur(28px) saturate(1.8); border-color:rgba(249,168,212,.5) }
+#app[data-vstyle="sakura"][data-vmode="light"] {
+  --bg:#fff5f9; --glass:rgba(255,255,255,.72); --glass2:rgba(255,248,252,.72);
+  --border:rgba(249,168,212,.65); --accent:#db2777; --accent-g:rgba(219,39,119,.2);
+  --accent2:#be185d; --text:#500724; --dim:#9d174d; --muted:rgba(157,23,77,.45);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff5f9;
+}
+#app[data-vstyle="sakura"][data-vmode="light"] #topbar,
+#app[data-vstyle="sakura"][data-vmode="light"] #sidebar,
+#app[data-vstyle="sakura"][data-vmode="light"] #runbar,
+#app[data-vstyle="sakura"][data-vmode="light"] #rpanel { backdrop-filter:blur(22px) saturate(1.6); border-color:rgba(249,168,212,.5); box-shadow:0 2px 16px rgba(219,39,119,.06) }
+#app[data-vstyle="sakura"][data-vmode="light"] .xi     { background:rgba(219,39,119,.08); border-color:rgba(219,39,119,.2) }
+#app[data-vstyle="sakura"][data-vmode="light"] .logo-alfa { text-shadow:none }
+#app[data-vstyle="sakura"][data-vmode="light"] .rbtn   { background:var(--accent); box-shadow:0 4px 14px rgba(219,39,119,.3) }
+
+/* ══ VOID ═════════════════════════════════════════════════ */
+.vbg-void { position:absolute; inset:0; background:#08090a }
+.vbg-void .void-line { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent); top:48px }
+
+#app[data-vstyle="void"] {
+  --bg:#08090a; --glass:#0d0e0f; --glass2:#080909;
+  --border:rgba(255,255,255,.07); --accent:#94a3b8; --accent-g:rgba(148,163,184,.2);
+  --accent2:#cbd5e1; --text:#e2e8f0; --dim:#475569; --muted:rgba(71,85,105,.5);
+  --green:#22c55e; --gdim:rgba(34,197,94,.12);
+  --yellow:#eab308; --ydim:rgba(234,179,8,.12);
+  --red:#ef4444; --rdim:rgba(239,68,68,.12); --log:#08090a;
+}
+#app[data-vstyle="void"] #topbar,
+#app[data-vstyle="void"] #sidebar,
+#app[data-vstyle="void"] #runbar,
+#app[data-vstyle="void"] #rpanel { background:rgba(8,9,10,.95); backdrop-filter:none; border-color:rgba(255,255,255,.06) }
+#app[data-vstyle="void"] #topbar::after { display:none }
+#app[data-vstyle="void"] .logo-alfa   { text-shadow:none }
+#app[data-vstyle="void"] .trow        { background:transparent; border-color:transparent }
+#app[data-vstyle="void"] .trow:hover  { background:rgba(255,255,255,.03); border-color:rgba(255,255,255,.06) }
+#app[data-vstyle="void"] .trow.on     { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.1); box-shadow:none }
+#app[data-vstyle="void"] .chk         { border-radius:50% }
+#app[data-vstyle="void"] .trow.on .chk { box-shadow:none }
+#app[data-vstyle="void"] .rbtn        { background:transparent; border:1px solid rgba(255,255,255,.2); color:var(--text); box-shadow:none; font-weight:600; letter-spacing:1px }
+#app[data-vstyle="void"] .rbtn:hover:not(:disabled) { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.4); box-shadow:none; transform:none }
+#app[data-vstyle="void"] .chip        { background:transparent; border-color:rgba(255,255,255,.08); box-shadow:none }
+#app[data-vstyle="void"] .ibt         { background:transparent; border-color:rgba(255,255,255,.07) }
+#app[data-vstyle="void"] ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.08) }
+#app[data-vstyle="void"] .mbox        { background:#0d0e0f; border-color:rgba(255,255,255,.08); border-radius:8px; box-shadow:none }
+#app[data-vstyle="void"][data-vmode="light"] {
+  --bg:#fafafa; --glass:#ffffff; --glass2:#f5f5f5;
+  --border:#e5e7eb; --accent:#6b7280; --accent-g:rgba(107,114,128,.15);
+  --accent2:#4b5563; --text:#111827; --dim:#6b7280; --muted:rgba(107,114,128,.5);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fafafa;
+}
+#app[data-vstyle="void"][data-vmode="light"] .vbg-void .void-line { background:linear-gradient(90deg,transparent,rgba(0,0,0,.06),transparent) }
+#app[data-vstyle="void"][data-vmode="light"] .xi      { background:transparent; border-color:#e5e7eb }
+#app[data-vstyle="void"][data-vmode="light"] .trow:hover { background:rgba(0,0,0,.03); border-color:#e5e7eb }
+#app[data-vstyle="void"][data-vmode="light"] .trow.on    { background:rgba(0,0,0,.04); border-color:#d1d5db }
+#app[data-vstyle="void"][data-vmode="light"] .rbtn    { background:transparent; border:1px solid rgba(0,0,0,.2); color:#111827 }
+#app[data-vstyle="void"][data-vmode="light"] .rbtn:hover:not(:disabled) { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.4) }
+#app[data-vstyle="void"][data-vmode="light"] .chip    { border-color:#e5e7eb }
+#app[data-vstyle="void"][data-vmode="light"] .ibt     { border-color:#e5e7eb }
+#app[data-vstyle="void"][data-vmode="light"] .foot-btn { border-color:#e5e7eb }
+
+/* ══ MATRIX ═══════════════════════════════════════════════ */
+#vstyle-matrix-canvas { position:fixed; inset:0; z-index:0; display:none; pointer-events:none; opacity:.18 }
+#vstyle-matrix-canvas.vactive { display:block }
+
+#app[data-vstyle="matrix"] {
+  --accent:#00ff41; --accent2:#00ff41; --accent-g:rgba(0,255,65,.2); --green:#00ff41;
+}
+#app[data-vstyle="matrix"] #topbar,
+#app[data-vstyle="matrix"] #sidebar,
+#app[data-vstyle="matrix"] #runbar,
+#app[data-vstyle="matrix"] #rpanel { background:rgba(0,5,0,.88); backdrop-filter:blur(2px); border-color:rgba(0,255,65,.15) }
+#app[data-vstyle="matrix"] #topbar::after { background:linear-gradient(90deg,transparent,#00ff41,transparent) }
+#app[data-vstyle="matrix"] .logo-alfa { text-shadow:0 0 12px #00ff41; -webkit-text-fill-color:#00ff41 }
+#app[data-vstyle="matrix"] .trow      { background:rgba(0,255,65,.03); border-color:rgba(0,255,65,.07); font-family:var(--mono) }
+#app[data-vstyle="matrix"] .trow:hover { border-color:rgba(0,255,65,.3); background:rgba(0,255,65,.07) }
+#app[data-vstyle="matrix"] .trow.on   { background:rgba(0,255,65,.1); border-color:rgba(0,255,65,.4); box-shadow:0 0 10px rgba(0,255,65,.1) }
+#app[data-vstyle="matrix"] .chk       { border-radius:0; border-color:rgba(0,255,65,.35) }
+#app[data-vstyle="matrix"] .rbtn      { background:transparent; border:1px solid #00ff41; color:#00ff41; font-family:var(--mono); letter-spacing:2px; text-transform:uppercase; box-shadow:0 0 16px rgba(0,255,65,.2),inset 0 0 20px rgba(0,255,65,.05) }
+#app[data-vstyle="matrix"] .rbtn:hover:not(:disabled) { box-shadow:0 0 28px rgba(0,255,65,.4),inset 0 0 30px rgba(0,255,65,.1) }
+#app[data-vstyle="matrix"] .xi        { background:rgba(0,255,65,.08); border-color:rgba(0,255,65,.22); color:#00ff41 }
+#app[data-vstyle="matrix"] .chip.ok   { box-shadow:0 0 8px rgba(0,255,65,.3) }
+#app[data-vstyle="matrix"] .mbox      { background:rgba(0,5,0,.93); border-color:rgba(0,255,65,.3); border-radius:2px }
+#app[data-vstyle="matrix"][data-vmode="light"] {
+  --bg:#f0fdf4; --glass:#ffffff; --glass2:#ecfdf5;
+  --border:#a7f3d0; --accent:#16a34a; --accent-g:rgba(22,163,74,.2);
+  --accent2:#15803d; --text:#052e16; --dim:#166534; --muted:rgba(22,101,52,.45);
+  --green:#059669; --gdim:rgba(5,150,105,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f0fdf4;
+}
+#app[data-vstyle="matrix"][data-vmode="light"] .xi         { background:rgba(22,163,74,.08); border-color:rgba(22,163,74,.25); color:#15803d }
+#app[data-vstyle="matrix"][data-vmode="light"] .tname      { color:#166534; font-family:inherit }
+#app[data-vstyle="matrix"][data-vmode="light"] .trow.on .tname { color:#052e16 }
+#app[data-vstyle="matrix"][data-vmode="light"] .logo-alfa  { text-shadow:none }
+#app[data-vstyle="matrix"][data-vmode="light"] .rbtn       { background:var(--accent); border:none; color:#fff; font-family:inherit; letter-spacing:0; text-transform:none; box-shadow:0 4px 14px rgba(22,163,74,.3) }
+#app[data-vstyle="matrix"][data-vmode="light"] .chip       { border-radius:20px; font-family:inherit }
+#app[data-vstyle="matrix"][data-vmode="light"] .trow       { border-radius:var(--rsm); font-family:inherit }
+#app[data-vstyle="matrix"][data-vmode="light"] .chk        { border-radius:3px }
+#app[data-vstyle="matrix"][data-vmode="light"] .mbox       { border-radius:14px }
+
+/* ══ SUNSET ═══════════════════════════════════════════════ */
+.vbg-sunset { position:absolute; inset:0; background:linear-gradient(135deg,#1a0533 0%,#2d0a1e 25%,#4a1530 50%,#2d1000 75%,#0d0505 100%); background-size:400% 400%; animation:vbgshift 16s ease-in-out infinite }
+.vbg-sunset .sg  { position:absolute; border-radius:50%; filter:blur(90px); opacity:.3; animation:vdrift linear infinite }
+.vbg-sunset .sg1 { width:500px; height:500px; background:radial-gradient(circle,#f59e0b,transparent 70%); bottom:-100px; right:-50px; animation-duration:24s }
+.vbg-sunset .sg2 { width:400px; height:400px; background:radial-gradient(circle,#ec4899,transparent 70%); top:-80px; left:-60px; animation-duration:20s; animation-delay:-10s }
+.vbg-sunset .sg3 { width:300px; height:300px; background:radial-gradient(circle,#ef4444,transparent 70%); top:40%; left:50%; animation-duration:18s; animation-delay:-6s }
+
+#app[data-vstyle="sunset"] {
+  --accent:#f59e0b; --accent2:#fcd34d; --accent-g:rgba(245,158,11,.3);
+}
+#app[data-vstyle="sunset"] #topbar,
+#app[data-vstyle="sunset"] #sidebar,
+#app[data-vstyle="sunset"] #runbar,
+#app[data-vstyle="sunset"] #rpanel { background:rgba(15,5,0,.6); backdrop-filter:blur(20px) saturate(1.3); border-color:rgba(245,158,11,.15) }
+#app[data-vstyle="sunset"] #topbar::after { background:linear-gradient(90deg,transparent,#f59e0b,transparent) }
+#app[data-vstyle="sunset"] .logo-alfa  { text-shadow:0 0 18px rgba(245,158,11,.5) }
+#app[data-vstyle="sunset"] .trow       { background:rgba(245,158,11,.04) }
+#app[data-vstyle="sunset"] .trow:hover { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.25) }
+#app[data-vstyle="sunset"] .trow.on    { background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.45); box-shadow:0 0 14px rgba(245,158,11,.12) }
+#app[data-vstyle="sunset"] .rbtn       { background:linear-gradient(135deg,#b45309,#f59e0b); box-shadow:0 0 24px rgba(245,158,11,.3) }
+#app[data-vstyle="sunset"] .rbtn:hover:not(:disabled) { box-shadow:0 0 40px rgba(245,158,11,.5) }
+#app[data-vstyle="sunset"] .xi         { background:rgba(245,158,11,.1); border-color:rgba(245,158,11,.25) }
+#app[data-vstyle="sunset"] .mbox       { background:rgba(15,5,0,.78); backdrop-filter:blur(22px); border-color:rgba(245,158,11,.2) }
+#app[data-vstyle="sunset"][data-vmode="light"] {
+  --bg:#fff7ed; --glass:#ffffff; --glass2:#fffbf5;
+  --border:#fde68a; --accent:#d97706; --accent-g:rgba(217,119,6,.2);
+  --accent2:#b45309; --text:#451a03; --dim:#92400e; --muted:rgba(146,64,14,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff7ed;
+}
+#app[data-vstyle="sunset"][data-vmode="light"] .vbg-sunset     { background:linear-gradient(160deg,#fff7ed,#ffedd5,#fef3c7)!important }
+#app[data-vstyle="sunset"][data-vmode="light"] .vbg-sunset .sg { opacity:.18 }
+#app[data-vstyle="sunset"][data-vmode="light"] .xi             { background:rgba(217,119,6,.08); border-color:rgba(217,119,6,.2) }
+#app[data-vstyle="sunset"][data-vmode="light"] .logo-alfa      { text-shadow:none }
+#app[data-vstyle="sunset"][data-vmode="light"] .rbtn           { background:var(--accent); box-shadow:0 4px 14px rgba(217,119,6,.3) }
+
+/* ══ NEON ═════════════════════════════════════════════════ */
+.vbg-neon { position:absolute; inset:0; background:#080014 }
+.vbg-neon::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(232,121,249,.012) 3px,rgba(232,121,249,.012) 4px); pointer-events:none }
+.vbg-neon .nb  { position:absolute; border-radius:50%; filter:blur(90px); animation:vblobdrift ease-in-out infinite }
+.vbg-neon .nb1 { width:580px; height:420px; background:rgba(232,121,249,.2); top:-110px; right:-70px; animation-duration:19s }
+.vbg-neon .nb2 { width:480px; height:320px; background:rgba(167,139,250,.14); bottom:-80px; left:-60px; animation-duration:25s; animation-delay:-9s }
+.vbg-neon .nb3 { width:260px; height:260px; background:rgba(251,113,133,.12); top:38%; left:42%; animation-duration:15s; animation-delay:-5s }
+.vbg-neon .nscan { position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent 5%,rgba(232,121,249,.55) 50%,transparent 95%); animation:vneon-scan 6s linear infinite }
+
+#app[data-vstyle="neon"] {
+  --bg:#080014; --glass:rgba(18,0,34,.82); --glass2:rgba(12,0,24,.82);
+  --border:rgba(232,121,249,.2); --accent:#e879f9; --accent2:#f0abfc;
+  --accent-g:rgba(232,121,249,.3); --text:#fdf4ff; --dim:#d8b4fe; --muted:rgba(216,180,254,.4);
+  --green:#4ade80; --gdim:rgba(74,222,128,.12);
+  --yellow:#facc15; --ydim:rgba(250,204,21,.12);
+  --red:#fb7185; --rdim:rgba(251,113,133,.12); --log:#080014;
+}
+#app[data-vstyle="neon"] #topbar,
+#app[data-vstyle="neon"] #sidebar,
+#app[data-vstyle="neon"] #runbar,
+#app[data-vstyle="neon"] #rpanel { background:rgba(16,0,30,.78); backdrop-filter:blur(20px) saturate(1.4); border-color:rgba(232,121,249,.14) }
+#app[data-vstyle="neon"] #topbar::after { background:linear-gradient(90deg,transparent,#e879f9,transparent); opacity:.55 }
+#app[data-vstyle="neon"] .logo-alfa  { text-shadow:0 0 16px rgba(232,121,249,.8); -webkit-text-fill-color:#f0abfc }
+#app[data-vstyle="neon"] .trow       { background:rgba(232,121,249,.03); border-color:rgba(232,121,249,.08) }
+#app[data-vstyle="neon"] .trow:hover { background:rgba(232,121,249,.07); border-color:rgba(232,121,249,.3) }
+#app[data-vstyle="neon"] .trow.on    { background:rgba(232,121,249,.12); border-color:rgba(232,121,249,.45); box-shadow:0 0 14px rgba(232,121,249,.12) }
+#app[data-vstyle="neon"] .rbtn       { background:linear-gradient(135deg,#a21caf,#e879f9); box-shadow:0 0 24px rgba(232,121,249,.38) }
+#app[data-vstyle="neon"] .rbtn:hover:not(:disabled) { box-shadow:0 0 42px rgba(232,121,249,.6) }
+#app[data-vstyle="neon"] .xi         { background:rgba(232,121,249,.08); border-color:rgba(232,121,249,.22) }
+#app[data-vstyle="neon"] .mbox       { background:rgba(14,0,28,.9); backdrop-filter:blur(24px); border-color:rgba(232,121,249,.25) }
+
+/* ══ ABYSS ════════════════════════════════════════════════ */
+.vbg-abyss { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 110%,#011830 0%,#010810 58%,#000 100%) }
+.vbg-abyss .ay  { position:absolute; border-radius:50%; filter:blur(80px); animation:vblobdrift ease-in-out infinite }
+.vbg-abyss .ay1 { width:460px; height:320px; background:rgba(34,211,238,.2); top:8%; left:4%; animation-duration:21s }
+.vbg-abyss .ay2 { width:340px; height:270px; background:rgba(6,182,212,.13); bottom:14%; right:8%; animation-duration:27s; animation-delay:-11s }
+.vbg-abyss .ay3 { width:200px; height:200px; background:rgba(103,232,249,.1); top:50%; left:50%; animation-duration:16s; animation-delay:-6s }
+.vbg-abyss .ay4 { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(34,211,238,.18),transparent); animation:vray-drift 10s ease-in-out infinite }
+.vbg-abyss .ay4b { animation-delay:-5s; animation-duration:14s }
+
+#app[data-vstyle="abyss"] {
+  --bg:#010810; --glass:rgba(1,14,32,.84); --glass2:rgba(1,8,22,.84);
+  --border:rgba(34,211,238,.16); --accent:#22d3ee; --accent2:#67e8f9;
+  --accent-g:rgba(34,211,238,.28); --text:#e0f2fe; --dim:#7dd3fc; --muted:rgba(125,211,252,.4);
+  --green:#22c55e; --gdim:rgba(34,197,94,.12);
+  --yellow:#fbbf24; --ydim:rgba(251,191,36,.12);
+  --red:#f87171; --rdim:rgba(248,113,113,.12); --log:#010810;
+}
+#app[data-vstyle="abyss"] #topbar,
+#app[data-vstyle="abyss"] #sidebar,
+#app[data-vstyle="abyss"] #runbar,
+#app[data-vstyle="abyss"] #rpanel { background:rgba(1,12,28,.78); backdrop-filter:blur(20px) saturate(1.4); border-color:rgba(34,211,238,.12) }
+#app[data-vstyle="abyss"] #topbar::after { background:linear-gradient(90deg,transparent,#22d3ee,transparent); opacity:.4 }
+#app[data-vstyle="abyss"] .logo-alfa  { text-shadow:0 0 18px rgba(34,211,238,.55) }
+#app[data-vstyle="abyss"] .trow       { background:rgba(34,211,238,.03); border-color:rgba(34,211,238,.08) }
+#app[data-vstyle="abyss"] .trow:hover { background:rgba(34,211,238,.07); border-color:rgba(34,211,238,.28) }
+#app[data-vstyle="abyss"] .trow.on    { background:rgba(34,211,238,.12); border-color:rgba(34,211,238,.4); box-shadow:0 0 12px rgba(34,211,238,.1) }
+#app[data-vstyle="abyss"] .rbtn       { background:linear-gradient(135deg,#0891b2,#22d3ee); box-shadow:0 0 22px rgba(34,211,238,.3) }
+#app[data-vstyle="abyss"] .rbtn:hover:not(:disabled) { box-shadow:0 0 38px rgba(34,211,238,.5) }
+#app[data-vstyle="abyss"] .xi         { background:rgba(34,211,238,.08); border-color:rgba(34,211,238,.2) }
+#app[data-vstyle="abyss"] .mbox       { background:rgba(1,10,24,.88); backdrop-filter:blur(24px); border-color:rgba(34,211,238,.18) }
+
+/* ══ BLOOD ════════════════════════════════════════════════ */
+.vbg-blood { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 115%,#28000a 0%,#0c0003 55%,#000 100%) }
+.vbg-blood .bd  { position:absolute; border-radius:50%; filter:blur(100px); animation:vblood-pulse ease-in-out infinite }
+.vbg-blood .bd1 { width:700px; height:280px; background:rgba(244,63,94,.22); bottom:-90px; left:5%; animation-duration:4.8s }
+.vbg-blood .bd2 { width:520px; height:200px; background:rgba(190,18,60,.15); bottom:-70px; right:10%; animation-duration:6.5s; animation-delay:-2.4s }
+.vbg-blood .bd3 { width:300px; height:300px; background:rgba(244,63,94,.08); top:20%; left:40%; animation-duration:9s; animation-delay:-4s; filter:blur(60px) }
+
+#app[data-vstyle="blood"] {
+  --bg:#0c0003; --glass:rgba(18,0,6,.84); --glass2:rgba(12,0,4,.84);
+  --border:rgba(244,63,94,.17); --accent:#f43f5e; --accent2:#fda4af;
+  --accent-g:rgba(244,63,94,.3); --text:#fff1f2; --dim:#fda4af; --muted:rgba(253,164,175,.4);
+  --green:#4ade80; --gdim:rgba(74,222,128,.12);
+  --yellow:#fbbf24; --ydim:rgba(251,191,36,.12);
+  --red:#f43f5e; --rdim:rgba(244,63,94,.2); --log:#0c0003;
+}
+#app[data-vstyle="blood"] #topbar,
+#app[data-vstyle="blood"] #sidebar,
+#app[data-vstyle="blood"] #runbar,
+#app[data-vstyle="blood"] #rpanel { background:rgba(16,0,5,.8); backdrop-filter:blur(18px); border-color:rgba(244,63,94,.14) }
+#app[data-vstyle="blood"] #topbar::after { background:linear-gradient(90deg,transparent,#f43f5e,transparent); opacity:.45 }
+#app[data-vstyle="blood"] .logo-alfa  { text-shadow:0 0 18px rgba(244,63,94,.65); -webkit-text-fill-color:#fda4af }
+#app[data-vstyle="blood"] .trow       { background:rgba(244,63,94,.03) }
+#app[data-vstyle="blood"] .trow:hover { background:rgba(244,63,94,.07); border-color:rgba(244,63,94,.3) }
+#app[data-vstyle="blood"] .trow.on    { background:rgba(244,63,94,.12); border-color:rgba(244,63,94,.45); box-shadow:0 0 14px rgba(244,63,94,.12) }
+#app[data-vstyle="blood"] .rbtn       { background:linear-gradient(135deg,#9f1239,#f43f5e); box-shadow:0 0 22px rgba(244,63,94,.32) }
+#app[data-vstyle="blood"] .rbtn:hover:not(:disabled) { box-shadow:0 0 40px rgba(244,63,94,.52) }
+#app[data-vstyle="blood"] .xi         { background:rgba(244,63,94,.08); border-color:rgba(244,63,94,.22) }
+#app[data-vstyle="blood"] .mbox       { background:rgba(14,0,5,.9); backdrop-filter:blur(22px); border-color:rgba(244,63,94,.2) }
+
+/* ══ AURORA ═══════════════════════════════════════════════ */
+.vbg-aurora { position:absolute; inset:0; background:#01080f }
+.vbg-aurora .ar  { position:absolute; left:-8%; width:116%; filter:blur(42px); border-radius:40%; animation:vaurora ease-in-out infinite }
+.vbg-aurora .ar1 { height:160px; top:15%; background:linear-gradient(90deg,transparent 5%,rgba(16,185,129,.38),rgba(6,182,212,.3),transparent 95%); animation-duration:11s }
+.vbg-aurora .ar2 { height:130px; top:30%; background:linear-gradient(90deg,transparent 10%,rgba(99,102,241,.28),rgba(16,185,129,.26),transparent 90%); animation-duration:16s; animation-delay:-5s }
+.vbg-aurora .ar3 { height:110px; top:6%;  background:linear-gradient(90deg,transparent 18%,rgba(52,211,153,.2),rgba(103,232,249,.18),transparent 82%); animation-duration:20s; animation-delay:-9s }
+.vbg-aurora .ar4 { height:90px;  top:44%; background:linear-gradient(90deg,transparent 15%,rgba(129,140,248,.18),transparent 85%); animation-duration:25s; animation-delay:-13s }
+
+#app[data-vstyle="aurora"] {
+  --bg:#01080f; --glass:rgba(1,12,26,.76); --glass2:rgba(1,8,18,.76);
+  --border:rgba(16,185,129,.18); --accent:#10b981; --accent2:#34d399;
+  --accent-g:rgba(16,185,129,.3); --text:#ecfdf5; --dim:#6ee7b7; --muted:rgba(110,231,183,.4);
+  --green:#10b981; --gdim:rgba(16,185,129,.15);
+  --yellow:#fbbf24; --ydim:rgba(251,191,36,.12);
+  --red:#f87171; --rdim:rgba(248,113,113,.12); --log:#01080f;
+}
+#app[data-vstyle="aurora"] #topbar,
+#app[data-vstyle="aurora"] #sidebar,
+#app[data-vstyle="aurora"] #runbar,
+#app[data-vstyle="aurora"] #rpanel { background:rgba(1,10,22,.76); backdrop-filter:blur(22px) saturate(1.5); border-color:rgba(16,185,129,.14) }
+#app[data-vstyle="aurora"] #topbar::after { background:linear-gradient(90deg,transparent,#10b981,transparent); opacity:.4 }
+#app[data-vstyle="aurora"] .logo-alfa  { text-shadow:0 0 16px rgba(16,185,129,.55) }
+#app[data-vstyle="aurora"] .trow       { background:rgba(16,185,129,.03); border-color:rgba(16,185,129,.07) }
+#app[data-vstyle="aurora"] .trow:hover { background:rgba(16,185,129,.07); border-color:rgba(16,185,129,.28) }
+#app[data-vstyle="aurora"] .trow.on    { background:rgba(16,185,129,.11); border-color:rgba(16,185,129,.4); box-shadow:0 0 12px rgba(16,185,129,.1) }
+#app[data-vstyle="aurora"] .rbtn       { background:linear-gradient(135deg,#065f46,#10b981); box-shadow:0 0 22px rgba(16,185,129,.3) }
+#app[data-vstyle="aurora"] .rbtn:hover:not(:disabled) { box-shadow:0 0 36px rgba(16,185,129,.5) }
+#app[data-vstyle="aurora"] .xi         { background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.2) }
+#app[data-vstyle="aurora"] .mbox       { background:rgba(1,8,20,.88); backdrop-filter:blur(24px); border-color:rgba(16,185,129,.2) }
+
+/* ══ COAL ═════════════════════════════════════════════════ */
+.vbg-coal { position:absolute; inset:0; background:#0b0b0b }
+.vbg-coal::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.006) 59px,rgba(255,255,255,.006) 60px),repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.006) 59px,rgba(255,255,255,.006) 60px); pointer-events:none }
+.vbg-coal::after  { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 28% 42%,rgba(161,161,170,.06) 0%,transparent 55%),radial-gradient(ellipse at 72% 58%,rgba(161,161,170,.05) 0%,transparent 55%); animation:vcoal-breathe 18s ease-in-out infinite; pointer-events:none }
+
+#app[data-vstyle="coal"] {
+  --bg:#0b0b0b; --glass:rgba(16,16,16,.92); --glass2:rgba(11,11,11,.92);
+  --border:rgba(161,161,170,.11); --accent:#a1a1aa; --accent2:#d4d4d8;
+  --accent-g:rgba(161,161,170,.2); --text:#f4f4f5; --dim:#a1a1aa; --muted:rgba(161,161,170,.45);
+  --green:#22c55e; --gdim:rgba(34,197,94,.12);
+  --yellow:#eab308; --ydim:rgba(234,179,8,.12);
+  --red:#ef4444; --rdim:rgba(239,68,68,.12); --log:#0b0b0b;
+}
+#app[data-vstyle="coal"] #topbar,
+#app[data-vstyle="coal"] #sidebar,
+#app[data-vstyle="coal"] #runbar,
+#app[data-vstyle="coal"] #rpanel { background:rgba(15,15,15,.92); border-color:rgba(161,161,170,.1) }
+#app[data-vstyle="coal"] .trow       { background:transparent; border-color:rgba(161,161,170,.08) }
+#app[data-vstyle="coal"] .trow:hover { background:rgba(255,255,255,.04); border-color:rgba(161,161,170,.22) }
+#app[data-vstyle="coal"] .trow.on    { background:rgba(255,255,255,.07); border-color:rgba(161,161,170,.3); box-shadow:none }
+#app[data-vstyle="coal"] .rbtn       { background:rgba(38,38,38,.95); border:1px solid rgba(161,161,170,.35); color:var(--text); box-shadow:none; letter-spacing:1px }
+#app[data-vstyle="coal"] .rbtn:hover:not(:disabled) { background:rgba(50,50,50,.95); border-color:rgba(161,161,170,.55); box-shadow:none }
+#app[data-vstyle="coal"] .xi         { background:transparent; border-color:rgba(161,161,170,.15) }
+#app[data-vstyle="coal"] .mbox       { background:rgba(13,13,13,.96); border-color:rgba(161,161,170,.14); --dim:#c4c4c8 }
+
+/* ══ CLOUD (light) ════════════════════════════════════════ */
+.vbg-cloud { position:absolute; inset:0; background:linear-gradient(180deg,#bfdbfe 0%,#dbeafe 35%,#f0f9ff 100%) }
+.vbg-cloud .cv  { position:absolute; border-radius:50%; filter:blur(65px); animation:vblobdrift ease-in-out infinite }
+.vbg-cloud .cv1 { width:520px; height:320px; background:rgba(255,255,255,.78); top:-60px; left:-70px; animation-duration:22s }
+.vbg-cloud .cv2 { width:440px; height:270px; background:rgba(186,230,253,.65); top:22%; right:-55px; animation-duration:28s; animation-delay:-11s }
+.vbg-cloud .cv3 { width:380px; height:230px; background:rgba(255,255,255,.55); bottom:6%; left:20%; animation-duration:18s; animation-delay:-7s }
+
+#app[data-vstyle="cloud"][data-vmode="light"] {
+  --bg:#f0f9ff; --glass:rgba(255,255,255,.82); --glass2:rgba(240,249,255,.82);
+  --border:rgba(14,165,233,.2); --accent:#0ea5e9; --accent2:#0284c7;
+  --accent-g:rgba(14,165,233,.2); --text:#0c2340; --dim:#0369a1; --muted:rgba(3,105,161,.45);
+  --green:#0d9488; --gdim:rgba(13,148,136,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f0f9ff;
+}
+#app[data-vstyle="cloud"] #topbar,
+#app[data-vstyle="cloud"] #sidebar,
+#app[data-vstyle="cloud"] #runbar,
+#app[data-vstyle="cloud"] #rpanel { background:rgba(255,255,255,.72); backdrop-filter:blur(22px) saturate(1.5); border-color:rgba(14,165,233,.2); box-shadow:0 2px 14px rgba(14,165,233,.07) }
+#app[data-vstyle="cloud"] #topbar::after { background:linear-gradient(90deg,transparent,#0ea5e9,transparent); opacity:.3 }
+#app[data-vstyle="cloud"] .trow       { background:rgba(255,255,255,.62); border-color:transparent }
+#app[data-vstyle="cloud"] .trow:hover { background:rgba(255,255,255,.88) }
+#app[data-vstyle="cloud"] .trow.on    { background:rgba(14,165,233,.09); border-color:rgba(14,165,233,.3); box-shadow:0 2px 10px rgba(14,165,233,.08) }
+#app[data-vstyle="cloud"] .rbtn       { background:linear-gradient(135deg,#0284c7,#0ea5e9); box-shadow:0 4px 18px rgba(14,165,233,.3) }
+#app[data-vstyle="cloud"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(14,165,233,.45) }
+#app[data-vstyle="cloud"] .xi         { background:rgba(14,165,233,.08); border-color:rgba(14,165,233,.22) }
+#app[data-vstyle="cloud"] .mbox       { background:rgba(240,249,255,.94); backdrop-filter:blur(22px); border-color:rgba(14,165,233,.2) }
+
+/* ══ PEACH (light) ════════════════════════════════════════ */
+.vbg-peach { position:absolute; inset:0; background:linear-gradient(150deg,#fff5f0 0%,#ffedd5 50%,#fef3c7 100%) }
+.vbg-peach .ph  { position:absolute; border-radius:50%; filter:blur(80px); animation:vblobdrift ease-in-out infinite }
+.vbg-peach .ph1 { width:540px; height:400px; background:rgba(254,215,170,.52); top:-80px; right:-60px; animation-duration:21s }
+.vbg-peach .ph2 { width:420px; height:320px; background:rgba(253,186,116,.36); bottom:-60px; left:-40px; animation-duration:27s; animation-delay:-11s }
+.vbg-peach .ph3 { width:300px; height:220px; background:rgba(254,243,199,.6); top:42%; left:32%; animation-duration:15s; animation-delay:-5s }
+
+#app[data-vstyle="peach"][data-vmode="light"] {
+  --bg:#fff5f0; --glass:rgba(255,255,255,.86); --glass2:rgba(255,248,242,.86);
+  --border:rgba(249,115,22,.18); --accent:#f97316; --accent2:#ea580c;
+  --accent-g:rgba(249,115,22,.22); --text:#3b1003; --dim:#9a3412; --muted:rgba(154,52,18,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fff5f0;
+}
+#app[data-vstyle="peach"] #topbar,
+#app[data-vstyle="peach"] #sidebar,
+#app[data-vstyle="peach"] #runbar,
+#app[data-vstyle="peach"] #rpanel { background:rgba(255,255,255,.76); backdrop-filter:blur(20px) saturate(1.4); border-color:rgba(249,115,22,.15); box-shadow:0 2px 12px rgba(249,115,22,.06) }
+#app[data-vstyle="peach"] #topbar::after { background:linear-gradient(90deg,transparent,#f97316,transparent); opacity:.35 }
+#app[data-vstyle="peach"] .trow       { background:rgba(255,255,255,.62); border-color:transparent }
+#app[data-vstyle="peach"] .trow:hover { background:rgba(255,255,255,.88) }
+#app[data-vstyle="peach"] .trow.on    { background:rgba(249,115,22,.09); border-color:rgba(249,115,22,.3) }
+#app[data-vstyle="peach"] .rbtn       { background:linear-gradient(135deg,#c2410c,#f97316); box-shadow:0 4px 18px rgba(249,115,22,.3) }
+#app[data-vstyle="peach"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(249,115,22,.45) }
+#app[data-vstyle="peach"] .xi         { background:rgba(249,115,22,.07); border-color:rgba(249,115,22,.2) }
+#app[data-vstyle="peach"] .mbox       { background:rgba(255,248,242,.95); backdrop-filter:blur(22px); border-color:rgba(249,115,22,.18) }
+
+/* ══ MINT (light) ═════════════════════════════════════════ */
+.vbg-mint { position:absolute; inset:0; background:#f0fffe }
+.vbg-mint::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle,rgba(13,148,136,.08) 1px,transparent 1px); background-size:30px 30px; opacity:.7 }
+.vbg-mint .mt  { position:absolute; border-radius:50%; border:1px solid rgba(13,148,136,.08); animation:vmint-ring ease-in-out infinite }
+.vbg-mint .mt1 { width:380px; height:380px; top:calc(50% - 190px); left:calc(50% - 190px); animation-duration:11s }
+.vbg-mint .mt2 { width:600px; height:600px; top:calc(50% - 300px); left:calc(50% - 300px); animation-duration:16s; animation-delay:-5s }
+.vbg-mint .mt3 { width:820px; height:820px; top:calc(50% - 410px); left:calc(50% - 410px); animation-duration:21s; animation-delay:-9s }
+
+#app[data-vstyle="mint"][data-vmode="light"] {
+  --bg:#f0fffe; --glass:rgba(255,255,255,.86); --glass2:rgba(240,255,254,.86);
+  --border:rgba(13,148,136,.18); --accent:#0d9488; --accent2:#0f766e;
+  --accent-g:rgba(13,148,136,.22); --text:#042f2e; --dim:#0f766e; --muted:rgba(15,118,110,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#f0fffe;
+}
+#app[data-vstyle="mint"] #topbar,
+#app[data-vstyle="mint"] #sidebar,
+#app[data-vstyle="mint"] #runbar,
+#app[data-vstyle="mint"] #rpanel { background:rgba(255,255,255,.78); backdrop-filter:blur(20px) saturate(1.5); border-color:rgba(13,148,136,.15); box-shadow:0 2px 12px rgba(13,148,136,.06) }
+#app[data-vstyle="mint"] #topbar::after { background:linear-gradient(90deg,transparent,#0d9488,transparent); opacity:.35 }
+#app[data-vstyle="mint"] .trow       { background:rgba(255,255,255,.62); border-color:transparent }
+#app[data-vstyle="mint"] .trow:hover { background:rgba(255,255,255,.88) }
+#app[data-vstyle="mint"] .trow.on    { background:rgba(13,148,136,.09); border-color:rgba(13,148,136,.3) }
+#app[data-vstyle="mint"] .rbtn       { background:linear-gradient(135deg,#0f766e,#0d9488); box-shadow:0 4px 18px rgba(13,148,136,.3) }
+#app[data-vstyle="mint"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(13,148,136,.45) }
+#app[data-vstyle="mint"] .xi         { background:rgba(13,148,136,.07); border-color:rgba(13,148,136,.2) }
+#app[data-vstyle="mint"] .mbox       { background:rgba(240,255,254,.95); backdrop-filter:blur(22px); border-color:rgba(13,148,136,.2) }
+
+/* ══ LAVENDER (light) ═════════════════════════════════════ */
+.vbg-lavender { position:absolute; inset:0; background:linear-gradient(135deg,#faf5ff,#f3e8ff,#ede9fe) }
+.vbg-lavender .la  { position:absolute; border-radius:50%; filter:blur(70px); animation:vblobdrift ease-in-out infinite }
+.vbg-lavender .la1 { width:480px; height:380px; background:rgba(216,180,254,.42); top:-80px; right:-60px; animation-duration:20s }
+.vbg-lavender .la2 { width:380px; height:300px; background:rgba(196,181,253,.36); bottom:-60px; left:-40px; animation-duration:26s; animation-delay:-9s }
+.vbg-lavender .la3 { width:280px; height:280px; background:rgba(233,213,255,.32); top:32%; left:22%; animation-duration:16s; animation-delay:-5s }
+
+#app[data-vstyle="lavender"][data-vmode="light"] {
+  --bg:#faf5ff; --glass:rgba(255,255,255,.8); --glass2:rgba(250,245,255,.8);
+  --border:rgba(147,51,234,.18); --accent:#9333ea; --accent2:#7e22ce;
+  --accent-g:rgba(147,51,234,.22); --text:#2d0a5e; --dim:#6b21a8; --muted:rgba(107,33,168,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#ca8a04; --ydim:rgba(202,138,4,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#faf5ff;
+}
+#app[data-vstyle="lavender"] #topbar,
+#app[data-vstyle="lavender"] #sidebar,
+#app[data-vstyle="lavender"] #runbar,
+#app[data-vstyle="lavender"] #rpanel { background:rgba(255,255,255,.72); backdrop-filter:blur(20px) saturate(1.5); border-color:rgba(147,51,234,.15); box-shadow:0 2px 14px rgba(147,51,234,.06) }
+#app[data-vstyle="lavender"] #topbar::after { background:linear-gradient(90deg,transparent,#9333ea,transparent); opacity:.35 }
+#app[data-vstyle="lavender"] .trow       { background:rgba(255,255,255,.62); border-color:transparent }
+#app[data-vstyle="lavender"] .trow:hover { background:rgba(255,255,255,.88) }
+#app[data-vstyle="lavender"] .trow.on    { background:rgba(147,51,234,.08); border-color:rgba(147,51,234,.28) }
+#app[data-vstyle="lavender"] .rbtn       { background:linear-gradient(135deg,#6b21a8,#9333ea); box-shadow:0 4px 18px rgba(147,51,234,.3) }
+#app[data-vstyle="lavender"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(147,51,234,.45) }
+#app[data-vstyle="lavender"] .xi         { background:rgba(147,51,234,.07); border-color:rgba(147,51,234,.2) }
+#app[data-vstyle="lavender"] .mbox       { background:rgba(250,245,255,.95); backdrop-filter:blur(22px); border-color:rgba(147,51,234,.18) }
+
+/* ══ GOLD (light) ═════════════════════════════════════════ */
+.vbg-gold { position:absolute; inset:0; background:linear-gradient(150deg,#fffbeb 0%,#fef9c3 42%,#fef3c7 100%) }
+.vbg-gold .gl  { position:absolute; border-radius:50%; filter:blur(80px); animation:vblobdrift ease-in-out infinite }
+.vbg-gold .gl1 { width:440px; height:330px; background:rgba(253,224,71,.3); top:-65px; right:-45px; animation-duration:21s }
+.vbg-gold .gl2 { width:360px; height:270px; background:rgba(251,191,36,.24); bottom:-55px; left:-30px; animation-duration:27s; animation-delay:-10s }
+.vbg-gold .gsp { position:absolute; border-radius:50%; animation:vgold-twinkle ease-in-out infinite }
+.vbg-gold .gsp1 { width:4px; height:4px; background:#fbbf24; top:14%; left:22%; animation-duration:2.8s }
+.vbg-gold .gsp2 { width:3px; height:3px; background:#f59e0b; top:37%; left:74%; animation-duration:3.8s; animation-delay:-1.5s }
+.vbg-gold .gsp3 { width:5px; height:5px; background:#fcd34d; top:62%; left:43%; animation-duration:2.5s; animation-delay:-0.8s }
+.vbg-gold .gsp4 { width:3px; height:3px; background:#fbbf24; top:22%; left:87%; animation-duration:3.2s; animation-delay:-2.1s }
+.vbg-gold .gsp5 { width:4px; height:4px; background:#f59e0b; top:79%; left:14%; animation-duration:4.2s; animation-delay:-1s }
+
+#app[data-vstyle="gold"][data-vmode="light"] {
+  --bg:#fffbeb; --glass:rgba(255,255,255,.86); --glass2:rgba(255,251,235,.86);
+  --border:rgba(217,119,6,.2); --accent:#d97706; --accent2:#b45309;
+  --accent-g:rgba(217,119,6,.22); --text:#451a03; --dim:#92400e; --muted:rgba(146,64,14,.45);
+  --green:#15803d; --gdim:rgba(21,128,61,.12);
+  --yellow:#d97706; --ydim:rgba(217,119,6,.12);
+  --red:#dc2626; --rdim:rgba(220,38,38,.12); --log:#fffbeb;
+}
+#app[data-vstyle="gold"] #topbar,
+#app[data-vstyle="gold"] #sidebar,
+#app[data-vstyle="gold"] #runbar,
+#app[data-vstyle="gold"] #rpanel { background:rgba(255,255,255,.76); backdrop-filter:blur(20px) saturate(1.4); border-color:rgba(217,119,6,.15); box-shadow:0 2px 12px rgba(217,119,6,.06) }
+#app[data-vstyle="gold"] #topbar::after { background:linear-gradient(90deg,transparent,#d97706,transparent); opacity:.35 }
+#app[data-vstyle="gold"] .trow       { background:rgba(255,255,255,.62); border-color:transparent }
+#app[data-vstyle="gold"] .trow:hover { background:rgba(255,255,255,.88) }
+#app[data-vstyle="gold"] .trow.on    { background:rgba(217,119,6,.09); border-color:rgba(217,119,6,.3) }
+#app[data-vstyle="gold"] .rbtn       { background:linear-gradient(135deg,#92400e,#d97706); box-shadow:0 4px 18px rgba(217,119,6,.3) }
+#app[data-vstyle="gold"] .rbtn:hover:not(:disabled) { box-shadow:0 6px 26px rgba(217,119,6,.45) }
+#app[data-vstyle="gold"] .xi         { background:rgba(217,119,6,.07); border-color:rgba(217,119,6,.2) }
+#app[data-vstyle="gold"] .mbox       { background:rgba(255,251,235,.95); backdrop-filter:blur(22px); border-color:rgba(217,119,6,.18) }

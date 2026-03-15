@@ -53,6 +53,11 @@ for %%F in (services\__init__.py services\system.py services\bat_runner.py servi
     )
 )
 
+if not exist src\static\css\base.css (
+    echo  [ОШИБКА] static\css\base.css не найден!
+    echo  Папка static\ должна лежать рядом с main.py
+    pause ^& exit /b 1
+)
 :: ── Если index.html лежит рядом — кладём в src\templates\ автоматически ──
 if exist index.html (
     if not exist src\templates mkdir src\templates
@@ -103,6 +108,7 @@ pyinstaller ^
   --name _ALFAscript ^
   %ICON_ARG% ^
   --add-data "src\templates;templates" ^
+  --add-data "src/static;static"^
   --paths "src" ^
   --hidden-import webview ^
   --hidden-import webview.platforms.winforms ^

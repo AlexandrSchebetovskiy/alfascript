@@ -1,0 +1,126 @@
+/* base.css — :root variables, reset, layout skeleton, topbar */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg:#0f1117; --glass:#1a1d2e; --glass2:#141824; --border:#2a2d3e;
+  --accent:#7c3aed; --accent-g:rgba(124,58,237,.3); --accent2:#a78bfa;
+  --text:#e2e8f0; --dim:#64748b; --muted:#334155;
+  --green:#10b981; --gdim:rgba(16,185,129,.15);
+  --yellow:#f59e0b; --ydim:rgba(245,158,11,.15);
+  --red:#ef4444; --rdim:rgba(239,68,68,.15);
+  --log:#0f1117;
+  --mono:'JetBrains Mono',monospace; --ui:'Nunito',sans-serif;
+  --r:10px; --rsm:7px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html,body { height:100%; overflow:hidden }
+body {
+  background:var(--bg); color:var(--text);
+  font-family:var(--ui); font-size:15px; line-height:1.5;
+  user-select:none;
+}
+button { cursor:pointer; font-family:inherit; border:none; outline:none; background:none }
+
+::-webkit-scrollbar       { width:4px }
+::-webkit-scrollbar-track { background:transparent }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px }
+::-webkit-scrollbar-thumb:hover { background:var(--accent) }
+
+/* ── Layout ─────────────────────────────────────────────── */
+#app { display:flex; flex-direction:column; height:100vh }
+
+#topbar {
+  flex:0 0 auto; display:flex; align-items:center; gap:10px;
+  padding:0 14px; height:48px;
+  background:var(--glass); border-bottom:1px solid var(--border);
+  position:relative; z-index:20;
+}
+#topbar::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  opacity:.5;
+}
+
+#workspace { flex:1 1 0; display:flex; overflow:hidden }
+
+#sidebar {
+  flex:0 0 210px; background:var(--glass); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; overflow-y:auto; overflow-x:hidden;
+}
+
+#center { flex:1 1 0; display:flex; flex-direction:column; overflow:hidden }
+#tasks-wrap { flex:1 1 0; overflow-y:auto; padding:8px 12px 0 }
+
+#runbar {
+  flex:0 0 auto; display:flex; align-items:center; gap:10px;
+  padding:9px 14px; border-top:1px solid var(--border);
+  background:var(--glass);
+}
+
+#rpanel {
+  flex:0 0 220px; background:var(--glass); border-left:1px solid var(--border);
+  display:flex; flex-direction:column; overflow-y:auto;
+}
+
+/* ── Topbar elements ─────────────────────────────────────── */
+.logo {
+  display:flex; align-items:baseline; gap:0; flex-shrink:0;
+  font-family:var(--mono); font-size:20px; font-weight:700;
+}
+.logo-alfa   { color:var(--accent2); text-shadow:0 0 16px var(--accent-g); position:relative }
+.logo-script { color:var(--dim); font-size:16px }
+.logo-cur    { color:var(--accent2); animation:blink 1.1s step-end infinite }
+@keyframes blink { 50% { opacity:0 } }
+
+.tb-chips { display:flex; gap:6px; flex:1; overflow:hidden }
+.chip {
+  display:flex; align-items:center; gap:5px; padding:2px 9px;
+  border-radius:20px; font-size:13px; font-weight:600; white-space:nowrap;
+  border:1px solid var(--border); background:var(--glass2); color:var(--dim);
+  transition:all .2s;
+}
+.chip.ok  { background:var(--gdim); border-color:rgba(16,185,129,.3); color:var(--green) }
+.chip.err { background:var(--rdim); border-color:rgba(239,68,68,.3);  color:var(--red)   }
+.chip-dot { width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0 }
+
+.tb-right { display:flex; align-items:center; gap:7px; margin-left:auto; flex-shrink:0 }
+.ver-tag  { font-family:var(--mono); font-size:12px; color:var(--muted); white-space:nowrap }
+
+#upd-pill {
+  display:none; padding:2px 9px; border-radius:20px;
+  font-size:13px; font-weight:600;
+  background:var(--ydim); border:1px solid rgba(245,158,11,.35); color:var(--yellow);
+  cursor:pointer; animation:ppulse 2s ease-in-out infinite;
+}
+@keyframes ppulse { 0%,100% { opacity:1 } 50% { opacity:.6 } }
+
+.ibt {
+  width:26px; height:26px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; color:var(--dim); background:var(--glass2);
+  border:1px solid var(--border); cursor:pointer;
+  transition:all .15s; flex-shrink:0;
+}
+.ibt:hover {
+  background:var(--accent); border-color:var(--accent);
+  color:#fff; box-shadow:0 0 10px var(--accent-g);
+}
+
+/* ── Glitch animation ────────────────────────────────────── */
+@keyframes glitch-c {
+  0%,100% { clip-path:none; transform:none }
+  10%     { clip-path:inset(20% 0 50% 0); transform:translate(-2px,0) }
+  20%     { clip-path:inset(60% 0 10% 0); transform:translate(2px,0)  }
+  30%     { clip-path:none; transform:none }
+}
+
+/* ── vstyle bg layer ─────────────────────────────────────── */
+#vstyle-bg { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden }
+#vstyle-bg > * { display:none }
+#app { position:relative; z-index:1 }
+
+/* ── Modal open/close animation ─────────────────────────── */
+@keyframes popin { from { opacity:0; transform:scale(.95) } to { opacity:1; transform:none } }
+@keyframes spin  { from { transform:rotate(0deg) } to { transform:rotate(360deg) } }
