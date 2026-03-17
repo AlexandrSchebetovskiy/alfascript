@@ -17,7 +17,7 @@ import threading
 from datetime import datetime
 from typing import Any
 
-from config import TASKS, default_task_states
+from src.config import  default_task_states
 
 
 # ---------------------------------------------------------------------------

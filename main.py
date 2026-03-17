@@ -13,7 +13,7 @@ import threading
 import time
 
 from src.app import create_app
-from src.config import CURRENT_VERSION
+from src.config  import CURRENT_VERSION
 from src.paths import MULTILAUNCH
 from src.services.hardware import load_hw_info_bg
 from src.services.system import (

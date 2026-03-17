@@ -9,8 +9,7 @@ Keeping this class separate from the Flask app means:
 - The log-window lifecycle logic is easy to find and modify.
 - main.py stays clean — it just instantiates WebAPI and hands it to webview.
 """
-
-import state
+from src import state
 
 
 class WebAPI:

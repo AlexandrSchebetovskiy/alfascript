@@ -8,7 +8,7 @@ thresholds live here. Nothing in this module has side-effects on import.
 import json
 import os
 
-from paths import MULTILAUNCH, LOCAL_COMP_FILE, _APP_DIR
+from src.paths import MULTILAUNCH, LOCAL_COMP_FILE, _APP_DIR
 
 
 # ---------------------------------------------------------------------------
@@ -18,7 +18,7 @@ from paths import MULTILAUNCH, LOCAL_COMP_FILE, _APP_DIR
 CURRENT_VERSION = "6.6.6"
 
 #: Default build date — overwritten at runtime by ``get_current_date()``.
-_DEFAULT_DATE = "04.03.2026"
+_DEFAULT_DATE = "16.03.2026"
 
 
 def get_current_date() -> str:
@@ -160,3 +160,100 @@ def default_task_states() -> dict[str, bool]:
         for _cat, tasks in TASKS
         for _name, bat, default in tasks
     }
+# ---------------------------------------------------------------------------
+# JSON override  (MULTILAUNCH/config_override.json)
+# ---------------------------------------------------------------------------
+# All keys are optional. Missing keys leave the defaults above untouched.
+#
+# Expected JSON shape:
+# {
+#   "temps": {
+#     "CPU_WARN": 80, "CPU_CRIT": 90,
+#     "GPU_WARN": 75, "GPU_CRIT": 85,
+#     "VRM_WARN": 85, "VRM_CRIT": 100
+#   },
+#   "tasks": [
+#     ["CATEGORY", [
+#       ["Display name", "bat_file.bat", true]
+#     ]]
+#   ],
+#   "presets": {
+#     "⚡  Полный скрипт": ["10_nosleep.bat", "..."]
+#   },
+#   "extras": [
+#     ["💾", "Label", "bat_or_action_or_null"]
+#   ]
+# }
+
+def _load_overrides() -> None:
+    if not MULTILAUNCH:
+        return
+    path = os.path.join(MULTILAUNCH, "config_override.json")
+    if not os.path.isfile(path):
+        return
+
+    try:
+        with open(path, encoding="utf-8-sig") as f:
+            data = json.load(f)
+    except Exception as exc:
+        print(f"[config] Warning: could not read config_override.json — {exc}")
+        return
+
+    import sys
+    _mod = sys.modules[__name__]
+
+    # -- Temperature thresholds (now lowercase keys in JSON) --------------
+    _TEMP_MAP = {
+        "cpu_warn": "CPU_WARN", "cpu_crit": "CPU_CRIT",
+        "gpu_warn": "GPU_WARN", "gpu_crit": "GPU_CRIT",
+        "vrm_warn": "VRM_WARN", "vrm_crit": "VRM_CRIT",
+    }
+    for json_key, attr in _TEMP_MAP.items():
+        if json_key in data:
+            value = data[json_key]
+            if isinstance(value, (int, float)):
+                setattr(_mod, attr, value)
+            else:
+                print(f"[config] Warning: {json_key} must be a number, got {value!r} — skipped")
+
+    # -- TASKS (objects with category/items/name/bat/enabled) -------------
+    if "tasks" in data:
+        try:
+            _mod.TASKS = [
+                (
+                    str(entry["category"]),
+                    [
+                        (str(item["name"]), str(item["bat"]), bool(item["enabled"]))
+                        for item in entry["items"]
+                    ]
+                )
+                for entry in data["tasks"]
+            ]
+        except Exception as exc:
+            print(f"[config] Warning: could not apply tasks override — {exc}")
+
+    # -- PRESETS (unchanged — already correct format) ---------------------
+    if "presets" in data:
+        try:
+            raw: dict = data["presets"]
+            if not isinstance(raw, dict):
+                raise TypeError("presets must be a JSON object")
+            _mod.PRESETS = {
+                str(k): [str(bat) for bat in v]
+                for k, v in raw.items()
+            }
+        except Exception as exc:
+            print(f"[config] Warning: could not apply presets override — {exc}")
+
+    # -- EXTRAS (objects with icon/name/action) ---------------------------
+    if "extras" in data:
+        try:
+            _mod.EXTRAS = [
+                (str(e["icon"]), str(e["name"]), None if e["action"] is None else str(e["action"]))
+                for e in data["extras"]
+            ]
+        except Exception as exc:
+            print(f"[config] Warning: could not apply extras override — {exc}")
+
+
+_load_overrides()

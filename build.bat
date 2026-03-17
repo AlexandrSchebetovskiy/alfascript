@@ -108,7 +108,7 @@ pyinstaller ^
   --name _ALFAscript ^
   %ICON_ARG% ^
   --add-data "src\templates;templates" ^
-  --add-data "src/static;static"^
+  --add-data "src/static;static" ^
   --paths "src" ^
   --hidden-import webview ^
   --hidden-import webview.platforms.winforms ^

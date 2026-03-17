@@ -8,7 +8,7 @@ Import ``create_app()`` from here; do not instantiate Flask anywhere else.
 import os
 from flask import Flask
 
-from paths import _MEIPASS
+from src.paths import _MEIPASS
 
 
 def create_app() -> Flask:
