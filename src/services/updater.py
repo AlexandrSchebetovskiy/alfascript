@@ -44,7 +44,8 @@ def _load_local_comp() -> dict:
                 v = v.get("version") or v.get("ver") or v.get("date") or ""
             result[k] = str(v) if v is not None else None
         return result
-    except Exception:
+    except Exception as e:
+        state.log(f"Не удалось прочитать {LOCAL_COMP_FILE}: {e}", "warn")
         return {}
 
 
@@ -72,9 +73,10 @@ def check_for_update() -> dict:
     """
     try:
         import ssl as _ssl
+        # _ctx.check_hostname = False
+        # _ctx.verify_mode    = _ssl.CERT_NONE
+
         _ctx = _ssl.create_default_context()
-        _ctx.check_hostname = False
-        _ctx.verify_mode    = _ssl.CERT_NONE
         UA = "ALFAscript-Updater/1.0"
 
         def _get_dl_url(pk, path=""):
@@ -247,9 +249,9 @@ def _download_bg(keys_to_dl: list[str], comp_list: list[dict]) -> None:
     global _upd_cancel, _upd_tmp_dir
 
     import ssl as _ssl
+    # _ctx.check_hostname = False
+    # _ctx.verify_mode    = _ssl.CERT_NONE
     _ctx = _ssl.create_default_context()
-    _ctx.check_hostname = False
-    _ctx.verify_mode    = _ssl.CERT_NONE
     UA = "ALFAscript-Updater/1.0"
 
     upd_log_path = os.path.join(_APP_DIR, "updatelog.txt")

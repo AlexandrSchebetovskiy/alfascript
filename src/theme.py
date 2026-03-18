@@ -8,6 +8,7 @@ Provides:
 """
 
 import json
+import logging
 from paths import THEME_FILE
 
 
@@ -76,8 +77,8 @@ def save_appearance(vstyle: str, vmode: str) -> None:
     try:
         with open(THEME_FILE, "w", encoding="utf-8") as f:
             json.dump({"vstyle": vstyle, "vmode": vmode}, f)
-    except Exception:
-        pass
+    except Exception as e:
+        logging.warning("[theme] Failed to save theme.json: %s", e)
 
 
 def current_theme_key(vstyle: str, vmode: str) -> str:

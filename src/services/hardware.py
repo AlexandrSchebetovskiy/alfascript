@@ -9,6 +9,7 @@ Provides:
 """
 
 import json
+import logging
 import os
 import re
 import subprocess
@@ -152,7 +153,8 @@ def _fetch_smart() -> None:
             timeout=10, startupinfo=si,
         )
         scan_lines = [l for l in scan.stdout.splitlines() if l.strip()]
-    except Exception:
+    except Exception as e:
+        logging.warning("[hardware] smartctl scan failed: %s", e)
         _hw_smart = {}
         return
 

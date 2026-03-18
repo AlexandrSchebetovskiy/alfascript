@@ -9,6 +9,7 @@ Provides:
 """
 
 import glob
+import logging
 import os
 from datetime import datetime
 
@@ -135,7 +136,8 @@ def parse_aida_stat_csv(csv_file: str) -> dict | None:
             return None
 
         return result
-    except Exception:
+    except Exception as e:
+        logging.warning("[aida] parse_aida_stat_csv failed: %s", e)
         return None
 
 
@@ -225,7 +227,8 @@ def detect_cpu_throttle(log_file: str) -> str | None:
                 return "VRM"
 
         return None
-    except Exception:
+    except Exception as e:
+        logging.warning("[aida] detect_cpu_throttle failed: %s", e)
         return None
 
 

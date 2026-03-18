@@ -122,8 +122,8 @@ def api_soft_programs():
                     "comp_key":  comp_key,
                     "local_ver": local_comp.get(comp_key),
                 })
-        except Exception:
-            pass
+        except Exception as e:
+            state.log(f"Ошибка сканирования heavy-программ: {e}", "warn")
 
     return jsonify({"ok": True, "programs": programs, "title": "Установка программ", "folder": soft_dir})
 
@@ -174,7 +174,7 @@ def api_icon():
     path = request.args.get("path", "")
     if not path or not os.path.isfile(path):
         return "", 404
-    if MULTILAUNCH and not path.lower().startswith(MULTILAUNCH.lower()):
+    if MULTILAUNCH and not os.path.realpath(path).lower().startswith(os.path.realpath(MULTILAUNCH).lower()):
         return "", 403
     try:
         mime = mimetypes.guess_type(path)[0] or "image/png"
