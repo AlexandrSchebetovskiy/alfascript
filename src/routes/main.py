@@ -48,7 +48,7 @@ def index():
         extras=EXTRAS,
         version=CURRENT_VERSION,
         date=CURRENT_DATE,
-        state=state._state,
+        state=state.get_state_snapshot(),
         multilaunch=MULTILAUNCH,
         is_admin=is_admin(),
         vstyle=vstyle,
@@ -74,14 +74,15 @@ def log_window():
 @bp.route("/api/state")
 def api_state():
     vstyle, vmode = load_appearance()
+    snap = state.get_state_snapshot()
     return jsonify({
-        "tasks":          state._state["tasks"],
-        "active_preset":  state._state["active_preset"],
-        "running":        state._state["running"],
-        "status":         state._state["status"],
-        "status_type":    state._state["status_type"],
-        "progress":       state._state["progress"],
-        "test_results":   state._state["test_results"],
+        "tasks":          snap["tasks"],
+        "active_preset":  snap["active_preset"],
+        "running":        snap["running"],
+        "status":         snap["status"],
+        "status_type":    snap["status_type"],
+        "progress":       snap["progress"],
+        "test_results":   snap["test_results"],
         "multilaunch":    MULTILAUNCH,
         "is_admin":       is_admin(),
         "os_ver":         get_os_version(),
@@ -111,8 +112,9 @@ def api_stream():
     def generate():
         try:
             # Send current run state immediately on connect
+            snap = state.get_state_snapshot()
             yield (
-                f"data: {json.dumps({'type': 'state', 'data': {'running': state._state['running'], 'status': state._state['status'], 'progress': state._state['progress']}})}\n\n"
+                f"data: {json.dumps({'type': 'state', 'data': {'running': snap['running'], 'status': snap['status'], 'progress': snap['progress']}})}\n\n"
             )
             # Replay log history so a freshly opened log window isn't empty
             if history_snapshot:

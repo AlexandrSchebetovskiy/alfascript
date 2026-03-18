@@ -36,6 +36,7 @@ _state: dict[str, Any] = {
 }
 
 
+_state_lock = threading.Lock()
 # ---------------------------------------------------------------------------
 # SSE client queues
 # ---------------------------------------------------------------------------
@@ -109,10 +110,29 @@ def remove_client(q) -> None:
             _clients.remove(q)
 
 
+def get_state(key: str) -> Any:
+    """Thread-safe read of a single state key."""
+    with _state_lock:
+        return _state[key]
+
+
+def set_state(key: str, value: Any) -> None:
+    """Thread-safe write of a single state key."""
+    with _state_lock:
+        _state[key] = value
+
+
+def update_state(**kwargs: Any) -> None:
+    """Thread-safe bulk update of multiple state keys atomically."""
+    with _state_lock:
+        _state.update(kwargs)
+
+
 def get_state_snapshot() -> dict[str, Any]:
     """Return a shallow copy of the current state dict.
 
     Use this when you need a consistent read without holding a lock across
     a slow operation (e.g. building a JSON response).
     """
-    return dict(_state)
+    with _state_lock:
+        return dict(_state)

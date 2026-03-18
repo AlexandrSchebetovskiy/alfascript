@@ -57,7 +57,7 @@ def api_extra():
         return jsonify({"ok": True, "action": "portmgr"})
 
     # Regular bat file
-    if state._state["running"]:
+    if state.get_state("running"):
         return jsonify({"ok": False, "error": "Уже запущено"})
     if not SCRIPTS_DIR:
         return jsonify({"ok": False, "error": "scripts не найден"})

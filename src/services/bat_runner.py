@@ -103,12 +103,12 @@ def _run_thread(tasks_to_run: list[tuple[str, str]]) -> None:
     errors = 0
 
     for i, (name, bat) in enumerate(tasks_to_run):
-        if state._state["cancel"]:
+        if state.get_state("cancel"):
             state.log("⏹ Выполнение отменено", "warn")
             break
 
         pct = int(i / total * 100)
-        state._state["progress"] = pct
+        state.set_state("progress", pct)
         state.push("status", {
             "running":  True,
             "text":     f"{name}...",
@@ -134,9 +134,7 @@ def _run_thread(tasks_to_run: list[tuple[str, str]]) -> None:
             _process_aida_results()
 
     # ── Finalise ────────────────────────────────────────────────────────────
-    state._state["running"] = False
-    state._state["cancel"]  = False
-    state._state["progress"] = 100
+    state.update_state(running=False, cancel=False, progress=100)
 
     if errors:
         state.log(f"═══ Завершено с ошибками ({errors}) ═══", "warn")
@@ -181,7 +179,7 @@ def _process_aida_results() -> None:
             if result:
                 if alf:
                     result["throttle"] = detect_cpu_throttle(alf)
-                state._state["test_results"] = result
+                state.set_state("test_results", result)
                 state.push("test_results", result)
             else:
                 state.log("Не удалось разобрать отчёт AIDA64", "warn")
