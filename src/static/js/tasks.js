@@ -8,9 +8,24 @@ function toggleTask(c) {
   window._st = setTimeout(syncTasks, 300);
 }
 
+function onDropdownChange(sel) {
+  if (_running) { sel.value = sel.dataset.prev || ""; return; }
+  sel.dataset.prev = sel.value;
+  sel.closest(".trow").classList.toggle("on", sel.value !== "");
+  clearTimeout(window._st);
+  window._st = setTimeout(syncTasks, 300);
+}
+
 function syncTasks() {
   const t = {};
-  qsa(".trow").forEach(c => t[c.dataset.bat] = c.classList.contains("on"));
+  qsa(".trow[data-bat]").forEach(c => {
+    t[c.dataset.bat] = c.classList.contains("on");
+  });
+  qsa(".task-ddl").forEach(sel => {
+    sel.querySelectorAll("option").forEach(opt => {
+      if (opt.value) t[opt.value] = (opt.value === sel.value);
+    });
+  });
   fetch("/api/tasks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -19,7 +34,7 @@ function syncTasks() {
 }
 
 function selectAll() {
-  qsa(".trow").forEach(c => {
+  qsa(".trow[data-bat]").forEach(c => {
     if (c.dataset.bat !== "99_testnotimelimit.bat") c.classList.add("on");
   });
   syncTasks();
@@ -27,6 +42,7 @@ function selectAll() {
 
 function deselectAll() {
   qsa(".trow").forEach(c => c.classList.remove("on"));
+  qsa(".task-ddl").forEach(sel => { sel.value = ""; });
   syncTasks();
 }
 
@@ -38,7 +54,17 @@ function applyPreset(btn) {
     body: JSON.stringify({ preset: btn.dataset.preset }),
   }).then(r => r.json()).then(d => {
     if (!d.ok) return;
-    qsa(".trow").forEach(c => c.classList.toggle("on", !!d.tasks[c.dataset.bat]));
+    qsa(".trow[data-bat]").forEach(c =>
+      c.classList.toggle("on", !!d.tasks[c.dataset.bat])
+    );
+    qsa(".task-ddl").forEach(sel => {
+      let selected = "";
+      sel.querySelectorAll("option").forEach(opt => {
+        if (opt.value && d.tasks[opt.value]) selected = opt.value;
+      });
+      sel.value = selected;
+      sel.closest(".trow").classList.toggle("on", selected !== "");
+    });
     qsa(".pset").forEach(b => b.classList.remove("on"));
     btn.classList.add("on");
   });

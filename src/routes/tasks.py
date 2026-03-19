@@ -24,12 +24,17 @@ def api_run():
     if not MULTILAUNCH:
         return jsonify({"ok": False, "error": "Папка multilaunch не найдена!"})
 
-    tasks_to_run = [
-        (name, bat)
-        for cat, tasks in TASKS
-        for name, bat, _ in tasks
-        if state._state["tasks"].get(bat)
-    ]
+    tasks_to_run = []
+    for _cat, tasks in TASKS:
+        for item in tasks:
+            if isinstance(item, dict) and item.get("type") == "dropdown":
+                for label, bat in item["options"]:
+                    if state._state["tasks"].get(bat):
+                        tasks_to_run.append((f"{item['name']} › {label}", bat))
+            else:
+                name, bat, _ = item
+                if state._state["tasks"].get(bat):
+                    tasks_to_run.append((name, bat))
     if not tasks_to_run:
         return jsonify({"ok": False, "error": "Выберите хотя бы одну задачу!"})
 

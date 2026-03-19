@@ -73,17 +73,35 @@ VRM_CRIT = 110
 # ---------------------------------------------------------------------------
 # Task definitions
 # ---------------------------------------------------------------------------
-# Structure: list of (category_name, [(display_name, bat_filename, default_enabled)])
+# Structure: list of (category_name, [items])
+# Each item is either:
+#   - a tuple (display_name, bat_filename, default_enabled)  — simple checkbox
+#   - a dict returned by dropdown()                           — dropdown selector
 
-TASKS: list[tuple[str, list[tuple[str, str, bool]]]] = [
+
+def dropdown(
+    name: str,
+    options: list[tuple[str, str]],
+    default: str | None = None,
+) -> dict:
+    """Create a dropdown task item.
+
+    Args:
+        name:    Display name shown in the task row.
+        options: List of ``(label, bat_filename)`` pairs.
+        default: bat_filename selected by default, or ``None`` for none.
+    """
+    return {"type": "dropdown", "name": name, "options": options, "default": default}
+
+
+TASKS: list = [
     ("ПОДГОТОВКА", [
         ("Включить профиль производительности", "10_nosleep.bat",         True),
         ("Установка драйверов SDI",              "11_runsdi.bat",          True),
         ("Проверка интернет соединения",         "01_inetnew.bat",         True),
     ]),
     ("НАСТРОЙКА", [
-        ("Тёмная тема",                          "02_temad.bat",           False),
-        ("Светлая тема",                         "02_temaw.bat",           False),
+        dropdown("Тема Windows", [("Тёмная", "02_temad.bat"), ("Светлая", "02_temaw.bat")]),
         ("Установка библиотек",                  "03_biblioteki.bat",      True),
         ("Создание ярлыков",                     "05_shortcuts.bat",       True),
         ("Активация Win + Office",               "07_aktiv.bat",           True),
@@ -159,11 +177,17 @@ EXTRAS: list[tuple[str, str, str | None]] = [
 
 def default_task_states() -> dict[str, bool]:
     """Return ``{bat_filename: default_enabled}`` for every task."""
-    return {
-        bat: default
-        for _cat, tasks in TASKS
-        for _name, bat, default in tasks
-    }
+    result: dict[str, bool] = {}
+    for _cat, tasks in TASKS:
+        for item in tasks:
+            if isinstance(item, dict) and item.get("type") == "dropdown":
+                default_bat = item.get("default")
+                for _label, bat in item["options"]:
+                    result[bat] = (bat == default_bat)
+            else:
+                _name, bat, default = item
+                result[bat] = default
+    return result
 # ---------------------------------------------------------------------------
 # JSON override  (MULTILAUNCH/config_override.json)
 # ---------------------------------------------------------------------------
@@ -223,14 +247,17 @@ def _load_overrides() -> None:
     # -- TASKS (objects with category/items/name/bat/enabled) -------------
     if "tasks" in data:
         try:
+            def _parse_item(item: dict):
+                if item.get("type") == "dropdown":
+                    return dropdown(
+                        str(item["name"]),
+                        [(str(o["label"]), str(o["bat"])) for o in item["options"]],
+                        item.get("default"),
+                    )
+                return (str(item["name"]), str(item["bat"]), bool(item["enabled"]))
+
             _mod.TASKS = [
-                (
-                    str(entry["category"]),
-                    [
-                        (str(item["name"]), str(item["bat"]), bool(item["enabled"]))
-                        for item in entry["items"]
-                    ]
-                )
+                (str(entry["category"]), [_parse_item(i) for i in entry["items"]])
                 for entry in data["tasks"]
             ]
         except Exception as exc:

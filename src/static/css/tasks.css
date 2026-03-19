@@ -79,3 +79,20 @@
 .rbtn.stop     { background:var(--red)   }
 .rbtn.done     { background:var(--green) }
 .rbtn:disabled { opacity:.5; cursor:not-allowed }
+
+/* ── Dropdown task select ─────────────────────────────────── */
+.task-ddl {
+  flex-shrink:0; font-family:var(--ui); font-size:12px; font-weight:600;
+  color:var(--dim); background:var(--glass); border:1px solid var(--border);
+  border-radius:var(--rsm); padding:2px 6px; cursor:pointer; outline:none;
+  transition:border-color .15s, color .15s;
+}
+.task-ddl:hover,
+.task-ddl:focus {
+  border-color:var(--accent); color:var(--text);
+}
+.trow.on .task-ddl {
+  color:var(--accent2);
+  border-color:color-mix(in srgb,var(--accent) 50%,transparent);
+  background:color-mix(in srgb,var(--accent) 8%,var(--glass));
+}

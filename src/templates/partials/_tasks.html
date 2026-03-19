@@ -9,13 +9,30 @@
     {% for cat_name, tasks in tasks %}
     <div class="cat-blk">
       <div class="cat-name">{{ cat_name }}</div>
-      {% for name, bat, default in tasks %}
-      <div class="trow {{ 'on' if state.tasks.get(bat, default) else '' }}"
-           data-bat="{{ bat }}" onclick="toggleTask(this)">
+      {% for item in tasks %}
+      {% if item is mapping %}
+        {% set sel = namespace(val='') %}
+        {% for label, bat in item.options %}
+          {% if state.tasks.get(bat) %}{% set sel.val = bat %}{% endif %}
+        {% endfor %}
+        <div class="trow {{ 'on' if sel.val else '' }}" data-type="dropdown">
+          <div class="chk">✓</div>
+          <span class="tname">{{ item.name }}</span>
+          <select class="task-ddl" onchange="onDropdownChange(this)" onclick="event.stopPropagation()">
+            <option value="">— не выбрано —</option>
+            {% for label, bat in item.options %}
+            <option value="{{ bat }}" {{ 'selected' if state.tasks.get(bat) else '' }}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% else %}
+      <div class="trow {{ 'on' if state.tasks.get(item[1], item[2]) else '' }}"
+           data-bat="{{ item[1] }}" onclick="toggleTask(this)">
         <div class="chk">✓</div>
-        <span class="tname">{{ name }}</span>
-        <span class="tbat">{{ bat }}</span>
+        <span class="tname">{{ item[0] }}</span>
+        <span class="tbat">{{ item[1] }}</span>
       </div>
+      {% endif %}
       {% endfor %}
     </div>
     {% endfor %}

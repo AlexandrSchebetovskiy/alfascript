@@ -81,9 +81,18 @@ function fetchState() {
     })();
 
     // Task checkboxes
-    if (s.tasks) qsa(".trow").forEach(c => {
+    if (s.tasks) qsa(".trow[data-bat]").forEach(c => {
       if (s.tasks[c.dataset.bat] !== undefined)
         c.classList.toggle("on", !!s.tasks[c.dataset.bat]);
+    });
+    // Dropdown tasks
+    if (s.tasks) qsa(".task-ddl").forEach(sel => {
+      let selected = "";
+      sel.querySelectorAll("option").forEach(opt => {
+        if (opt.value && s.tasks[opt.value]) selected = opt.value;
+      });
+      sel.value = selected;
+      sel.closest(".trow").classList.toggle("on", selected !== "");
     });
 
     // Active preset highlight
