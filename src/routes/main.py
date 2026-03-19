@@ -17,7 +17,7 @@ import os
 from flask import Blueprint, Response, jsonify, render_template, request, stream_with_context
 
 from src import state
-from src.config import CURRENT_VERSION, CURRENT_DATE, TASKS, EXTRAS
+from src.config import CURRENT_VERSION, CURRENT_DATE, TASKS, EXTRAS, TASK_HINTS
 from src.paths import MULTILAUNCH, _APP_DIR
 from src.theme import THEMES_DATA, load_appearance
 from src.services.system import (
@@ -44,6 +44,7 @@ def index():
     return render_template(
         "index.html",
         tasks=TASKS,
+        hints=TASK_HINTS,
         presets=list(PRESETS.keys()),
         extras=EXTRAS,
         version=CURRENT_VERSION,

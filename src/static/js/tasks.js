@@ -1,5 +1,30 @@
 // tasks.js — task checkboxes, presets, run/stop
 
+// ── Task tooltips ──────────────────────────────────────────
+(function () {
+  const tip = document.createElement("div");
+  tip.className = "task-tip";
+  document.body.appendChild(tip);
+
+  let _hideTimer = null;
+
+  document.addEventListener("mouseover", e => {
+    const row = e.target.closest(".trow[data-hint]");
+    if (!row) return;
+    clearTimeout(_hideTimer);
+    tip.textContent = row.dataset.hint;
+    const r = row.getBoundingClientRect();
+    tip.style.left = r.left + "px";
+    tip.style.top  = (r.bottom + 6) + "px";
+    tip.classList.add("visible");
+  });
+
+  document.addEventListener("mouseout", e => {
+    if (!e.target.closest(".trow[data-hint]")) return;
+    _hideTimer = setTimeout(() => tip.classList.remove("visible"), 80);
+  });
+})();
+
 // ── Tasks ─────────────────────────────────────────────────
 function toggleTask(c) {
   if (_running) return;

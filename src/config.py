@@ -83,6 +83,7 @@ def dropdown(
     name: str,
     options: list[tuple[str, str]],
     default: str | None = None,
+    hint: str | None = None,
 ) -> dict:
     """Create a dropdown task item.
 
@@ -90,8 +91,9 @@ def dropdown(
         name:    Display name shown in the task row.
         options: List of ``(label, bat_filename)`` pairs.
         default: bat_filename selected by default, or ``None`` for none.
+        hint:    Optional tooltip text shown on hover.
     """
-    return {"type": "dropdown", "name": name, "options": options, "default": default}
+    return {"type": "dropdown", "name": name, "options": options, "default": default, "hint": hint}
 
 
 TASKS: list = [
@@ -101,7 +103,8 @@ TASKS: list = [
         ("Проверка интернет соединения",         "01_inetnew.bat",         True),
     ]),
     ("НАСТРОЙКА", [
-        dropdown("Тема Windows", [("Тёмная", "02_temad.bat"), ("Светлая", "02_temaw.bat")]),
+        dropdown("Тема Windows", [("Тёмная", "02_temad.bat"), ("Светлая", "02_temaw.bat")],
+                 hint="Применяет тему оформления Windows из папки ALFAthemenew. Выберите тёмный или светлый вариант."),
         ("Установка библиотек",                  "03_biblioteki.bat",      True),
         ("Создание ярлыков",                     "05_shortcuts.bat",       True),
         ("Активация Win + Office",               "07_aktiv.bat",           True),
@@ -115,6 +118,28 @@ TASKS: list = [
         ("Финальная очистка",                    "12_cleanup.bat",         True),
     ]),
 ]
+
+
+# ---------------------------------------------------------------------------
+# Task hints (tooltip text shown on hover)
+# ---------------------------------------------------------------------------
+# Maps bat_filename → short description string. Optional — tasks without an
+# entry in this dict simply show no tooltip.
+
+TASK_HINTS: dict[str, str] = {
+    "10_nosleep.bat":         "Переключает схему питания на «Высокая производительность», отключает сон и гибернацию на время работы.",
+    "11_runsdi.bat":          "Запускает SDI Origin для автоматической установки актуальных драйверов. Для некоторых систем запускается дважды.",
+    "01_inetnew.bat":         "Проверяет наличие интернет-соединения и корректность сетевых настроек.",
+    "02_temad.bat":           "Применяет тёмную тему оформления Windows из папки ALFAthemenew.",
+    "02_temaw.bat":           "Применяет светлую тему оформления Windows из папки ALFAthemenew.",
+    "03_biblioteki.bat":      "Устанавливает распространяемые библиотеки Visual C++, .NET и другие системные компоненты.",
+    "05_shortcuts.bat":       "Создаёт ярлыки на рабочем столе и в меню «Пуск».",
+    "07_aktiv.bat":           "Активирует Windows и Microsoft Office через встроенный скрипт.",
+    "13_yabrowser.bat":       "Устанавливает Яндекс Браузер из папки multilaunch.",
+    "04_tests.bat":           "Запускает нагрузочный тест AIDA64 + FurMark на 5 минут для проверки температур и стабильности.",
+    "99_testnotimelimit.bat": "Запускает нагрузочный тест AIDA64 + FurMark на 5 часов. Используется для длительной проверки стабильности.",
+    "12_cleanup.bat":         "Удаляет временные файлы, очищает корзину и завершает финальную настройку системы.",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -275,6 +300,16 @@ def _load_overrides() -> None:
             }
         except Exception as exc:
             print(f"[config] Warning: could not apply presets override — {exc}")
+
+    # -- TASK_HINTS (bat → hint string) -----------------------------------
+    if "hints" in data:
+        try:
+            raw = data["hints"]
+            if not isinstance(raw, dict):
+                raise TypeError("hints must be a JSON object")
+            _mod.TASK_HINTS = {str(k): str(v) for k, v in raw.items()}
+        except Exception as exc:
+            print(f"[config] Warning: could not apply hints override — {exc}")
 
     # -- EXTRAS (objects with icon/name/action) ---------------------------
     if "extras" in data:
