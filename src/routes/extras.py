@@ -15,6 +15,7 @@ import subprocess
 from flask import Blueprint, Response, jsonify, request
 
 from src import state
+from src.config import ACTION_CMD, ACTION_SOFTMGR, ACTION_PORTMGR
 from src.paths import MULTILAUNCH, SCRIPTS_DIR
 from src.services.bat_runner import run_bat
 from src.services.programs import scan_programs
@@ -41,8 +42,8 @@ def api_extra():
             state.log(f"Ошибка: {e}", "err")
         return jsonify({"ok": True})
 
-    if isinstance(bat, str) and bat.startswith(":cmd:"):
-        cmd = bat[5:]
+    if isinstance(bat, str) and bat.startswith(ACTION_CMD):
+        cmd = bat[len(ACTION_CMD):]
         try:
             subprocess.Popen(cmd, shell=True)
             state.log(f"▶ Запущен: {name}", "info")
@@ -50,10 +51,10 @@ def api_extra():
             state.log(f"Ошибка: {e}", "err")
         return jsonify({"ok": True})
 
-    if isinstance(bat, str) and bat.startswith(":softmgr:"):
+    if isinstance(bat, str) and bat.startswith(ACTION_SOFTMGR):
         return jsonify({"ok": True, "action": "softmgr"})
 
-    if isinstance(bat, str) and bat.startswith(":portmgr:"):
+    if isinstance(bat, str) and bat.startswith(ACTION_PORTMGR):
         return jsonify({"ok": True, "action": "portmgr"})
 
     # Regular bat file
