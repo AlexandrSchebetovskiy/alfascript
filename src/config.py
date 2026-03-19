@@ -132,11 +132,15 @@ PRESETS: dict[str, list[str]] = {
 # ---------------------------------------------------------------------------
 # Structure: list of (icon, display_name, bat_or_action)
 # bat_or_action meanings:
-#   str ending in .bat   → run that bat from SCRIPTS_DIR
-#   None                 → manual activation (inline PowerShell)
-#   ":cmd:<shell_cmd>"   → run shell command directly
-#   ":portmgr:"          → open port/diagnostics manager UI
-#   ":softmgr:"          → open software manager UI
+#   str ending in .bat         → run that bat from SCRIPTS_DIR
+#   None / ACTION_ACTIVATE     → manual activation (inline PowerShell)
+#   ACTION_CMD + "<shell_cmd>" → run shell command directly
+#   ACTION_PORTMGR             → open port/diagnostics manager UI
+#   ACTION_SOFTMGR             → open software manager UI
+
+ACTION_CMD     = ":cmd:"
+ACTION_SOFTMGR = ":softmgr:"
+ACTION_PORTMGR = ":portmgr:"
 
 EXTRAS: list[tuple[str, str, str | None]] = [
     ("💾", "Бэкап драйверов",          "08_drv_backup.bat"),
